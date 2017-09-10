@@ -1,7 +1,10 @@
-package quicksort
+package main
 
 import (
 	"sync"
+	"time"
+	"os"
+	"math/rand"
 )
 
 var semaphore = make(chan struct{}, 100)
@@ -76,4 +79,14 @@ func partition(a *[]int, low, hi int) int {
 
 func swap(a *[]int, i , j int) {
 	(*a)[i], (*a)[j] = (*a)[j], (*a)[i]
+}
+
+func main(){
+	rand.Seed(time.Now().UTC().UnixNano())
+	list := rand.Perm(1000000)
+	if len(os.Args) > 1 {
+		QuickSortSequential(&list,0, len(list)-1)
+	}else {
+		QuickSortConcurrent(&list,0, len(list)-1)
+	}
 }
