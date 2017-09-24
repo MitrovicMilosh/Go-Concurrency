@@ -6,7 +6,7 @@
 #include <errno.h>
 
 #define swap(a,b) {int t;t=a;a=b;b=t;}
-#define TEST_SIZE 1000000
+#define TEST_SIZE 10000000
 
 void error_fatal(char *message)
 {
@@ -47,7 +47,6 @@ int main(int argc, char* argv[])
 
 	qs_param *qp;
 
-
 	qp = (qs_param*)malloc(sizeof(qs_param));
 	if(qp == NULL)
 		error_fatal ("malloc error");
@@ -73,7 +72,6 @@ void QuickSortSequential(int *a, int low, int hi){
 
 void *QuickSortConcurrent(void *arg)
 {
-
     qs_param *qp;
     qp = (qs_param *) arg;
     int *a = qp->a;
@@ -118,7 +116,6 @@ void *QuickSortConcurrent(void *arg)
 			if( (err = pthread_create(&thread[1], NULL, QuickSortConcurrent, (void*)qp_hi)) != 0)
 				pthread_error ("thread create error", err);
 			
-
 			if( (err = pthread_join(thread[0], NULL)) != 0)
 				pthread_error ("thread join error", err);
 
@@ -133,7 +130,6 @@ void *QuickSortConcurrent(void *arg)
         }
     }
 	return ((void*)0);
-
 }
 
 int partition(int a[], int low, int hi)

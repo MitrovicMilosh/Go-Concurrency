@@ -31,7 +31,6 @@ void quick_sort(std::vector<int>::iterator first, std::vector<int>::iterator las
     } 
 } 
   
-  
 void quick_sort_parallel(std::vector<int>::iterator first, 
                           std::vector<int>::iterator last, 
                           unsigned remaining_threads) 
@@ -72,7 +71,6 @@ void quick_sort_parallel(std::vector<int>::iterator first,
     } 
 } 
   
-
 int main(int argc, char* argv[]) 
 { 
 	int n = 0;
