@@ -1,0 +1,11 @@
+concurrent
+n=100k  0.107s	13676 kB
+n=1M 	1.185s	29656 kB
+n=10M	13.702s	123112 kB
+n=30M 	39.321s	677240 kB
+
+sequential
+n=100k  0.071s	6996 kB
+n=1M 	0.378s	17304 kB
+n=10M 	4.214s	229312 kB
+n=50M 	13.487s	358468 kB

@@ -1,0 +1,11 @@
+concurrent		3092 kB
+n=1M   0.010s	
+n=100M 0.263s	
+n=300M 0.770s	
+n=500M 1.309s	
+
+sequential		2620 k
+n=1M   0.008s	
+n=100M 0.663s	
+n=300M 2.103s	
+n=500M 3.507s	
