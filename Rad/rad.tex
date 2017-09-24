@@ -1,0 +1,273 @@
+\documentclass[12pt,oneside]{memoir} 
+
+
+\usepackage[latinica, biblatex]{matfmaster} 
+\usepackage{listings}
+\usepackage{listings-golang}
+\usepackage{color}
+
+\lstset{ 
+    frame=single,
+    basicstyle=\footnotesize,
+    keywordstyle=\color{blue},
+    showstringspaces=false, 
+    stringstyle=\color{red},
+    tabsize=4,
+    language=Golang
+}
+
+\bib{literatura}
+
+
+\autor{Miloš Mitrović}
+\naslov{Konkurentno programiranje u programskom jeziku Go}
+\godina{2017}
+\mentor{dr Milena \textsc{Vujošević Janičić}\\ Univerzitet u Beogradu, Matematički fakultet}
+\komisijaA{dr Ana \textsc{Anić}\\  Univerzitet u Beogradu, Matematički fakultet}
+\komisijaB{dr Laza \textsc{Lazić}\\  Univerzitet u Beogradu, Matematički fakultet}
+
+
+\apstr{
+text
+}
+
+\kljucnereci{programski jezik Go, konkurentno programiranje}
+
+\begin{document}
+
+\frontmatter
+\naslovna
+\komisija
+\posveta{Mojoj sestri Ivoni}
+\apstrakt
+\tableofcontents*
+
+
+\mainmatter
+
+
+\chapter{Uvod}
+
+
+
+
+\chapter{Karakteristike programskog jezika Go}
+
+Go je imperativni programski jezik otvorenog koda koji razvija kompanija Google od 2007. godine. Napravljen je kao kompilirani jezik opšte namene sa statičkim tipovima koji podseća na interpretirane jezike sa dinamičkim tipovima. Podržava konkurentno programiranje, automatsko upravljanje memorijom kao i refleksiju tokom izvršavanja programa. Pogodan je za rešavanje svih vrsta problema a najviše se koristi za izgradnju servera, skriptove i samostalne aplikacije za komandnu liniju a može se korititi i za grafičke i mobilne aplikacije.
+
+\section{Tipovi podataka}
+
+Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa.  Za razliku od C-a Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom se prijavljuje greška.\\
+
+Od osnovnih ugrađenih tipova podataka Go podržava:
+\begin{itemize}
+
+\item Numeričke -  celobrojne označene (\texttt{int8}, \texttt{int16}, \texttt{int32}, \texttt{int64})
+ i neoznačene  (\texttt{uint8}, \texttt{uint16}, \texttt{uint32}, \texttt{uint64}), u pokretnom zarezu (\texttt{float32}, \texttt{float64}) i kompleksne (\texttt{complex64}, \texttt{complex128})
+
+\item Bulovske  (\texttt{bool})
+
+\item Tekstualne (\texttt{string})
+
+\end{itemize}
+
+Od drugih vrsta podataka, Go podržava nizove, mape i slajseve - nizove sa promenljivom dužinom. Postoje i paketi koji omogućavaju rad sa listama.
+
+\section{Funkcije i metodi}
+ 
+\section{Interfejsi}
+
+\section{Refleksija}
+
+\section{Testiranje}
+
+\section{Paketi}
+
+
+
+\chapter{Konkurentno programiranje u programskom jeziku Go}
+
+\section{Osnovni pojmovi konkurentnog programiranja}
+
+\section{Go}
+
+\subsection{Go-rutine}
+
+\subsection{Kanali}
+
+\subsection{Sinhronizacija}
+
+\subsection{Data race i data race detektor}
+
+\subsection{Select naredba}
+
+
+\chapter {Primeri i poređenje sa drugim jezicima}
+U ovom poglavlju su izloženi primeri konkurentnih Go programa kao i poređenje implementacija nekoliko jednostavnih algoritama u jezicima C, C++ i Python. Primeri ilustruju kako se može koristiti konkurentnost u jeziku Go i kakva je njegova efikasnost i udobnost programiranja u odnosu na druge pomenute jezike. 
+
+\section{Osnovni primeri sa poređenjem}
+Prvo sledi kratak pregled programskih jezika C, C++ i Python i njihove konkurentnosti a zatim poređenje implementacija algoritama quicksort, množenje matrica i Eratostenovo sito. Kao kriterijumi poređenja se koriste brzina izvršavanja, maksimalna upotreba memorije, broj linija k\^{o}da kao i kvalitet dostupnih implementacija i subjektivna razumljivost  k\^{o}da. Programi su testirani na hardveru sa procesorom Intel Core i3-3210 sa dva jezgra/četiri niti pod Linux-om Ubuntu 17.04.  Implementacije u drugim jezicima su preuzete sa interneta i biće kratko prodiskutovane bez detaljnog obrazlaganja k\^{o}da. Poređenje je čisto ilustrativnog tipa jer zavisi od kvaliteta i efikasnosti dostupnih implementacija i ne treba ga uzeti kao definitivne procene efikasnosti samih jezika. 
+
+\subsection{C}
+
+\subsection{C++}
+
+\subsection{Python}
+
+
+\section{Quicksort}
+Opis algoritma
+
+\subsection{Go}
+Implementacija \ref{lst:qs} koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i select naredbe gde kapacitet kanala označava maksimalan broj aktivnih go-rutina. Program pokreće po jednu go-rutinu za svaki rekurzivni poziv, odnosno za levi i desni podniz dokle god je to moguće. U select naredbi se pokušava "dobijanje tokena" odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nam nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da možemo da dobijemo token odnosno uspešno pošaljemo praznu strukturu kroz kanal pokrećemo go-rutinu za rekurzivni poziv, u suprotnom ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake go-rutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto. Da bismo bili sigurni da su sve go-rutine završile sa svojim radom, za sinhronizaciju koristimo wait grupe. Svaki konkurentni poziv funkcije kreira svoju wait grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da se ne zna kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati wait grupi da je završeno sa radom.
+
+\subsection{C}
+Za razliku od Go implementacije, ovde\cite{qs_c} je upotrebljena dubina rekurzije za ograničavanje broja niti koje program kreira. Kada se dostigne zadata dubina rekurzije program više ne kreira nove niti već prelazi u sekvencijalni režim rada. Svaki konkurentni poziv funkcije kreira po dve nove niti ukoliko maksimalna dubina nije dostignuta, nakon čega se join funkcijom čeka na njihov završetak sa radom.
+
+\begin{center}
+\begin{lstlisting}[caption=Go implementacija konkurentne quicksort funkcije,label={lst:qs}]
+var semaphore = make(chan struct{}, 100)
+
+func QuickSortConcurrent(a *[]int, low, hi int) {
+	if hi < low {
+		return
+	}
+
+	p := partition(a, low, hi)
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	select{
+	case semaphore <- struct{}{}:
+		go func(){
+			QuickSortConcurrent(a, low, p-1)
+			<- semaphore
+			wg.Done()
+		}()
+	default:
+		QuickSortSequential(a,low, p-1)
+		wg.Done()
+	}
+
+	select{
+	case semaphore <- struct{}{}:
+		go func(){
+			QuickSortConcurrent(a, p+1, hi)
+			<- semaphore
+			wg.Done()
+		}()
+	default:
+		QuickSortSequential(a, p+1, hi)
+		wg.Done()
+	}
+
+	wg.Wait()
+}
+
+\end{lstlisting}
+\end{center}
+
+
+\subsection{C++}
+Za C++ su razmatrane dve implementacije: prva\cite{qs_cpp_std}, u kojoj je niz reprezentovan strukturom vector i koristi standardnu biblioteku, i druga\cite{qs_cpp_omp}, koja koristi običan niz int-ova i OpenMP biblioteku. 
+Prva implementacija ima koncept dubine rekurzije za restrikciju broja niti na isti način kao što je realizovano u C-u. Druga, u kojoj je upotrebljena OpenMP biblioteka, ima mogućnost da postavi maksimalni broj aktivnih niti u jednom trenutku i za razliku od ostalih implementacija, kreira nit samo za jedan rekurzivni poziv dok se drugi izvršava sekvencijalno. U ovom slučaju nije potrebno imati dve funkcije, konkurentnu i sekvencijalnu već se konkurentno izvršavanje funkcije postiže instrukcijama same biblioteke. 
+
+\subsection{Python}
+Ovde se takođe razmatraju dve implementacije koje koriste različite pakete za realizaciju konkurentnosti. Prva implementacija\cite{qs_python_mp} koristi multiprocessing paket u kojoj se postavlja maksimalni broj aktivnih niti. Algoritam je realizovan tako što svaka nit sortira jedan deo niza a drugi stavlja u red da bude dostupan nitima koje još nisu krenule sa radom. U trenutku kada su sve niti aktivne, prestaju sa deljenjem niza i sekvencijalno sortiraju ostatak. U drugoj verziji\cite{qs_python_pp} je iskorišćen Parallel Python paket sa već pomenutim konceptom dubine rekurzije za kontrolu broja niti i izvršnim serverom. 
+
+\subsection{Rezultati}
+Nakon testiranja navedenih implementacija nad slučajno generisanim nizom od milion brojeva dobijeni su rezultati koji se mogu videti u tabeli \ref{tab:qs1}.  Kod konkurentnog izvršavanja C radi najbrže, dok Go ne zaostaje značajno za njim. U C++-u, verzija sa standardnom bibliotekom dobija najveće ubrzanje od svih implementacija ali ipak radi sporije od C-a i Go-a, dok verzija sa omp bibliotekom ne dobija nikakavo ubrzanje u odnosu na sekvencijalnu. Kada je reč o upotrebi memorije,  Go i C++ koriste približno istu količinu kao i sekvencijane verzije, dok je C-u potrebno čak 4 puta više memorije. Što se tiče Pythona, očekivano, potrebno mu je značajno više vremena i veća količina memorija od svih ostalih. Interesantno je da je konkurentna verzija sa multiprocessing paketom sporija od sekvencijalne što pokazuje često pojavu u Pythonu kao i u drugim jezicima da konkurentnost može da uspori program ako se ne koristi na odgovarajući način. 
+
+\begin{table}
+\begin{center}
+\caption{Performanse quicksort implementacija za niz od milion brojeva}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{3}{|c|}{Sekvencijalno izvršavanje} \\ \hline
+Implementacija &  Brzina izvršavanja [s] & Maks. upotreba memorije [kB]\\ \hline
+Go	 	& 0,200 	&  5.248  \\ \hline
+C 		& 0,191 	&  5.152\\ \hline
+C++  std 	& 0,708 	&  6.456\\ \hline
+C++  omp 	& 0,196  	&  6344  \\ \hline
+Python mp  	& 2,040	&  67.472\\ \hline
+Python pp  	& 8,750 	&  39.296\\ \hline
+\multicolumn{3}{|c|}{Konkurentno izvršavanje} \\ \hline
+Implementacija &  Brzina izvršavanja [s]& Maks. upotreba memorije [kB]\\ \hline
+Go  		&  0,149	&  6.540\\ \hline
+C 		&  0,096	&  21.420\\ \hline
+C++  std 	&  0,297 	&  6.776\\ \hline
+C++  omp 	&  0,197 	&  6.264\\ \hline
+Python mp 	&  5,260 	&  59.616\\ \hline
+Python pp  	&  4,050	& 49.664\\ \hline
+\end{tabular}
+\label{tab:qs1}
+\end{center}
+\end{table}
+
+Sve preuzete implementacije su dobro iskomentarisane, prilično razumljive i jednostavne za korišćenje. Najveći broj dostupnih implementacija postoji za C i C++ među kojima je najzastupljenija OpenMP biblioteka, dok je za Python dostupan samo mali broj. Napomena da postoje C++ programi koji se mogu izvršavati kao C programi jer ne sadrže ništa specifično za C++ što važi i za pomenutu C++ OpenMP implementaciju.
+
+Dužine programskih kodova se mogu pogledati u tabeli \ref{tab:qs1}. Primećujemo da C ima najveći broj linija k\^{o}da usled neophodne alokacije memorije i provera greške. Sa druge strane, Pythonu je potreban najmanji broj linija za realizaciju algoritma, međutim, iako je njegov k\^{o}d koncizan, manje je razumljiv. Konkurentnost je najjednostavnije realizovati u C++-u i Go-u, bez neophodnih alokacija memorije i komplikovanih poziva funkcije, za razliku od C-a i intuitivno je jasnije koji delovi k\^{o}da se izvršavaju konkurentno i na koji način, za razliku od Python-a.
+
+\begin{table}
+\begin{center}
+\caption{Dužine k\^{o}da quicksort implementacija}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+		& Go	&  C 	& C++ std	& C++ omp	& Python mp & Python pp \\ \hline
+Br. linija koda& 92	& 150	&85		&80		&55		&39	 \\ \hline
+\end{tabular}
+\label{tab:qs2}
+\end{center}
+\end{table}
+
+\section{Množenje matrica}
+Opis algoritma
+
+\subsection{Go}
+
+\subsection{C}
+
+\subsection{C++}
+
+\subsection{Python}
+
+\subsection{Rezultati}
+
+
+
+\section{Eratostenovo sito}
+Opis algoritma
+
+\subsection{Go}
+
+\subsection{C}
+
+\subsection{C++}
+
+\subsection{Python}
+
+\subsection{Rezultati}
+
+
+
+\section{Složeniji primeri u programskom jeziku Go}
+
+
+
+
+\chapter{Zaključak}
+
+
+
+
+
+\printbibliography 
+% ==============================================================================
+% Završni deo teze i prilozi
+\backmatter
+% ==============================================================================
+
+
+
+\end{document}
