@@ -15,12 +15,6 @@ var res =  make(matrix, n)
 
 var semaphore = make(chan struct{}, 20)
 
-func multiply_conc(row int) {
-	for i:=0; i<n; i++{
-		res[row][i] = multiply_row_column(row,i)
-	}
-}
-
 func multiply_row_column(row,col int) int{
 	res:=0
 	for i:=0; i<n; i++{
@@ -29,7 +23,7 @@ func multiply_row_column(row,col int) int{
 	return res
 }
 
-func multiply_seq(row int) {
+func multiply_row(row int) {
 	for i:=0; i<n; i++{
 		res[row][i] = multiply_row_column(row,i)
 	}
@@ -43,23 +37,22 @@ func multiply(is_concurrent bool) {
 			select{
 			case semaphore <- struct{}{}:
 				go func(row int){
-					multiply_conc(row)
+					multiply_row(row)
 					<- semaphore
 					wg.Done()
 				}(i)
 			default:
-				multiply_seq(i)
+				multiply_row(i)
 				wg.Done()
 			}
 		}
 		wg.Wait()
 	}else{
 		for i := 0; i < n; i++ {
-			multiply_conc(i)
+			multiply_row(i)
 		}
 	}
 }
-
 
 func main(){
 	rand.Seed(time.Now().UTC().UnixNano())
