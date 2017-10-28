@@ -1,3 +1,5 @@
+#source: http://www.parallelpython.com/component/option,com_smf/Itemid,1/topic,138.0
+
 import sys, random
 import pp
 
