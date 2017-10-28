@@ -5,15 +5,13 @@ import (
 	"time"
 	"os"
 	"sync"
+	"strconv"
 )
 
 type matrix [][]int
-var n = 700
-var m1 =  make(matrix, n)
-var m2 =  make(matrix, n)
-var res =  make(matrix, n)
-
-var semaphore = make(chan struct{}, 20)
+var n, num_routines int
+var m1, m2, res matrix
+var semaphore chan struct{}
 
 func multiply_row_column(row,col int) int{
 	res:=0
@@ -55,6 +53,12 @@ func multiply(is_concurrent bool) {
 }
 
 func main(){
+	n,_ = strconv.Atoi(os.Args[1])
+
+	m1 =  make(matrix, n)
+	m2 =  make(matrix, n)
+	res =  make(matrix, n)
+
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	for i:=0; i<n; i++{
@@ -63,9 +67,11 @@ func main(){
 		res[i] = make([]int, n)
 	}
 
-	if(len(os.Args)>1) {
-		multiply(false)
-	}else {
+	if(len(os.Args)>2) {
+		num_routines,_ = strconv.Atoi(os.Args[2])
+		semaphore = make(chan struct{}, num_routines)
 		multiply(true)
+	}else {
+		multiply(false)
 	}
 }

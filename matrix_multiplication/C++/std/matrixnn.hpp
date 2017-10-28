@@ -42,7 +42,7 @@ public:
 
 	int get_n()const{return n_;}
 
-	MatrixNN QuickMult(const MatrixNN& m)const{
+	MatrixNN QuickMult(const MatrixNN& m, const int nbThreads)const{
 		MatrixNN tmp(m.get_n());
 		const MatrixNN *a = this;
 		auto myFunc = [&](unsigned int i){
@@ -52,7 +52,7 @@ public:
 				tmp(r,c) += (*a)(r,rm) * m(rm,c);
 			}
 		};
-		parallelFor(data_.size(),myFunc);
+		parallelFor(data_.size(),nbThreads,myFunc);
 		return tmp;
 	}
 	

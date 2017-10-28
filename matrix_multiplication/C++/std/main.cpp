@@ -1,18 +1,20 @@
+//source: https://gist.github.com/Jerdak/6102229
+
 #include "matrixnn.hpp"
 #include <thread>
 
 int main(int argc, char *argv[]){
 		
-	int size = 700;
+	int size = atoi(argv[1]);
 	
 	MatrixNN a(size),b(size),c(size);
 	a.FillRandom();
 	b.FillRandom();
-	
-	if(argc>1)
-		c = a.SlowMult(b);
+		
+	if(argc>2)
+		c = a.QuickMult(b,atoi(argv[2]));
 	else		
-		c = a.QuickMult(b);
+		c = a.SlowMult(b);
 			
 	return 0;
 }
