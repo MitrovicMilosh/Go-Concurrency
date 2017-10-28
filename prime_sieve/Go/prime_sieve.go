@@ -4,9 +4,10 @@ import (
 	"math"
 	"sync"
 	"os"
+	"strconv"
 )
 
-var num_goroutines = 1000
+var num_goroutines int
 
 func Prime(list *[]bool, n int, is_concurrent bool){
 	sqrt := int(math.Sqrt(float64(n)))
@@ -64,12 +65,14 @@ func mark_prime(list *[]bool, first, last, sqrt int, wg *sync.WaitGroup, is_conc
 }
 
 func main() {
-	n := 1000000
+	n ,_ := strconv.Atoi(os.Args[1])
 	list := make([]bool, n+1, n+1)
-	if len(os.Args) > 1 {
-		Prime(&list,n,false)
-	}else {
-		Prime(&list,n,true)
-	}
+	num_goroutines = 1	
 
+	if len(os.Args) > 2 {
+		num_goroutines,_ = strconv.Atoi(os.Args[2])
+		Prime(&list,n,true)
+	}else {
+		Prime(&list,n,false)
+	}
 }
