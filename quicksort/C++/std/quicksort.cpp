@@ -9,13 +9,11 @@ void quick_sort(std::vector<int>::iterator first, std::vector<int>::iterator las
 { 
     if(last-first>1) 
     { 
-        //find pivot with median of three 
         std::vector<int>::iterator mid(first + (last-first)/2); 
         if(*first>*mid) std::swap(*first, *mid); 
         if(*first>*(last-1)) std::swap(*first, *(last-1)); 
         if(*(last-1)>*mid) std::swap(*mid, *(last-1)); 
   
-        //in-place partition 
         std::vector<int>::iterator i(first-1), j(last-1); 
         for(;;) 
         { 
@@ -37,13 +35,11 @@ void quick_sort_parallel(std::vector<int>::iterator first,
 { 
     if(last-first>1) 
     { 
-        //find pivot with median of three 
         std::vector<int>::iterator mid(first + (last-first)/2); 
         if(*first>*mid) std::swap(*first, *mid); 
         if(*first>*(last-1)) std::swap(*first, *(last-1)); 
         if(*(last-1)>*mid) std::swap(*mid, *(last-1)); 
   
-        //in-place partition 
         std::vector<int>::iterator i(first-1), j(last-1); 
         for(;;) 
         { 
@@ -54,7 +50,6 @@ void quick_sort_parallel(std::vector<int>::iterator first,
         } 
         std::swap(*i, *(last-1)); 
   
-        //recursion 
         if(remaining_threads) 
         { 
             std::future<void> thread1 = std::async(quick_sort_parallel, first, i, remaining_threads-1);
@@ -73,13 +68,15 @@ void quick_sort_parallel(std::vector<int>::iterator first,
   
 int main(int argc, char* argv[]) 
 { 
-	int n = 0;
+	int n;
+	int depth = 0;
 	if(argc > 1)
 		n = atoi(argv[1]);
+	if(argc > 2)
+		depth = atoi(argv[2]);
 	
-    int size = 1000000; 
-    std::vector<int> test(size); 
+    std::vector<int> test(n); 
     std::generate(test.begin(), test.end(), [](){ return std::rand(); }); 
   
-    quick_sort_parallel(test.begin(), test.end(), n); 
+    quick_sort_parallel(test.begin(), test.end(), depth); 
 }

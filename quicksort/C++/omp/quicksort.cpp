@@ -1,13 +1,10 @@
-/* multithreaded quickSort
-usage with gcc (version 4.2 or higher required):
-		 gcc -O -fopenmp -o quickSort-openmp quickSort-openmp.c 
-		 ./quickSort-openmp size numWorkers
-*/
+//source: https://github.com/pHag/id1217/blob/master/hw2/ex2/quickSort-openmp.c
+
 #include <omp.h>
 #include <time.h>
 #include <stdlib.h>
 #define MAXSIZE 1000000 /* maximum array size */
-#define MAXWORKERS 10 /* maximum number of workers */
+#define MAXWORKERS 100 /* maximum number of workers */
 
 void quickSort(int *inputArray, int size);
 void swap(int *inputArray, int leftIndex, int rightIndex);
@@ -21,9 +18,8 @@ int main(int argc, char *argv[]) {
 	
 	/* read command line args if any */
 	size = (argc > 1)? atoi(argv[1]) : MAXSIZE;
-	if (size > MAXSIZE) size = MAXSIZE;
 
-	numWorkers = (argc > 2)? atoi(argv[2]) : MAXWORKERS;
+	numWorkers = (argc > 2)? atoi(argv[2]) : 1;
 	if (numWorkers > MAXWORKERS) numWorkers = MAXWORKERS;
 	omp_set_num_threads(numWorkers); /* Set number of threads */
 
@@ -68,14 +64,14 @@ void quickSort(int *inputArray, int size){
 		}
 		swap(inputArray, leftIndex, rightIndex);    
 	}
-	#pragma omp task if(rightIndex-leftIndex > 1000)
+	#pragma omp task
 	{
 		quickSort(inputArray, leftIndex); /* Sort lower */
 	}
-	//#pragma omp task
-	//{
+	#pragma omp task
+	{
 		quickSort(inputArray + rightIndex + 1, size - rightIndex -1); /* Sort upper */
-	//}
+	}
 }
 /* ---------------------------------------------------------------------------- */
 /* Swaps two elements */
