@@ -5,10 +5,9 @@ import (
 	"time"
 	"os"
 	"math/rand"
-	"strconv"
 )
 
-var semaphore chan struct{}
+var semaphore = make(chan struct{}, 100)
 
 func QuickSortSequential(a *[]int, low, hi int) {
 	if hi < low {
@@ -83,16 +82,11 @@ func swap(a *[]int, i , j int) {
 }
 
 func main(){
-	n,_ := strconv.Atoi(os.Args[1])
-	
 	rand.Seed(time.Now().UTC().UnixNano())
-	list := rand.Perm(n)
-	
-	if len(os.Args) > 2 {
-		num_routines,_ := strconv.Atoi(os.Args[2])
-		semaphore = make(chan struct{}, num_routines)
-		QuickSortConcurrent(&list,0, len(list)-1)
-	}else {
+	list := rand.Perm(1000000)
+	if len(os.Args) > 1 {
 		QuickSortSequential(&list,0, len(list)-1)
+	}else {
+		QuickSortConcurrent(&list,0, len(list)-1)
 	}
 }
