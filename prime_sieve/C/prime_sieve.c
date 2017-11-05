@@ -36,7 +36,7 @@ void *DoSieve(void *thrd_arg)
     if (minJ < i*i)
       minJ = i*i;	
 
-    for (j = minJ; j <= end /*&& GlobalList[i] != true*/; j += i)
+    for (j = minJ; j <= end && GlobalList[i] != true; j += i)
     {
       GlobalList[j] = true;
     }
