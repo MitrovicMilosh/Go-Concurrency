@@ -52,8 +52,8 @@ void quick_sort_parallel(std::vector<int>::iterator first,
   
         if(remaining_threads) 
         { 
-            std::future<void> thread1 = std::async(quick_sort_parallel, first, i, remaining_threads-1);
-			std::future<void> thread2 = std::async(quick_sort_parallel, i+1, last, remaining_threads-1);  
+            std::future<void> thread1 = std::async(std::launch::async,quick_sort_parallel, first, i, remaining_threads-1);
+			std::future<void> thread2 = std::async(std::launch::async,quick_sort_parallel, i+1, last, remaining_threads-1);  
             
             thread1.wait();
 			thread2.wait(); 
