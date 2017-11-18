@@ -1,0 +1,30 @@
+{{define "results"}}
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Image Filters</title>
+	<link rel="stylesheet" type="text/css" href="data/style/style.css">
+	<link rel="icon" href="data/images/favicon.png">
+</head>
+<body>
+	<div class="main">
+		<div class="topnav">
+			<img src="data/images/icon.png" height="30px">
+			Image Filters
+		</div>
+		<div class="message">
+			These images will be available for the next 15 minutes
+			<a href="http://localhost:8080/" class="home">Try filters on another image</a>
+		</div>
+		<div class="filters results">
+			{{range $name, $image := .Filters}}
+			<div class="gallery results">
+				<a href="{{$image}}"><img src="{{$image}}"></a>
+				<div class="desc">{{$name}}</div>
+			</div>
+			{{end}}
+		</div>
+	</div>
+</body>
+</html>
+{{end}}

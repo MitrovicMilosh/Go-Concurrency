@@ -1,0 +1,64 @@
+{{define "index"}}
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Image Filters</title>
+      <link rel="stylesheet" type="text/css" href="data/style/style.css">
+      <link rel="icon" href="data/images/favicon.png">
+  </head>
+  <body>
+      <div class="main">
+          <div class="topnav">
+              <img src="data/images/icon.png" height="30px">
+              Image Filters
+          </div>
+          <form action="http://localhost:8080/results" method="post" enctype="multipart/form-data">
+              <div class="form">
+                  <input type="file" name="file" >
+                  Or enter image URL:<input type="url"  placeholder="Paste image URL here" name="url"><br>
+                  <span class="info">Supported formats are: .jpeg .png .bmp. Maximum file size is 1 MB.</span> <br>
+                  Rotate:
+                  <input type="radio" name="rotate" value="90"> Left
+                  <input type="radio" name="rotate" value="270"> Right
+                  <input type="radio" name="rotate" value="180"> 180&deg Degrees <br>
+                  <input type="submit" value="Filter">
+              </div>
+
+              <div class="filters">
+
+                  <span>Default filters:</span><br>
+                  <div class="gallery">
+                      <img src="data/images/filters/Original.jpeg">
+                      <div class="desc">Original</div>
+                  </div>
+
+
+                  {{range $name, $image := .Filters}}
+                  <div class="gallery">
+                      <img src="{{$image}}" width="150px">
+                      <div class="desc">{{$name}}</div>
+                  </div>
+                  {{end}}
+
+              </div>
+              <div class="filters">
+                  <span>Combine filters to create a custom filter:</span>
+                  {{range $name, $image := .Base_filters}}
+
+                  <label for="{{$name}}" >
+                      <div class="gallery">
+                          <input type="checkbox" name="custom" value="{{$name}}" id="{{$name}}"/>
+                          <img src="{{$image}}" width="150px">
+                          <div class="desc">{{$name}}</div>
+                      </div>
+                  </label>
+                  {{end}}
+              </div>
+              <div class="form">
+                  <input type="submit" value="Filter">
+              </div>
+          </form>
+    </div>
+  </body>
+</html>
+{{end}}

@@ -1,0 +1,22 @@
+{{define "error"}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Filters</title>
+    <link rel="stylesheet" type="text/css" href="data/style/style.css">
+    <link rel="icon" href="data/images/favicon.png">
+</head>
+<body>
+    <div class="main">
+        <div class="topnav">
+            <img src="data/images/icon.png" height="30px">
+            Image Filters
+        </div>
+        <div class="message error">
+            <a href="http://localhost:8080/" class="home back">Go back</a>
+            <span>{{.}}</span>
+        </div>
+    </div>
+</body>
+</html>
+{{end}}

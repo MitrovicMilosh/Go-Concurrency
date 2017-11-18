@@ -1,0 +1,130 @@
+body {
+    font-family: "Trebuchet MS";
+    font-size: 13pt;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: black;
+    color: white;
+    font-size: xx-large;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+div.gallery {
+    margin: 6px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 150px;
+
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.desc {
+    padding: 15px;
+    text-align: center;
+}
+
+div.gallery.results:hover {
+    border: 1px solid #777;
+}
+
+div.filters.results{
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.main{
+    margin: auto;
+    width: 1200px;
+    padding: 10px;
+}
+
+.form{
+    margin: auto;
+    width: 1150px;
+    padding: 50px;
+}
+
+.filters{
+    margin: auto;
+    width: 1150px;
+}
+
+input[type=url] {
+    width: 58%;
+    padding: 12px 20px;
+    margin: 8px 10px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 1095px;
+    background-color: dodgerblue;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover{
+    background-color: deepskyblue;
+}
+
+.info{
+    font-size: 9pt;
+    color: red;
+}
+
+.message{
+    margin-top: 50px;
+    margin-left: 50px;
+}
+
+.error{
+    color: red;
+}
+
+.error span{
+    margin-left: 50px;
+}
+
+.home{
+    width: 100px;
+    background-color: dodgerblue;
+    color: white;
+    padding: 14px 20px;
+    margin-left: 410px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.back{
+    margin: 100px 0;
+}
+
+a:link{
+    text-decoration:  none;
+}
+
+.home:hover{
+    background-color: deepskyblue;
+}
+
+label div.gallery:hover {
+    border: 1px solid black;
+}
+
+
+
