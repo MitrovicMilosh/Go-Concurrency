@@ -126,5 +126,15 @@ label div.gallery:hover {
     border: 1px solid black;
 }
 
+.filter_inputs{
+    margin: auto;
+    width: 1050px;
+    padding: 10px;
+}
 
+.filter_input {
+    float: left;
+    width: 350px;
+    height: 80px;
+}
 

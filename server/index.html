@@ -12,7 +12,7 @@
               <img src="data/images/icon.png" height="30px">
               Image Filters
           </div>
-          <form action="http://localhost:8080/results" method="post" enctype="multipart/form-data">
+          <form action="/results" method="post" enctype="multipart/form-data">
               <div class="form">
                   <input type="file" name="file" >
                   Or enter image URL:<input type="url"  placeholder="Paste image URL here" name="url"><br>
@@ -41,10 +41,10 @@
                   {{end}}
 
               </div>
+
               <div class="filters">
                   <span>Combine filters to create a custom filter:</span>
                   {{range $name, $image := .Base_filters}}
-
                   <label for="{{$name}}" >
                       <div class="gallery">
                           <input type="checkbox" name="custom" value="{{$name}}" id="{{$name}}"/>
@@ -54,6 +54,15 @@
                   </label>
                   {{end}}
               </div>
+
+              <div class="filter_inputs">
+                  {{range $name, $limits := .Input_filters}}
+                  <div class="filter_input">
+                      <div width="100px">{{$name}}:</div> <input type="number" name="{{$name}}"> values {{$limits}}
+                  </div>
+                  {{end}}
+              </div>
+
               <div class="form">
                   <input type="submit" value="Filter">
               </div>
