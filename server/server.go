@@ -26,6 +26,7 @@ const timeout = 10 * time.Second
 const time_available = 15 * time.Minute
 const max_connections = 100
 const max_file_size = 1025*1024
+const safety_max_file_size = 10*1024*1024
 
 var filters = map[string] *gift.GIFT{
 	"Twilight": gift.New(
@@ -150,8 +151,21 @@ func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	http.HandleFunc("/", DefaultHandler)
 	http.HandleFunc("/results", ImageHandler)
-	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("data"))))
+	http.Handle("/data/", http.HandlerFunc(file_server))
 	http.ListenAndServe(address + ":http", nil)
+}
+
+func file_server(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	last := parts[len(parts)-1]
+
+	if last == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	fileServer := http.StripPrefix("/data/", http.FileServer(http.Dir("data")))
+	fileServer.ServeHTTP(w, r)
 }
 
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +189,6 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	done := false
-
 	//for loop if the server is busy
 	for ;; {
 		select {
@@ -186,6 +199,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 			var f_info file_info
 			p := processor{w,r}
 
+			r.Body = http.MaxBytesReader(w, r.Body, safety_max_file_size)
 			if !p.open_file(&f_info) {return}
 
 			if f_info.Url_file != nil {
@@ -271,7 +285,7 @@ func (p processor) check_file_size(file_size int64) bool{
 
 func create_user_directory() string {
 	dir_path := path.Join("data","tmp", random_string())
-	os.Mkdir(dir_path, 0744)
+	os.Mkdir(dir_path, 0700)
 
 	return dir_path
 }
