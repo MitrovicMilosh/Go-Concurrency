@@ -220,7 +220,7 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 			p.rotate(&img)
 
 			custom := p.create_custom_filter()
-			img_paths := p.apply_filters(&img, custom, dir_path, extension)
+			img_paths := apply_filters(&img, custom, dir_path, extension)
 
 			data := tmpl_data{Filters : img_paths}
 			tmpl, _ := template.ParseFiles("results.html")
@@ -364,7 +364,7 @@ func (p processor) create_custom_filter() *gift.GIFT{
 	return custom
 }
 
-func (p processor) apply_filters(img *image.Image, custom *gift.GIFT, dir_path string, extension string) map[string]string {
+func apply_filters(img *image.Image, custom *gift.GIFT, dir_path string, extension string) map[string]string {
 	img_paths := make(map[string]string)
 	wg := sync.WaitGroup{}
 	mutex := &sync.Mutex{}
