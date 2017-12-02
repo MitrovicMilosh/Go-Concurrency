@@ -25,7 +25,7 @@
 }
 
 \lstnewenvironment{snippet}[1][]
-    {\lstset{float=htpb,#1}} 
+    {\lstset{float=tpb,#1}} 
     {}
 
 
@@ -68,13 +68,13 @@ Go je imperativni programski jezik otvorenog koda koji razvija kompanija Google 
 
 \section{Tipovi podataka}
 
-Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa.  Za razliku od C-a Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom se prijavljuje greška.\\
+Tipovi podataka koje Go podržava, mogu se klasifikovati u četiri kategorije: bazični tipovi, složeni tipovi, referentni tipovi i interfejsni tipovi. 
 
-Od osnovnih ugrađenih tipova podataka Go podržava:
+Od bazičnih tipova podataka Go podržava:
 \begin{itemize}
 
-\item Numeričke -  celobrojne označene (\texttt{int8}, \texttt{int16}, \texttt{int32}, \texttt{int64})
- i neoznačene  (\texttt{uint8}, \texttt{uint16}, \texttt{uint32}, \texttt{uint64}), u pokretnom zarezu (\texttt{float32}, \texttt{float64}) i kompleksne (\texttt{complex64}, \texttt{complex128})
+\item Numeričke -  celobrojne označene (\texttt{int8}, \texttt{int16}, \texttt{int32}, \texttt{int64}),
+ celobrojne neoznačene  (\texttt{uint8}, \texttt{uint16}, \texttt{uint32}, \texttt{uint64}), u pokretnom zarezu (\texttt{float32}, \texttt{float64}) i kompleksne (\texttt{complex64}, \texttt{complex128})
 
 \item Bulovske  (\texttt{bool})
 
@@ -82,7 +82,15 @@ Od osnovnih ugrađenih tipova podataka Go podržava:
 
 \end{itemize}
 
-Od drugih vrsta podataka, Go podržava nizove, mape i slajseve - nizove sa promenljivom dužinom. 
+Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija je vrednost unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
+
+U složene tipovi podataka spadaju nizovi i strukture. 
+
+U referentne tipove podataka spadaju pokazivači, slajsovi, mape, kanali i funkcije. 
+
+Operatori
+
+Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. 
 
 \section{Funkcije i metodi}
  
@@ -98,7 +106,7 @@ Od drugih vrsta podataka, Go podržava nizove, mape i slajseve - nizove sa prome
 
 
 % KONKURENTNO==============================================================================
-\chapter{Konkurentno programiranje u programskom jeziku Go}
+\chapter{Konkurentno programiranje u jeziku Go}
 
 \section{Osnovni pojmovi konkurentnog programiranja}
 
@@ -137,7 +145,7 @@ Goroutine 83 (running) created at:
       /home/cg/root/7238354/main.go:72 +0x126
 \end{Verbatim}
 
-\caption{Primer upozorenja koje "data race" detektor daje za implementaciju Eratostenovog sita}
+\caption{Primer upozorenja koje data race detektor daje za implementaciju Eratostenovog sita}
 \label{fig:datarace}
 \end{center}
 \end{figure}
@@ -147,7 +155,7 @@ Goroutine 83 (running) created at:
 
 %PRIMERI ==============================================================================
 
-\chapter {Poređenje sa drugim jezicima}
+\chapter {Poređenje sa drugim programskim jezicima}
 U ovom poglavlju su izloženi primeri konkurentnih Go programa i poređenje implementacija nekoliko jednostavnih algoritama u jezicima C, C++ i Python. Primeri ilustruju na koji način se može koristiti konkurentnost u jeziku Go i kakva je njegova efikasnost u odnosu na druge pomenute jezike. Prvo sledi kratak pregled programskih jezika C, C++ i Python i njihove konkurentnosti a zatim poređenje implementacija algoritama quicksort, množenje matrica i Eratostenovo sito.
 
 \section{C}
@@ -842,26 +850,24 @@ Razvijena serverska aplikacija se bavi primenom različitih filtera na slikama. 
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.33]{interface.png}
+\includegraphics[scale=1.4]{interface.png}
 \end{center}
-\caption{Grafički interfejs serverske aplikacije za primenu filtera}
+\caption{Grafički interfejs početne stranice i stranice za prikaz rezultata serverske aplikacije za primenu filtera}
 \label{fig:interface}
 \end{figure}
 
+\subsection{Struktura aplikacije}
+Struktura aplikacije predtsavljena je dijagramom na slici \ref{fig:diag}. Server, na osnovu zahteva koji dobija od korisnika, poziva odgovarajuću handler funkciju. Definisane su dve handler funkcije: \texttt{DefuaultHandle}, koja ima zadatak da generiše početnu HTML stranicu, i \texttt{ImageHandler}, koja se bavi preuzimanjem i procesiranjem fajla, primenom filtera na slici i generisanjem HTML stranice za prikaz rezultata. 
+ 
+\begin{figure}
 \begin{center}
-\begin{lstlisting}[caption={Main funkcija, kreiranje servera},label={lst:main}, float, backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
-func main() {
-	fmt.Println("Starting server...")
-	rand.Seed(time.Now().UTC().UnixNano())
-	http.HandleFunc("/", DefaultHandler)
-	http.HandleFunc("/results", ImageHandler)
-	http.Handle("/data/", http.HandlerFunc(file_server))
-	http.ListenAndServe(address + ":http", nil)
-}
-\end{lstlisting}
+\includegraphics[scale=0.33]{dijagram.png}
 \end{center}
+\caption{Dijagram koji prikazuje strukturu aplikacije}
+\label{fig:diag}
+\end{figure}
 
-\subsection{Kreiranje servera}
+\subsection{Kreiranje servera i procesiranje zahteva}
 
 Za kreiranje servera je korišćen net/http paket koji obezbeđuje skup funkcija za jednostavnu implementaciju i upravljanje serverom. Primer jednog jednostavnog servera je prikazan na listingu \ref{lst:server1}. 
 
@@ -881,16 +887,31 @@ func main() {
 \end{center}
 
 
-Funkcija HandleFunc se koristi za registrovanje handler funkcija za određeni šablon. Kao parametre, handler funkcija ima ResponseWriter koji se koristi za konstrukciju http odgovora i  Request koji sadrži sve podatke http zahteva. ListenAndServe funkcija osluškuje na zadatoj adresi (prvi parametar) TCP mreže i poziva Serve funkciju kojoj prosleđuje Handler (drugi parametar). U pozadini, funkcija Serve kreira novu gorutinu za svaku http konekciju i poziva Handler. Ukoliko je Handler nil, koristi se DefaultServeMux multiplekser koji uparuje URL zahteve sa registrovanim šablonima i poziva odgovarajuću handler funkciju. 
+Funkcija \texttt{HandleFunc} se koristi za registrovanje handler funkcija za određeni šablon. Kao parametre, handler funkcija ima \texttt{ResponseWriter} koji se koristi za konstrukciju http odgovora i \texttt{Request} koji sadrži sve podatke http zahteva. Funkcija \texttt{ListenAndServe} osluškuje na zadatoj adresi (prvi parametar) TCP mreže i poziva \texttt{Serve} funkciju kojoj prosleđuje \texttt{Handler} (drugi parametar). U pozadini, funkcija \texttt{Serve} kreira novu gorutinu za svaku http konekciju i poziva \texttt{Handler}. Ukoliko je \texttt{Handler} nil, koristi se \texttt{DefaultServeMux} multiplekser koji uparuje URL zahteve sa registrovanim šablonima i poziva odgovarajuću handler funkciju \cite{http}.
 
 Server se može implementirati u Go-u  koristeći samo 2 paketa i manje od 10 linija koda što je karakateristično za dinamički tipizirane, interpretirane jezike kao što su Python, PHP, Ruby i drugi. U C/C++ -u, koji su statički tipizirani jezici koji se kompiliraju, kao što je i Go, je potrebno 9 bibiloteka i više od 50 linija koda.\footnote{\url{https://rosettacode.org/wiki/Hello_world/Web_server\#C}}
 
-Deo koda koji se odnosi na kreiranje servera u aplikaciji se nalazi u main funkciji koja je prikazana u listingu \ref{lst:main}. Registrovane su dve handler funkcije: DefaultHandler koja se poziva kada se pristupa početnoj strani i ImageHandler koja se poziva prilikom obrade slike i prikazivanja rezultata. Handle funkcija se koristi za registrovanje Handler-a za fajl sistem i šablona koji se odnosi na zahteve resursa.  U ListenAndServe funkciji je postavljeno da se osluškuje na http portu zadate adrese servera koja je u ovom slučaju postavljena na localhost.
-
-\label{fileserver}Handler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji se definišu restrikcije nad URL zahtevima za resurse i definiše se root direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava sa '/' to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. DefaultServeMux funkcioniše tako što dodaje '/' na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
+Deo koda koji se odnosi na kreiranje servera u aplikaciji, nalazi se u main funkciji koja je prikazana u listingu \ref{lst:main}. \texttt{HandleFunc} funkcijom, registrovane su dve handler funkcije: \texttt{DefaultHandler} koja se poziva kada se pristupa početnoj strani i \texttt{ImageHandler} koja se poziva prilikom obrade slike i prikazivanja rezultata. \texttt{Handle} funkcija se koristi za registrovanje \texttt{Handler}-a za fajl sistem i šablona koji se odnosi na zahteve resursa.  U \texttt{ListenAndServe} funkciji je postavljeno da se osluškuje na http portu zadate adrese servera koja je u ovom slučaju postavljena na localhost.
 
 \begin{center}
-\begin{lstlisting}[caption=Handler za fajl sistem,label={lst:fileserver},  backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
+\begin{lstlisting}[caption={Main funkcija, kreiranje servera},label={lst:main},  backgroundcolor=\color{background}]
+func main() {
+	fmt.Println("Starting server...")
+	rand.Seed(time.Now().UTC().UnixNano())
+	http.HandleFunc("/", DefaultHandler)
+	http.HandleFunc("/results", ImageHandler)
+	http.Handle("/data/", http.HandlerFunc(file_server))
+	http.ListenAndServe(address + ":http", nil)
+}
+\end{lstlisting}
+\end{center}
+
+\label{fileserver}Handler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji definišu se restrikcije nad URL zahtevima za resurse i definiše se root direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava sa '/' to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. \texttt{DefaultServeMux} funkcioniše tako što dodaje '/' na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan \cite{http}. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
+
+\newpage
+
+\begin{center}
+\begin{lstlisting}[caption=Handler za fajl sistem,label={lst:fileserver},  backgroundcolor=\color{background}]
 func file_server(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	last := parts[len(parts)-1]
@@ -906,12 +927,12 @@ func file_server(w http.ResponseWriter, r *http.Request) {
 
 \subsection{Generisanje HTML stranice}
 
-Paket htmp/template se koristi za generisanje HTML izlaza sa datim parametrima koji ima zaštitu protiv umetanja koda. Paket nudi veliki broj različitih escape funkcija koje kodiraju specijalne karaktere ali u ovoj aplikaciji nije bilo potrebe za njihovom upotrebom. 
+Paket htmp/template koristi se za generisanje HTML izlaza sa datim parametrima koji ima zaštitu protiv umetanja koda. Paket nudi veliki broj različitih escape funkcija koje kodiraju specijalne karaktere, ali u ovoj aplikaciji nije bilo potrebe za njihovom upotrebom. 
 
-U DefaultHandler funkciji se parsira i izvršava template koji se prikazuje kada se pristupi početnoj strani. Deo funkcije koji se odnosi na izvršavanje template-a je prikazan u listingu \ref{lst:tmpl}. Ovde kao i na drugim mestima, greške će biti ignorisane jer se podrazumeva da su parametri funkcije ispravni i da neće doći do greške. Funkcija ExecuteTemplate kao argumente prima ResponseWriter, naziv template-a koji se izvršava i podatke koji se koriste za njegovo popunjavanje. Prosleđena promenljiva data je definisana struktura koja sadrži podatke o filterima u obliku mapa.
+U \texttt{DefaultHandler} funkciji, parsira se i izvršava template koji se prikazuje kada se pristupi početnoj strani. Deo funkcije koji se odnosi na izvršavanje template-a je prikazan u listingu \ref{lst:tmpl}. Ovde, kao i na drugim mestima, moguće greške će biti ignorisane jer se podrazumeva da su parametri funkcije ispravni i da neće doći do greške. Fiksni parametri su provereni tokom faze razvijanja i debagovanja aplikacije, dok parametri koji zavise od unosa korisnika, prethodno prolaze kroz odgovarajuće provere. Funkcija \texttt{ExecuteTemplate} kao argumente prima \texttt{ResponseWriter}, naziv template-a koji se izvršava i podatke koji se koriste za njegovo popunjavanje. Prosleđena promenljiva \texttt{data} je definisana struktura koja sadrži podatke o filterima u obliku mapa.
 
 \begin{center}
-\begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl},  backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
+\begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl},  backgroundcolor=\color{background}]
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 	...
 	tmpl, _ := template.ParseFiles("index.html")
@@ -920,10 +941,10 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 \end{lstlisting}
 \end{center}
 
-U template-u sve instrukcije, podaci i kontrole toka se navode između dvostrukih vitičarstih zagrada. Primer template-a je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog template-a se pomoću define definiše naziv, a kraj template-a je potrebno naznačiti sa end. Omogućeno je iteriranje nad prosleđenim podacima, if-else naredbe i izvršavanje template-a unutar template-a. U ovom slučaju se iterira nad mapom Filters koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju sa znakom '.', dok promenljive počinju sa znakom '\$'. 
+U template-u sve instrukcije, podaci i kontrole toka se navode između dvostrukih vitičarstih zagrada. Primer template-a je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog template-a se pomoću \texttt{define} definiše naziv, a kraj template-a je potrebno naznačiti sa \texttt{end}. Omogućeno je iteriranje nad prosleđenim podacima, if-else naredbe i izvršavanje template-a unutar template-a. U ovom slučaju, iterira se nad mapom \texttt{Filters} koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju sa znakom '.', dok promenljive počinju sa znakom '\$' \cite{template}.
 
 \begin{center}
-\begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl2},  backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
+\begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl2},  backgroundcolor=\color{background}]
 {{define "index"}}
 <html lang="en">
 	<head>
@@ -947,10 +968,10 @@ U template-u sve instrukcije, podaci i kontrole toka se navode između dvostruki
 
 \subsection{Preuzimanje i procesiranje fajla}
 
-Funkcija ImageHandler se poziva kada korisnik klikne na dugme filter i bavi se preuzimanjem fajla, proverom zadovoljenosti svih uslova i primenom filtera. Struktura funkcije je prikazana u listingu \ref{lst:imghand}. U funkciji se nalazi beskonačna petlja sa select naredbom. Semafor se koristi za kontrolu maksimalnog broja konekcija koji server može da opsluži. Ukoliko ima slobodnih mesta, izvršiće se glavni deo funkcije nakon čega se izlazi iz petlje. U slučaju da nema slobodnih mesta, proverava se da li korisnik čeka duže od dozvoljenog vremena za čekanje - timeout.  Ako je vreme čekanja isteklo, izlazi se iz petlje i korisniku ispisuje poruka da je server trenutno zauzet, u suprotnom se ponovo proverava da li ima slobodnih mesta. 
+Funkcija \texttt{ImageHandler} se poziva kada korisnik klikne na dugme filter i bavi se preuzimanjem fajla, proverom zadovoljenosti svih uslova i primenom filtera. Struktura funkcije je prikazana u listingu \ref{lst:imghand}. U funkciji se nalazi beskonačna petlja sa \texttt{select} naredbom. Semafor se koristi za kontrolu maksimalnog broja konekcija koji server može da opsluži. Ukoliko ima slobodnih mesta, izvršiće se glavni deo funkcije nakon čega se izlazi iz petlje. U slučaju da nema slobodnih mesta, proverava se da li korisnik čeka duže od dozvoljenog vremena za čekanje - timeout.  Ako je vreme čekanja isteklo, izlazi se iz petlje i korisniku ispisuje poruka da je server trenutno zauzet, u suprotnom se ponovo proverava da li ima slobodnih mesta. 
  
 \begin{center}
-\begin{lstlisting}[caption=Struktura ImageHandler funkcije,label={lst:imghand},float,  backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
+\begin{lstlisting}[caption=Struktura ImageHandler funkcije,label={lst:imghand},float,  backgroundcolor=\color{background}]
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	done := false
@@ -974,14 +995,13 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 \end{lstlisting}
 \end{center}
 
- Deo funkcije koji se odnosi na otvaranje i proveru fajla je prikazan u listingu \ref{lst:open}. U funkciji se koriste dve korisnički definisane strukture: file\_info, koja sadrži neophodne informacije o fajlu (naziv, veličina, referenca na otvoreni fajl, čitač fajla), i processor, tip nad kojim su definisani metodi koji koriste ResponseWriter i Request kako se ne bi prosleđivali pojedinačno svakoj funkciji koja ih koristi. Ovi metodi tokom svog rada proveravaju da li je došlo do neke greške pa kao rezultat vraćaju bool promenljivu kako bi funkcija ImageHandler prestala sa daljim radom. Generalno, validaciju fajla je prirodnije raditi na strani klijenta u javascript-u kako ne bi opterećivali server lošim zahtevima, ali u ovom slučaju je demonstrirano kako se validacija izvršava u Go-u.
+Deo funkcije koji se odnosi na otvaranje i proveru fajla je prikazan u listingu \ref{lst:open}. U funkciji, koriste se dve korisnički definisane strukture: \texttt{file\_info}, koja sadrži neophodne informacije o fajlu (naziv, veličina, referenca na otvoreni fajl, čitač fajla), i \texttt{processor}, tip nad kojim su definisani metodi koji koriste \texttt{ResponseWriter} i \texttt{Request} kako se ne bi prosleđivali pojedinačno svakoj funkciji koja ih koristi. Ovi metodi tokom svog rada proveravaju da li je došlo do neke greške pa kao rezultat vraćaju \texttt{bool} promenljivu kako bi funkcija \texttt{ImageHandler} prestala sa daljim radom. Generalno, validaciju fajla je prirodnije raditi na strani klijenta u javascript-u kako ne bi opterećivali server lošim zahtevima, ali u ovom slučaju demonstrirano je kako se validacija izvršava u Go-u.
 
-Metod open\_file otvara fajl i popunjava strukturu file\_info na odgovarajući način u zavisnosti da li je prosleđen URL fajla ili je on upload-ovan. Fajlu i svim ostalim elementima forme koje je korisnik uneo se pristupa pomoću ResponseWriter-a pozivanjem metoda Form ili FormValue. Nakon završetka sa radom svakog fajla, neophodno ga je zatvoriti. To se postiže na najbolji način korišćem defer naredbe odmah nakon otvaranja jer će se u tom slučaju zatvaranje sigurno izvršiti čak i ukoliko dođe do neke greške. U zavisnosti kako je prosleđen, tip fajla se razlikuje pa se u strukturi nalaze polja za obe vrste fajla. 
+Metod \texttt{open\_file} otvara fajl i popunjava strukturu \texttt{file\_info} na odgovarajući način u zavisnosti da li je prosleđen URL fajla ili je on upload-ovan. Fajlu i svim ostalim elementima forme koje je korisnik uneo se pristupa pomoću \texttt{ResponseWriter}-a pozivanjem metoda \texttt{Form} ili \texttt{FormValue}. Nakon završetka sa radom svakog fajla, neophodno ga je zatvoriti. To se postiže na najbolji način korišćem \texttt{defer} naredbe odmah nakon otvaranja jer će se u tom slučaju zatvaranje sigurno izvršiti čak i ukoliko dođe do neke greške. U zavisnosti kako je prosleđen, tip fajla se razlikuje pa se u strukturi nalaze polja za obe vrste fajla. 
 
-\newpage
 
 \begin{center}
-\begin{lstlisting}[caption=Otvaranje i provera fajla u funkciji ImageHandler,label={lst:open},float,  backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
+\begin{lstlisting}[caption=Otvaranje i provera fajla u funkciji ImageHandler,label={lst:open},float,  backgroundcolor=\color{background}]
 	var f_info file_info
 	p := processor{w,r}
 
@@ -1004,13 +1024,15 @@ Metod open\_file otvara fajl i popunjava strukturu file\_info na odgovarajući n
 \end{lstlisting}
 \end{center}
 
-Provera veličine fajla se izvršava u metodu check\_file\_size. Međutim, korisnik je i dalje u mogućnosti da upload-uje fajl nedozvoljene veličine pre nego što dođe do ove provere i time optereti server. Iz tog razloga se koristi funkcija MaxBytesReader koja prekida konekciju sa klijentom ukoliko je pređena dozvoljena veličina fajla. Ovom funkcijom je postavljena gornja bezbednosna granica za veličinu (u ovom slučaju 10 MB), kako bi funkcija check\_file\_size mogla da obavesti korisnika ako je slučajno prosledio fajl nešto iznad dozvoljene granice (u ovom slučaju 1 MB). 
+Provera veličine fajla se izvršava u metodu \texttt{check\_file\_size}. Međutim, korisnik je i dalje u mogućnosti da upload-uje fajl nedozvoljene veličine pre nego što dođe do ove provere i time optereti server. Iz tog razloga se koristi funkcija \texttt{MaxBytesReader} koja prekida konekciju sa klijentom ukoliko je pređena dozvoljena veličina fajla \cite{http}. Ovom funkcijom je postavljena gornja bezbednosna granica za veličinu (u ovom slučaju 10 MB), kako bi funkcija \texttt{check\_file\_size} mogla da obavesti korisnika ako je slučajno prosledio fajl nešto iznad dozvoljene granice (u ovom slučaju 1 MB). 
 
-Funkcija create\_user\_directory kreira privremeni direktorijum u kome smešta sve korisnikove slike. Naziv direktorijuma je pseudoslučajni string dužine 20 kako bi naziv bio jedinstven i direktorijum uvek mogao da se kreira. Nakon toga se fajl kopira funcijom create\_and\_copy\_file koja kao rezultat vraća pokazivač na otvoreni fajl i string sa njegovom ekstenzijom. Defer naredbom se osigurava zatvaranje samog fajla. Tip fajla se provera metodom  check\_file\_type koji koristi DetectContentType funkciju iz http paketa zbog sigurnosti jer sama ekstenzija fajla nije dovoljna.
+Funkcija \texttt{create\_user\_directory} kreira privremeni direktorijum u kome smešta sve korisnikove slike. Naziv direktorijuma je pseudoslučajni string dužine 20 kako bi naziv bio jedinstven i direktorijum uvek mogao da se kreira. Nakon toga se fajl kopira funcijom \texttt{create\_and\_copy\_file} koja kao rezultat vraća pokazivač na otvoreni fajl i string sa njegovom ekstenzijom. Defer naredbom se osigurava zatvaranje samog fajla. Tip fajla se provera metodom  \texttt{check\_file\_type} koji koristi \texttt{DetectContentType} funkciju iz http paketa zbog sigurnosti jer sama ekstenzija fajla nije dovoljna.
  
 \subsection{Primena filtera}
 
-Za rad sa slikama koristi se osnovni image paket a za primenu filtera je iskorišćen GIFT (Go Image Filtering Toolkit) paket\footnote{\url{https://godoc.org/github.com/disintegration/gift}}. Osnovni image paket obezbeđuje funkcije za rad sa slikama u formatima JPEG, PNG i GIF, a postoje i dodatni paketi za rad sa formatima kao što su BMP, TIFF i drugi. GIFT paket sadrži skup filtera za obradu slika kao što su kontrast, blur, sepia i slični. Osim filtera, paket omogućava i transformacije slika poput promene veličine, crop-a, rotiranja i drugih.
+Za rad sa slikama koristi se osnovni image paket a za primenu filtera je iskorišćen GIFT (Go Image Filtering Toolkit) paket\cite{gift} koji ne ulazi u originalnu Go distribuciju. Osnovni image paket obezbeđuje funkcije za rad sa slikama u formatima JPEG, PNG i GIF, a postoje i dodatni paketi za rad sa formatima kao što su BMP, TIFF i drugi\cite{image}. GIFT paket sadrži skup filtera za obradu slika kao što su kontrast, blur, sepia i slični. Osim filtera, paket omogućava i transformacije slika poput promene veličine, crop-a, rotiranja i drugih \cite{gift}.
+
+Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{lst:gift}. Promenljiva filter je tipa  \texttt{GIFT} i predstavlja niz filtera Filter kojise primenjuju na slici. Funkcijom  \texttt{Decode} se dekodira JPEG fajl i kao rezultat vraća promenljiva tipa  \texttt{Image}.  \texttt{NewRGBA} funkcija kreira praznu slika iste veličine kao što je i originalna slika. U image paketu postoje funkcije za rad i sa drugim modelima boja pored RGBA. Funkcijom  \texttt{Draw} se primenjuju filteri nad orginalnom slikom, nakon čega se funkcijom  \texttt{Encode} filterovana slika kodira u  \texttt{dst\_file} \cite{gift}.
 
 \begin{center}
 \begin{lstlisting}[caption=Definisanje i primena filtera,label={lst:gift},  backgroundcolor=\color{background}]
@@ -1025,7 +1047,7 @@ Za rad sa slikama koristi se osnovni image paket a za primenu filtera je iskori�
 \end{lstlisting}
 \end{center}
 
-Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{lst:gift}. Promenljiva filter je tipa GIFT i predstavlja niz filtera Filter kojise primenjuju na slici. Funkcijom Decode se dekodira JPEG fajl i kao rezultat vraća promenljiva tipa Image. NewRGBA funkcija kreira praznu slika iste veličine kao što je i originalna slika. U image paketu postoje funkcije za rad i sa drugim modelima boja pored RGBA. Funkcijom Draw se primenjuju filteri nad orginalnom slikom, nakon čega se funkcijom Encode filterovana slika kodira u dst\_file.
+Nakon svih provera kada je sigurno da se radi sa slikom dozvoljene veličine i formata, prelazi se na obradu slike. Deo funkcije  \texttt{ImageHandler} koji se odnosi na primenu filtera, prikazan je u listingu \ref{lst:IHfilter}. Funkcija  \texttt{decode\_image} dekodira dunkciju u zavsinosti od formata slike nakon čega metod  \texttt{rotate} rotira sliku ukoliko je to korisnik izabrao. 
 
 \begin{center}
 \begin{lstlisting}[caption=Primena filtera u funkciji ImageHandler,label={lst:IHfilter},  backgroundcolor=\color{background}]
@@ -1036,18 +1058,14 @@ Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{l
 \end{lstlisting}
 \end{center}
 
-Nakon svih provera kada je sigurno da se radi sa slikom dozvoljene veličine i formata, prelazi se na obradu slike. Deo funkcije ImageHandler koji se odnosi na primenu filtera je prikazan u listingu \ref{lst:IHfilter}. Funkcija decode\_image dekodira dunkciju u zavsinosti od formata slike nakon čega metod rotate rotira sliku ukoliko je to korisnik izabrao. 
-
 \begin{center}
-\begin{lstlisting}[caption=Funkcija za kreiranje zadatog filtera,label={lst:custom}, backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Funkcija za kreiranje zadatog filtera,label={lst:custom}, backgroundcolor=\color{background},belowskip=-0.8 \baselineskip]
 func (p processor) create_custom_filter() *gift.GIFT{
-
 	selected_custom := p.r.Form["custom"]
 	custom := gift.New()
 	for _, name := range selected_custom {
 		custom.Add(base_filters[name])
 	}
-
 	for name := range input_filter_descriptions {
 		if val := p.r.FormValue(name); val != "" {
 			x, _ := strconv.ParseFloat(val,32)
@@ -1055,13 +1073,33 @@ func (p processor) create_custom_filter() *gift.GIFT{
 			custom.Add(f)
 		}
 	}
-
 	return custom
 }
 \end{lstlisting}
 \end{center}
 
- U funkciji create\_custom\_filter, koja je prikazana u listingu \ref{lst:custom}, kreira se zadati filter na osnovu korisnikovog izbora. Prvo se sakupljaju informacije o svim izabranim ponuđenim filterima koji se na osnovu imena dodaju novom filteru custom. Definicije mapa sa predefinisanim filterima su prikazane u listingu \ref{lst:maps}. Nakon toga, zadatom filteru se dodaju filteri za izabrane vrednosti karakteristika koje je korisnik uneo. Za svaku karakteristiku postoji input polje u formi za koje je potrebno proveriti da li je korisnik uneo vrednost. Ukoliko korisnik jeste uneo vrednost za odgovarajuće polje, na osnovu imena, poziva se njegova odgovarajuća funkcija sa zadatim parametrom. Funkcije u Go-u su validan tip tako da je moguće definisati mapu koja će na osnovu stringa vratiti funkciju, što je i prikazano u listingu \ref{lst:maps}. Funkcija kao rezultat vraća filter koji je definisan pomoću numeričkog parametra x koji je korisnik uneo. U slučaju da korinsik nije izabrao ni jedan ponuđen filter i nije uneo nijedan parametar, vraća se prazan filter koji kada se primeni kao rezultat ima originalnu sliku.
+\begin{center}
+\begin{lstlisting}[caption=Mape koje se koriste za definisanje različitih vrsta filtera,label={lst:maps},  backgroundcolor=\color{background}]
+	var filters = map[string] *gift.GIFT{
+		"Sepia": gift.New(
+			gift.Sepia(100),
+			gift.Contrast(10),
+		),
+		...
+	}
+	var base_filters = map[string] gift.Filter{
+		"Sunset":      	gift.ColorBalance(30, -10, -10),
+		...
+	}
+	var input_filters = map[string] func(float32) gift.Filter{
+		"Brightness":	func(val float32) gift.Filter 
+							{ return gift.Brightness(val)},
+		...
+	}
+\end{lstlisting}
+\end{center}
+
+ U funkciji  \texttt{create\_custom\_filter}, koja je prikazana u listingu \ref{lst:custom}, kreira se zadati filter na osnovu korisnikovog izbora. Prvo se sakupljaju informacije o svim izabranim ponuđenim filterima koji se na osnovu imena dodaju novom filteru  \texttt{custom}. Definicije mapa sa predefinisanim filterima su prikazane u listingu \ref{lst:maps}. Nakon toga, zadatom filteru, dodaju se filteri za izabrane vrednosti karakteristika koje je korisnik uneo. Za svaku karakteristiku postoji input polje u formi za koje je potrebno proveriti da li je korisnik uneo vrednost. Ukoliko korisnik jeste uneo vrednost za odgovarajuće polje, na osnovu imena, poziva se njegova odgovarajuća funkcija sa zadatim parametrom. Funkcije u Go-u su validan tip tako da je moguće definisati mapu koja će na osnovu stringa vratiti funkciju, što je i prikazano u listingu \ref{lst:maps}. Funkcija kao rezultat vraća filter koji je definisan pomoću numeričkog parametra  \texttt{x} koji je korisnik uneo. U slučaju da korinsik nije izabrao ni jedan ponuđen filter i nije uneo nijedan parametar, vraća se prazan filter koji kada se primeni kao rezultat ima originalnu sliku.
 
 \begin{center}
 \begin{lstlisting}[caption=Funkcija za paralelnu primenu filtera,label={lst:apply},  backgroundcolor=\color{background}]
@@ -1093,33 +1131,9 @@ func  apply_filters(img *image.Image, custom *gift.GIFT,
 \end{lstlisting}
 \end{center}
 
-Kada je zadati filter definisan, potrebno je primeniti filtere na slici. U listingu \ref{lst:apply} je prikazana funkcija apply\_filters koja primenjuje filtere i kao rezultat vraća mapu sa putanjama do rezultujuće slike za svaki filter. Primena svakog filtera se izvršava u zasebnoj gorutini, konkurentno. U Go-u nije dozvoljeno konkurentno pisanje u mapu pa se u ovom slučaju koristi muteks za kontrolu pristupa mapi. Konkurentno čitanje mape bez pisanja je dozvoljeno i korišćeno je u svim ostalim slučajevima, iz razloga što su mape sa predefinisanim filterima globalne a svaka konekcija se obrađuje u posebnoj gorutini. Napomena da od verzije Go 1.9 postoje mape sa konkurentnim pristupom u okviru sync paketa. Nakon kreiranja gorutine za svaki definisani filter, u tekućoj gorutini se primenjuje zadati filter. Tek nakon završetka svih gorutina, upisuje se putanja do slike zadatog filtera kako nebi došlo do data race-a prilikom upisa u mapu. 
+Kada je zadati filter definisan, potrebno je primeniti filtere na slici. U listingu \ref{lst:apply} je prikazana funkcija  \texttt{apply\_filters} koja primenjuje filtere i kao rezultat vraća mapu sa putanjama do rezultujuće slike za svaki filter. Primena svakog filtera se izvršava u zasebnoj gorutini, konkurentno. U Go-u nije dozvoljeno konkurentno pisanje u mapu pa se u ovom slučaju koristi muteks za kontrolu pristupa mapi. Konkurentno čitanje mape bez pisanja je dozvoljeno i korišćeno je u svim ostalim slučajevima (mape sa predefinisanim filterima, definisane su kao globalne, a svaka konekcija se obrađuje u zasebnoj gorutini). Napomena da od verzije Go 1.9 postoje mape sa konkurentnim pristupom u okviru sync paketa \cite{sync}. Nakon kreiranja gorutine za svaki definisani filter, u tekućoj gorutini se primenjuje zadati filter. Tek nakon završetka svih gorutina, upisuje se putanja do slike zadatog filtera kako ne bi došlo do data race-a prilikom upisa u mapu. 
 
-\begin{center}
-\begin{lstlisting}[caption=Mape koje se koriste za definisanje različitih vrsta filtera,label={lst:maps},  backgroundcolor=\color{background}]
-	var filters = map[string] *gift.GIFT{
-		"Twilight": gift.New(
-			gift.Brightness(5),
-			gift.Gamma(0.55),
-			gift.Colorize(240, 50, 15),
-		),
-		...
-	}
-
-	var base_filters = map[string] gift.Filter{
-		"Sunset":      	gift.ColorBalance(30, -10, -10),
-		...
-	}
-
-	var input_filters = map[string] func(float32) gift.Filter{
-		"Brightness":	func(val float32) gift.Filter 
-							{ return gift.Brightness(val)},
-		...
-	}
-\end{lstlisting}
-\end{center}
-
-Nakon primene filtera, izvršava se template za prikaz rezultata kome se prosleđuje mapa sa putanjama do rezultujuće slike svakog filtera. Pre izlaska iz beskonačne petlje i funkcije ImageHandler, pokreće se gorutina za brisanje priveremnog direktorijuma koja je prikazana u listingu \ref{lst:clean}. Unutar gorutine, kreira se tajmer koji se aktivira nakon zadatog vremena. Timer funkcioniše tako što je izlaz njegovog kanala blokiran do trenutka isteka zadatog vremena kada se kanal oslobođa. Po isteku vremena, privremeni direktorijum sa svim korisnikovim slikama se briše. 
+Nakon primene filtera, izvršava se template za prikaz rezultata kome se prosleđuje mapa sa putanjama do rezultujuće slike svakog filtera. Pre izlaska iz beskonačne petlje i funkcije  \texttt{ImageHandler}, pokreće se gorutina za brisanje priveremnog direktorijuma koja je prikazana u listingu \ref{lst:clean}. Unutar gorutine, kreira se tajmer koji se aktivira nakon zadatog vremena. Tajmer funkcioniše tako što je izlaz njegovog kanala blokiran do trenutka isteka zadatog vremena kada se kanal oslobođa \cite{time}. Po isteku vremena, briše se privremeni direktorijum sa svim korisnikovim slikama. 
 
 \begin{center}
 \begin{lstlisting}[caption=Gorutina za brisanje privremenih direktorijuma,label={lst:clean},  backgroundcolor=\color{background}]
@@ -1131,13 +1145,12 @@ go func() {
 \end{lstlisting}
 \end{center}
 
-\newpage
 
 \subsection{Bezbednost}
 
 Kada je reč o bezbednosti, aplikacija ne poseduje mnogo tačaka koje bi bile meta zloupotrebe ili napada. Korisnici nemaju naloge i ne ostavljaju osetljive informacije koje mogu biti zloupotrebljene ukoliko se dospe do njih. Jedina meta napada mogu biti slike korisnika koje se trenutno čuvaju na serveru. Kao što je već pomenuto u segmentu \ref{fileserver}, fajl server ne dopušta korisniku da pristupi samim direktorijumima kako bi pročitao njihov sadržaj. Jedini način da se pristupi slici drugog korisnika jeste nagađanjem komletne putanje do same slike. Kako deo putanje predstavlja privremeni direktorijum sa pseudoslučajnim stringom dužine 20, možemo biti sigurni sa velikom verovatnoćom da napadač neće nasumičnim nagađanjem doći do slika drugih korisnika. 
 
-Korisnik nije u mogućnosti da preoptereti server prevelikim fajlom ali je u mogućnosti da šalje veliki broj zahteva i onemogući pristup aplkaciji drugim korisnicima. Generalno, ova vrsta aplikacije koja pruža jednostavnu uslugu, pri čemu korisnici ne ostavljaju osetljive informacije, nije tipična meta napada. Za potrebe razvijanja složenijih aplikacija koje zahtevaju viši nivo bezbednosti, postoje paketi koji pružaju autentikaciju korisnika, rutiranje i dodatne bezbednosne provere. 
+Korisnik nije u mogućnosti da preoptereti server prevelikim fajlom ali je u mogućnosti da šalje veliki broj zahteva i onemogući pristup aplikaciji drugim korisnicima. Generalno, ova vrsta aplikacije koja pruža jednostavnu uslugu, pri čemu korisnici ne ostavljaju osetljive informacije, nije tipična meta napada. Za potrebe razvijanja složenijih aplikacija koje zahtevaju viši nivo bezbednosti, postoje paketi koji pružaju autentikaciju korisnika, rutiranje i dodatne bezbednosne provere. 
 
 \chapter{Zaključak}
 
