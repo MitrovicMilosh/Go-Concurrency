@@ -64,11 +64,64 @@ text
 
 \chapter{Karakteristike programskog jezika Go}
 
-Go je imperativni programski jezik otvorenog koda koji razvija kompanija Google od 2007. godine. Napravljen je kao kompilirani jezik opšte namene sa statičkim tipovima koji podseća na interpretirane jezike sa dinamičkim tipovima. Podržava konkurentno programiranje, automatsko upravljanje memorijom kao i refleksiju tokom izvršavanja programa. Pogodan je za rešavanje svih vrsta problema a najviše se koristi za izgradnju servera, skriptove i samostalne aplikacije za komandnu liniju a može se korititi i za grafičke i mobilne aplikacije.
+U ovom poglavlju, opisane su karakteristike i osnovni koncepti programiranja jezika Go.  Konkurentnost jezika je detaljnije opisana i njoj je posvećeno naredno poglavlje.
+
+\section{Projekat Go}
+
+Programski jezik Go je projekat koji razvija kompanija Google od 2007. godine. Postao je javno dostupan kao projekat otvorenog koda 2009. godine i u stalnom je razvoju. Cilj projekta je bio kreirati novi statički tipiziran jezik koji se kompilira, koji bi omogućavao jednostavno programiranje kao kod interpretiranih, dinamički tipizarnih programskih jezika. 
+
+Smatara se da pripada C familiji programskih jezika, ali pozajmljuje i adaptira ideje raznih drugih jezika, izbegavajući karakteristike koje dovode do komplikovanog i nepouzdanog koda. Iako nije objektno-orijentisan, Go podržava određene koncepte kao što su metodi i interfejsi koji pružaju feleksibilnu abstrakciju podataka. Omogućena je efikasna konkurentnost koja je ugrađena u sam jezik, kao i automatsko upravljanje memorijom, odnosno garbage collection. 
+
+Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu različitih vrsta serverskih aplikacija, ali je pre svega jezik opšte namene pa se može koristiti za rešavanje svih vrsta problema. Ima primenu u raznim oblastima kao što su grafika, mobilne aplikacije, mašinsko učenje i mnoge druge. Osim kompanije Google, koristi se u velikom broju drugih kompanija širom sveta kao alternativa jezicima poput Python-a i Javascript-a, jer pruža znatno viši stepen efikasnosti i bezbednosti. Neke od većih kompanija koje koriste programski jezik Go, prikazane su na slici \ref{fig:comp}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=2]{companies.png}
+\end{center}
+\caption{Neke od kompanija koje koriste programski jezik Go}
+\label{fig:comp}
+\end{figure}
+
+\section{Hello World}
+Hello World program u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje ';', osim ako je potrebno navesti više naredbi u istoj liniji. 
+
+\begin{center}
+\begin{lstlisting}[caption=Hello World program u jeziku Go,label={lst:hello},  backgroundcolor=\color{background}]
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello World!")
+}
+\end{lstlisting}
+\end{center}
 
 \section{Tipovi podataka}
 
+Go je statički tipiziran jezik što znači da se promenljivoj dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. Pravilo koje važi za pakete važi i za promenljive, svaka deklarisana promenljiva mora biti upotrebljena.
+
+Primer prikazan u listingu \ref{lst:add} pokazuje definiciju i deklaraciju različitih vrsta promenljivih. Tip promenljive se ne mora ekspilicitno navesti, već se može zaključiti na osnovu dodele operatorom ':=' kada se promenljiva uvodi. Iako nije definisana, promenljiva \texttt{a} ima podrazumevanu vrednost koja je za numeričke tipove 0.
+
 Tipovi podataka koje Go podržava, mogu se klasifikovati u četiri kategorije: bazični tipovi, složeni tipovi, referentni tipovi i interfejsni tipovi. 
+
+\begin{center}
+\begin{lstlisting}[caption=Primer programa koji ilustruje rad sa promenljivama, label={lst:add},  backgroundcolor=\color{background}]
+package main
+
+import "fmt"
+
+func main() {
+	var a float32
+	b := 5
+	var c int
+	c = int(a) + b
+	fmt.Println(c)	
+}
+\end{lstlisting}
+\end{center}
+
+\subsection{Bazični tipovi podataka}
 
 Od bazičnih tipova podataka Go podržava:
 \begin{itemize}
@@ -82,15 +135,37 @@ Od bazičnih tipova podataka Go podržava:
 
 \end{itemize}
 
-Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija je vrednost unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
+Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija vrednost je unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
 
-U složene tipovi podataka spadaju nizovi i strukture. 
+Paket strings pruža veliki broj funkcija za manipulaciju tipom \texttt{string}. Iako u okviru paketa postoji funkcija \texttt{Compare}, Go dozvoljava poređenje stringova operatorom '==', kao i ostalim relacionimi operatorima.
 
+Operatori koji su definisani u Go-u, podeljeni su u sledeće kategorije:
+\begin{itemize}
+
+\item Aritmetički operatori (+ , - , * , / , \% , ++ ,  - - )
+\item Relacioni operatori (== , != , > , < , >= , <=)
+\item Logički operatori (\&\& , || , !)
+\item Bitski operatori (\& , | , \string^ , >{}> , <{}<)
+\item Operatori dodele (= , += , -= , *= , /= , \%= ,  >{}>= , <{}<= , \&= , |= , \string^= )
+
+\end{itemize}
+
+\subsection{Složeni tipovi podataka}
+U složene tipove podataka spadaju nizovi i strukture. Niz predstavlja sekvencu elemenata fiksne dužine određenog tipa podataka. Za razliku od nizova, slajsovi, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom '[redni\_broj]' notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len} se koristi za dobijanje podatka o dužini niza. 
+
+Go dozvoljava poređenje nizova definisanih nad istim tipom podataka, relacionim operatorima. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
+\\
+
+Strukture 
+
+
+
+
+
+\subsection{Referentni tipovi podataka}
 U referentne tipove podataka spadaju pokazivači, slajsovi, mape, kanali i funkcije. 
 
-Operatori
-
-Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. 
+\section{Kontrole toka}
 
 \section{Funkcije i metodi}
  
@@ -99,6 +174,8 @@ Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilik
 \section{Refleksija}
 
 \section{Garbage collection}
+
+\section{Upravljanje greškama}
 
 \section{Testiranje}
 
@@ -110,15 +187,17 @@ Go je statički tipiziran jezik što znači da se varijabli dodeljuje tip prilik
 
 \section{Osnovni pojmovi konkurentnog programiranja}
 
-\section{Mogućnosti u programskom jeziku Go}
+\section{Go-rutine}
 
-\subsection{Go-rutine}
+\section{Kanali}
 
-\subsection{Kanali}
+\section{Sinhronizacija}
 
-\subsection{Sinhronizacija}
+\section{Select naredba}
 
-\subsection{Data race detektor}
+\section{Dizajn pattern-i}
+
+\section{Data race detektor}
 
 \begin{figure}
 \begin{center}
@@ -149,8 +228,6 @@ Goroutine 83 (running) created at:
 \label{fig:datarace}
 \end{center}
 \end{figure}
-
-\subsection{Select naredba}
 
 
 %PRIMERI ==============================================================================
@@ -206,7 +283,9 @@ algorithm partition(A, lo, hi) :
 
 \subsection{Go}
 \label{qs:go}
-Implementacija \ref{lst:qs} koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i select naredbe gde kapacitet kanala označava maksimalan broj aktivnih go-rutina. U select naredbi se pokušava "dobijanje tokena" odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nam nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da možemo da dobijemo token odnosno uspešno pošaljemo praznu strukturu kroz kanal pokrećemo go-rutinu za rekurzivni poziv, u suprotnom, ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake go-rutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto. Da bismo bili sigurni da su sve go-rutine završile sa svojim radom, za sinhronizaciju koristimo wait grupe. Svaki konkurentni poziv funkcije kreira svoju wait grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da unapred nije poznato kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati wait grupi da je završeno sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
+Implementacija \ref{lst:qs} koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i select naredbe gde kapacitet kanala označava maksimalan broj aktivnih go-rutina. U select naredbi se pokušava "dobijanje tokena" odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nam nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da je moguće dobiti token odnosno uspešno poslati praznu strukturu kroz kanal pokreće se go-rutina za rekurzivni poziv, u suprotnom, ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake go-rutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto.
+
+ Kako bi se sačekalo da sve go-rutine završile sa svojim radom, za sinhronizaciju se koriste wait grupe. Svaki konkurentni poziv funkcije kreira svoju wait grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da unapred nije poznato kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati wait grupi da je završeno sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
 
 \begin{center}
 \begin{lstlisting}[caption=Go implementacija konkurentne quicksort funkcije,label={lst:qs},float,  backgroundcolor=\color{background}]
@@ -264,11 +343,13 @@ Ovde se takođe razmatraju dve implementacije koje koriste različite pakete za 
 \subsection{Rezultati}\label{qs:rez}
 
 Vremenska efikasnost implementacija u zavisnosti od veličine niza je prikazana u tabeli \ref{tab:qs1}.  C i C++ OpenMP implementacija su se pokazale kao najefikasnije. Vreme izvršavanja Go implementacije je uporedivo za nizove od milion i 10 miliona dok je za niz od 100 miliona brojeva potrebno dva puta više vremena u odnosu na C i C++ OpenMP implementacije. C++ verzija sa standardnom bibliotekom je značajno sporija od pomenutih implementacija, ali je Python-u potrebno najviše vremena i nije bilo mogućnosti testirati ga za niz od 100 miliona brojeva.
+\\
 
 U odnosu na sekvencijalno izvršavanje, najveće ubrzanje ima C. Sekvencijalno se najbrže izvršava Go i za niz od milion brojeva mu je potrebno isto vremena kao i pri konkurentnom izvršavanju.  Ubrzanje postoji za nizove veće dužine međutim ono je manje u odnosu na C i C++ OpenMP verziju. 
+\\
 
 Kod Python threading implementacije, konkurentno izvršavanje je sporije u odnosu na sekvencijalno kao direktna posledica GIL-a, što je objašnjeno u odeljku \ref{gil}. Verzija koja koristi Parallel Python paket pokazuje da je moguće napraviti konkurentan program sa nitima u Pythonu koji je efikasniji u odnosu na sekvencijalno izvršavanje. Međutim i ova verzija je višestruko sporija u odnosu na implementacije u drugim jezicima. Napomena da rezultati dobijeni testiranjem na drugom računaru služe samo kao relativan odnos sekvencijalnog i konkurentog izvršavanja, a ne za poređenje sa drugim implementacijama, usled različite brzine izvršavanja.
-
+\\
 
 \begin{table}
 \begin{center}
@@ -289,7 +370,9 @@ Python pp\textsuperscript{*}	& 4.35		&58.87		& - 			& 8.46		& 118.33		& - 			\\ 
 \end{center}
 \end{table}
 
+
 U tabeli \ref{tab:qs5} je prikazano prosečno vreme izvršavanja implementacija sa različitim brojem niti/rutina. Python implementacija nije testirana iz razloga što se sa većim brojem niti izvršava sve sporije. Najbolje vreme se postiže sa 100 niti/rutina za Go i C++ OpenMP verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom.  Prilikom ostalih testiranja je korišćen onaj broj niti/rutina za koji implementacija pokazuje najbolje rezultate. Svi prikazani rezultati Python implementacije su testirani sa 30 niti. 
+\\
 
 \begin{table}
 \begin{center}
@@ -308,6 +391,8 @@ C++ std 	&6.44	&5.39	&4.37			&\textbf{3.77}	&4.82\\
 \end{table}
 
 Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi za izvršavanje, za niz od 10 miliona brojeva je prikazana na slici \ref{fig:qs1}. Python nije testiran jer broj jezgara ne utiče na njegovu brzinu izvršavanja. Ubrzanje sa povećanjem broja jezgara je najzastupljenije kod C++ verzije sa OpenMP bibliotekom. Kod ostalih implementacija, najveća razlika u brzini se vidi između izvršavanja sa 4 i 8 jezgara dok je razlika između 24 i 48 jezgara minimalna. 
+\\
+
 \begin{figure}
 \begin{center}
 
@@ -341,6 +426,7 @@ Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se korist
 \end{figure}
 
 Maksimalna upotreba memorije za nizove različitih dužina je prikazana u tabeli \ref{tab:qs3}. Obe verzije u C++-u su podjednako efikasne i potrebno im je najmanje memorije u odnosu na druge implementacije. C je približno efikasan kao i C++ osim što i za nizove manjih dužina zahteva veliku količinu memorije. Go koristi dva puta više memorije nego ostale implementacije dok je Pythonu potrebna višestruko veća količina memorije.
+\\
 
 \begin{table}
 \begin{center}
@@ -359,7 +445,7 @@ Python pp	& 49.6		&411.8		& - 			\\ \hline
 \end{center}
 \end{table}
 
-Dužine programskih kodova se mogu pogledati u tabeli \ref{tab:qs4}. U C-u je potrebno najviše linija  k\^{o}da za implementaciju algoritma dok je u Pythonu potrebno najmanje.
+Dužine implementacija, prikazane su u tabeli \ref{tab:qs4}.  Za implementaciju algoritma, u C-u je potrebno najviše linija  k\^{o}da, dok je u Pythonu potrebno najmanje.
 
 \begin{table}
 \begin{center}
@@ -385,7 +471,7 @@ Implementiran je standardni algoritam za množenje matrica. Vrednost na poziciji
 Algoritam je paralelizovan tako što svaka nit/rutina računa po jedan red matrice, odnosno jedan red prve matrice množi sa svim kolonama druge matrice. Za testiranje su korišćene pseudoslučajno generisane kvadratne matrice različitih dimenzija. 
 
 \subsection{Go}
-Restrikcija broja go-rutina se ostvaruje pomoću semafora na isti način kao što je urađeno u prethodnom primeru \ref{qs:go}. Može se primetiti u implementaciji \ref{lst:matrix} da je neophodno go-rutinama  proselditi \textit{i} kao argument anonimne funkcije kako bi svaka imala svoju kopiju. U suprotnom, u svakoj sledećoj iterciji for petlje vrednost \textit{i} bi bila ažurirana u svim go-rutinama. Za razliku od prethodnog primera gde se niz koji se sortira prenosi pomoću reference, ovde su rezultujuća i početne matrice definisane kao globalne. Ni u ovom slučaju nije potrebno zaključavanje jer se početne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka go-rutina popunjava samo svoj red. 
+Restrikcija broja go-rutina se ostvaruje pomoću semafora na isti način kao što je urađeno u prethodnom primeru \ref{qs:go}. Može se primetiti u implementaciji \ref{lst:matrix} da je neophodno go-rutinama  proselditi \texttt{i} kao argument anonimne funkcije kako bi svaka imala svoju kopiju. U suprotnom, u svakoj sledećoj iterciji for petlje vrednost \texttt{i} bi bila ažurirana u svim go-rutinama. Za razliku od prethodnog primera gde se niz koji se sortira prenosi pomoću reference, ovde su rezultujuća i početne matrice definisane kao globalne. Ni u ovom slučaju nije potrebno zaključavanje jer se početne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka go-rutina popunjava samo svoj red. 
 
 \begin{center}
 \begin{lstlisting}[caption=Go implementacija konkurentne funkcije za množenje matrica,label={lst:matrix},float, backgroundcolor=\color{background}]
@@ -419,6 +505,7 @@ Implementacije u ostalim jezicima su realizovane na sličan način. Maksimalan b
 \subsection{Rezultati}
 
 Grafik brzine izvršavanja u zavisnosti od veličine matrice je prikazan na slici \ref{fig:matrix1}. Python se izvršava znatno sporije od ostalih implementacija tako da nije bilo mogućnosti testirati ga na ulazima iste veličine, a rezultati testiranja Python implementacije su prikazani u tabeli \ref{tab:matrix1}. Na grafiku se vidi da je C implementacija najefikasnija, a zatim C++ verzija sa OpenMP bibliotekom, dok verzija sa standardnom bibliotekom radi najsporije. Za matrice manje veličine Go radi podjednako efikasno kao i OpenMP verzija C++ implementacije, ali za matricu veličine 1500 mu je potrebno dva puta više vremena, što je približno četiri puta više nego C-u. 
+\newpage
 
 \begin{figure}
 \begin{center}
@@ -453,6 +540,7 @@ Grafik brzine izvršavanja u zavisnosti od veličine matrice je prikazan na slic
 
 
 Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 1000 je prikazano u tabeli \ref{tab:matrix5}. Najbolje vreme se ponovo postiže sa 100 niti/rutina za Go i C++ OpenMP verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom. Kod ostalih testiranja je korišćen onaj broj niti/rutina za koji implementacija pokazuje najbolje rezultate. 
+\\
 
 \begin{table}
 \begin{center}
@@ -470,6 +558,7 @@ C++ std	&15.31&8.71&3.21&\textbf{3.06} \\ \hline
 \end{table}
 
 Rezultati testiranja implementacija na različitom broju jezgara prikazani su na slici \ref{fig:matrix3}. Na grafiku se vidi velika razlika u brzini između sekvencijalnog (na jednom jezgru) i konkurentnog izvršavanja. Brzina raste do 16 i 24 jezgara, dok povećanje na 48 jezgara, ne donosi značajno ubrzanje. 
+\\
 
 \begin{figure}
 \begin{center}
@@ -504,6 +593,7 @@ Rezultati testiranja implementacija na različitom broju jezgara prikazani su na
 \end{figure}
 
 Python se izvršava višestruko sporije i potrebno mu je više od 90 sekundi za matricu veličine 500, dok je ostalim implementacijama potrebno manje od jedne sekunde. Konkurentno izvršavanje je ponovo sporije od sekvencijalnog zbog već pomenutog problema sa GIL-om u odeljku \ref{gil}. Rezultati su prikazani u tabeli \ref{tab:matrix1}.
+\\
 
 \begin{table}
 \begin{center}
@@ -522,6 +612,7 @@ n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 
 
 Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica je prikazan na slici \ref{fig:matrix2}. Memorijska efikasnost se u ovom primeru poklapa sa vremenskom. C i C++ OpenMP vezija su najefikasnije dok Go koristi dva puta više memorije. C++ verzija sa standardnom bibliotekom zahteva najveću količinu memorije. 
+\newpage
 
 \begin{figure}
 \begin{center}
@@ -554,7 +645,7 @@ Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica je prikaza
 \end{figure}
 
 
-Broj linija k\^{o}da svih  implementacija je prikazan u tabeli \ref{tab:matrix2}. Python ima najkraću implementaciju sa samo 28 linija k\^{o}da. Najduža implementacija je C++ verzija sa standardnom bibliotekom jer je razdvojena na klase i nekoliko fajlova radi jednostavnijeg korišćenja.  
+Broj linija k\^{o}da svih  implementacija, prikazan je u tabeli \ref{tab:matrix2}. Python ima najkraću implementaciju sa samo 28 linija k\^{o}da. Najduža implementacija je C++ verzija sa standardnom bibliotekom jer je razdvojena na klase i nekoliko fajlova radi jednostavnijeg korišćenja.  
 
 \begin{table}
 \begin{center}
@@ -607,7 +698,7 @@ Paralelizacija algoritma se postiže deljenjem opsega od 2 do n na jednake delov
 Koristi se globalni niz od n bulovskih promenljivih postavljenih na podrzumevanu vrednost - false umesto na true radi jednostavnosti.  Funkcija koja kreira go-rutine je prikazana u listingu \ref{lst:prime1}. Za svaki broj koji je trenutno označen kao prost, najpre je potrebno je odrediti njegov prvi umnožak, a zatim, označiti sve njegove umnoške unutar opsega, što je i prikazano u listingu \ref{lst:prime2}. Kao što je već pomenuto, ako svaka go-rutina ima svoj opseg, ona mora da pristupa i članovima niza drugih go-rutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{n}$. To kao posledecu dovodi do pojave data race-a, međutim, u ovom slučaju je to dopustivo i nisu potrebni muteksi upravo zato što proveravamo dodatni uslov da li je pročitana vrednost u međuvremenu bila menjana. Ako se data race detektor pozove, dobija se izveštaj koji upozorava da postoji data race. Primer izveštaja se može videti na slici \ref{fig:datarace}. 
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za određivanje prostih brojeva manjih od n,label={lst:prime1},float, backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za određivanje prostih brojeva manjih od n,label={lst:prime1},backgroundcolor=\color{background}]
 func Prime(list *[]bool, n int, is_concurrent bool){
 	sqrt := int(math.Sqrt(float64(n)))
 	first := 0
@@ -659,8 +750,8 @@ Implementacije u ostalim jezicima su realizovane na isti načini. Za C++ je razm
 
 \subsection{Rezultati}
 
-Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je predstavljeno grafikom na slici \ref{fig:prime1}. Python ponovo nije mogao da bude uključen usled znatno sporijeg izvršavanja, a rezultati su prikazani u tabeli \ref{tab:prime1}. Go implementacija se pokazala kao najefikasnija a zatim implementacija u C++-u. C je znatno sporiji i njegovo izvršavanje se meri u sekundama dok Go i C rade ispod jedne sekunde. U odnosu na sekvencijano izvršavanje, Go ima najveće ubrzanje. Pri konkurentnom izvršavanju, veličina ulaza nema značajan uticaj tako da za Go i C++ nema velike razlike u brzini kada n iznosi 500 miliona ili 1 bilion. 
-
+Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je predstavljeno grafikom na slici \ref{fig:prime1}. Python ponovo nije mogao da bude uključen usled znatno sporijeg izvršavanja, a rezultati su prikazani u posebnoj tabeli. Go implementacija se pokazala kao najefikasnija a zatim implementacija u C++-u. C je znatno sporiji i njegovo izvršavanje se meri u sekundama dok Go i C rade ispod jedne sekunde. U odnosu na sekvencijano izvršavanje, Go ima najveće ubrzanje. Pri konkurentnom izvršavanju, veličina ulaza nema značajan uticaj tako da za Go i C++ nema velike razlike u brzini kada n iznosi 500 miliona ili 1 bilion. 
+\\
 
 \pgfplotsset{ every non boxed x axis/.style={} }
 
@@ -712,7 +803,6 @@ Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je pre
 
 \end{groupplot}
 \end{tikzpicture}
-
 \caption{Grafik brzine izvršavanja različitih implementacija Eratostenovog sita za različito n, testirano na 48 jezgara; isprekidanom linjom je prikazano sekvencijalno izvršavanje dok je konkurentno prikazano punom linijom}
 \label{fig:prime1}
 
@@ -720,6 +810,7 @@ Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je pre
 \end{figure}
 
 U tabeli \ref{tab:prime5} je prikazano vreme izvršavanja sa različitim brojem niti/rutina kada je n = 500 miliona. Sve tri implementacije postižu najbolje performanse sa 1000 niti/rutina što je iskorišćeno prilikom svih ostalih testiranja.
+\\
 
 \begin{table}
 \begin{center}
@@ -737,7 +828,7 @@ C++  &4.53	&2.84	&\textbf{0.73}&0.76\\ \hline
 
 
 Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara je prikazan na slici \ref{fig:prime3}. Kod svih implementacija postoji ubrzanje sa povećanjem broja jezgara, ali ne postoji značajna razlika u brzini prilikom izvršavanja sa 24 i 48 jezgara.
-
+\\
 
 \begin{figure}
 \begin{center}
@@ -768,7 +859,9 @@ Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara je prika
 \end{center}
 \end{figure}
 
-Python je testiran za 10 puta manju vrednost n u odnosu na ostale implementacije i potrebno mu je više od jednog minuta, dok Go za 10 puta veću vrednost radi ispod jedne sekunde. Upotreba memorije je 4 puta veća nego kod ostalih implementacija i potrebno mu je više vremena pri konkurentnom izvršavanju nego pri sekvencijalnom usled već pomenutog problema sa GIL-om u odeljku \ref{gil}.
+Python je testiran za 10 puta manju vrednost n u odnosu na ostale implementacije i rezultati testiranja su prikazani u tabeli \ref{tab:prime1}. Python-u je potrebno više od jednog minuta, dok Go za 10 puta veću vrednost radi ispod jedne sekunde. Upotreba memorije je 4 puta veća nego kod ostalih implementacija i potrebno mu je više vremena pri konkurentnom izvršavanju nego pri sekvencijalnom usled već pomenutog problema sa GIL-om u odeljku \ref{gil}.
+\\
+
 
 \begin{table}
 \begin{center}
@@ -787,7 +880,9 @@ n[$10^{6}$] & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 \end{center}
 \end{table}
 
+
 Maksimalna upotreba memorije u zavisnosti od n prikazana je na slici \ref{fig:prime2}. Sve tri implementacije imaju približno istu upotrebu memorije. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebno onoliko MB memorije koliko miliona iznosi vrednost n.
+\\
 
 \begin{figure}
 \begin{center}
@@ -818,6 +913,7 @@ Maksimalna upotreba memorije u zavisnosti od n prikazana je na slici \ref{fig:pr
 \end{center}
 \end{figure}
 
+\newpage
 
 Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. I u ovom primeru najkraća implementacija je u Python-u dok je u C-u najduža. Go se ponovo nalazi između C-a i C++-a po broju linija k\^{o}da.
 
@@ -846,7 +942,7 @@ Kao primer upotrebe programskog jezika Go, razvijena je serverska aplikacija koj
 
 \section{Serverska aplikacija}
 
-Razvijena serverska aplikacija se bavi primenom različitih filtera na slikama. Omogućava primenu postojećih predefisanih filtera kao i kreiranje sopstvenog, kombinovanjem različitih ponuđenih filtera i unošenjem željenih vrednosti za pojedine karakteristike. Slika koje se obrađuje se može upload-ovati sa računara ili se može proslediti njen URL. Svi filteri se primenjuju paralelno nakon čega se mogu videti pojedinačni rezultati obrade koji su dostupni za preuzimanje. Grafički interfejs aplikacije je prikazan na slici \ref{fig:interface}.
+Razvijena serverska aplikacija se bavi primenom različitih filtera na slikama. Omogućava primenu postojećih predefinisanih filtera kao i kreiranje sopstvenog, kombinovanjem različitih ponuđenih filtera i unošenjem željenih vrednosti za pojedine karakteristike. Slika koje se obrađuje se može upload-ovati sa računara ili se može proslediti njen URL. Svi filteri se primenjuju paralelno nakon čega se mogu videti pojedinačni rezultati obrade koji su dostupni za preuzimanje. Grafički interfejs aplikacije je prikazan na slici \ref{fig:interface}.
 
 \begin{figure}
 \begin{center}
@@ -861,7 +957,7 @@ Struktura aplikacije predtsavljena je dijagramom na slici \ref{fig:diag}. Server
  
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.33]{dijagram.png}
+\includegraphics[scale=0.45]{dijagram.png}
 \end{center}
 \caption{Dijagram koji prikazuje strukturu aplikacije}
 \label{fig:diag}
