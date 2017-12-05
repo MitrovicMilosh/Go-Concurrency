@@ -83,7 +83,7 @@ Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu raz
 \end{figure}
 
 \section{Hello World}
-Hello World program u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje ';', osim ako je potrebno navesti više naredbi u istoj liniji. 
+Hello World program u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje \texttt{;} , osim ako je potrebno navesti više naredbi u istoj liniji. 
 
 \begin{center}
 \begin{lstlisting}[caption=Hello World program u jeziku Go,label={lst:hello},  backgroundcolor=\color{background}]
@@ -101,7 +101,7 @@ func main() {
 
 Go je statički tipiziran jezik što znači da se promenljivoj dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. Pravilo koje važi za pakete važi i za promenljive, svaka deklarisana promenljiva mora biti upotrebljena.
 
-Primer prikazan u listingu \ref{lst:add} pokazuje definiciju i deklaraciju različitih vrsta promenljivih. Tip promenljive se ne mora ekspilicitno navesti, već se može zaključiti na osnovu dodele operatorom ':=' kada se promenljiva uvodi. Iako nije definisana, promenljiva \texttt{a} ima podrazumevanu vrednost koja je za numeričke tipove 0.
+Primer prikazan u listingu \ref{lst:add} pokazuje definiciju i deklaraciju različitih vrsta promenljivih. Tip promenljive se ne mora ekspilicitno navesti, već se može zaključiti na osnovu dodele operatorom \texttt{:=} kada se promenljiva uvodi. Iako nije definisana, promenljiva \texttt{a} ima podrazumevanu vrednost koja je za numeričke tipove 0.
 \\
 
 Tipovi podataka koji su definisani u programskom jeziku Go, mogu se klasifikovati u četiri kategorije \cite{bookGoProg}: 
@@ -125,7 +125,7 @@ func main() {
 	var c int
 
 	c = int(a) + b
-	fmt.Println(c)	 // "5"
+	fmt.Println(c)	 // 5
 }
 \end{lstlisting}
 \end{center}
@@ -147,7 +147,8 @@ Bazični tipovi koji postoje u programskom jeziku Go, podeljeni su na:
 
 Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija vrednost je unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
 
-Paket strings pruža veliki broj funkcija za manipulaciju tipom \texttt{string}. Iako u okviru paketa postoji funkcija \texttt{Compare}, Go dozvoljava poređenje stringova operatorom '==', kao i ostalim relacionimi operatorima.
+Paket strings pruža veliki broj funkcija za manipulaciju tipom \texttt{string}. Iako u okviru paketa postoji funkcija \texttt{Compare}, Go dozvoljava poređenje stringova operatorom \texttt{==}, kao i ostalim relacionimi operatorima.
+\\
 
 Operatori koji su definisani u Go-u, podeljeni su u sledeće kategorije:
 \begin{itemize}
@@ -161,54 +162,48 @@ Operatori koji su definisani u Go-u, podeljeni su u sledeće kategorije:
 \end{itemize}
 
 \subsection{Složeni tipovi podataka}
-Složenim tipovima podataka pripadaju \textbf{nizovi} i \textbf{strukture}. \textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Za razliku od nizova, isečci, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom '\texttt{[indeks]}' notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti \texttt{'...}', a dužina će biti zaključena na osnovu incijalizacije.
+Složenim tipovima podataka pripadaju \textbf{nizovi} i \textbf{strukture}. \textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Za razliku od nizova, isečci, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom \texttt{[indeks]} notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti \texttt{...}, a dužina će biti zaključena na osnovu incijalizacije.
 
-Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima ' \texttt{==}' i ' \texttt{!=}'. Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
+Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima \texttt{==} i \texttt{!=} . Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
 \\
 
-\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i prestavlja jedno polje strukture. Definisanjem strukture se definiše novi tip podataka korišćenjem ključne reči \texttt{type} ispred definicije strukture. Poljima strukture se pristupa sa '\texttt{.naziv\_polja}' notacijom. 
+\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i prestavlja jedno polje strukture. Definisanjem strukture se definiše novi tip podataka korišćenjem ključne reči \texttt{type} ispred definicije strukture. Poljima strukture se pristupa sa \texttt{.naziv\_polja} notacijom. 
 
-Ugnježdene strukture su dozvoljene, odnosno strukture koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima  ' \texttt{==}' i ' \texttt{!=}'. Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
+Ugnježdene strukture su dozvoljene, odnosno strukture koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa nizovima i strukturama, label={lst:arr_str},  backgroundcolor=\color{background}]
-package main
-
-import "fmt"
-
-func main() {
 	var a [3]int
 	b := [...]int{1, 2, 3}
 	a[0] = 1
-	fmt.Println(a==b) // "false"
+	fmt.Println(a==b) // false
 
 	type Point struct{ X, Y int }
 	p1 := Point{1, 2}
 	p2 := Point{Y:2}
 	p2.X = 1
-	fmt.Println(p1==p2) // "true"
+	fmt.Println(p1==p2) // true
 
 	c := new([3]int)
 	c[0] = 1
-	fmt.Println(a == *c) // "true"			
-}
+	fmt.Println(a == *c) // true			
 \end{lstlisting}
 \end{center}
 
-Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora '\texttt{*}' odnosno notacijom '\texttt{(*naziv)[indeks]}'. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti običnom '\texttt{.}' notacijom.
+Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora \texttt{*} odnosno notacijom \texttt{(*naziv)[indeks]}. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti običnom \texttt{.} notacijom.
 
 \subsection{Referentni tipovi podataka}
-U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \textbf{mape}, \textbf{kanali} i \textbf{funkcije}. U ovom segementu, opisani su svi referentni tipovi podataka osim funkcija, kojima je posvećen segment \ref{metod}, i kanala, koji su opisani u narednom poglavlju čija je tema konkurentnost, u segementu \ref{chanel}. 
+U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \textbf{mape}, \textbf{kanali} i \textbf{funkcije}. U ovom segementu, opisani su svi referentni tipovi podataka osim funkcija, kojima je posvećen segment \ref{func}, i kanala, koji su opisani u narednom poglavlju čija je tema konkurentnost, u segementu \ref{chanel}. 
 \\
 
-\textbf{Pokazivač} referiše na vrednost neke promenljive koja se trenutno čuva u memoriji. Pokazivači kao vrednost čuvaju lokaciju promenljive u memoriji na koju referišu. Za dobijanje lokacije promenljive, koristi se operator '\texttt{\&}'. Za dereferenciranje pokazivača, odnosno dobijanje vrednosti na koju pokazivač referiše, koristi se operator '\texttt{*}'.
+\textbf{Pokazivač} referiše na vrednost neke promenljive koja se trenutno čuva u memoriji. Pokazivači kao vrednost čuvaju lokaciju promenljive u memoriji na koju referišu. Za dobijanje lokacije promenljive, koristi se operator \texttt{\&}. Za dereferenciranje pokazivača, odnosno dobijanje vrednosti na koju pokazivač referiše, koristi se operator \texttt{*}.
 \\
 
-\textbf{Isečak} u programskom jeziku Go, predstavlja fleksibilan pogled na elemente niza. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za trenuntan podatak o njegovoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
+\textbf{Isečak} (eng. "slice") u programskom jeziku Go, predstavlja fleksibilan pogled na elemente niza. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za trenuntan podatak o njegovoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
 
-Definisanje isečka nad nizom se postiže korišćenjem '\texttt{niz[od:do]} notacije pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je počtak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo \texttt{:}, isečak će sadržati sve elemente niza. 
+Definisanje isečka nad nizom se postiže korišćenjem \texttt{niz[od:do]} notacije pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je počtak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo \texttt{:}, isečak će sadržati sve elemente niza. 
 
-Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira elemente jednog isečka u drugi i kao rezultat vraća broj kopiranih elemenata. Maksimalan broj elemenata koji će biti kopiran, jednak je dužini kraćeg isečka. Dozvoljeno je da isečci pre kopiranja dele elemente. Funkcija \texttt{append}, koristi se za dodavanje elemenata isečku. Tokom rada, ukoliko ne postoji dovoljno mesta, funkcija može imati potrebu da realocira niz i zbog toga kao rezultat vraća ažuriranu referencu na isečak. Nakon poziva funkcije \texttt{append}, moguće je da isečci koji su delili elemente niza \cite{bookGoProg}, pokazuju na različite nizove, što je i prikazano na slici \ref{fig:slice}. Primer koji ilustruje rad sa isečcima, prikazan je u listingu \ref{lst:slice}
+Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira elemente jednog isečka u drugi i kao rezultat vraća broj kopiranih elemenata. Maksimalan broj elemenata koji će biti kopiran, jednak je dužini kraćeg isečka. Dozvoljeno je da isečci pre kopiranja dele elemente. Funkcija \texttt{append}, koristi se za dodavanje elemenata isečku. Tokom rada, ukoliko ne postoji dovoljno mesta, funkcija može imati potrebu da realocira niz i zbog toga kao rezultat vraća ažuriranu referencu na isečak. Nakon poziva funkcije \texttt{append}, moguće je da isečci koji su delili elemente niza, pokazuju na različite nizove, što je i prikazano na slici \ref{fig:slice} \cite{bookGoProg}. Primer koji ilustruje rad sa isečcima, prikazan je u listingu \ref{lst:slice}
 
 \begin{figure}
 \begin{center}
@@ -220,42 +215,215 @@ Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira element
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa isečcima, label={lst:slice},  backgroundcolor=\color{background}]
-package main
+	a := [...]int{1, 2, 3, 4, 5}
+	
+	s1 := a[:3] 				
+	fmt.Println(s1, cap(s1))	// [1 2 3] 5
+	
+	s1 = append(s1, 6) 			// [1 2 3 6]
+	a[0] = 10					// deluje i na s1
+	s2 := make([]int, 4, 4)		// [0 0 0 0] 
+	copy(s2, s1)
+	s1[1] = 11					// ne deluje na s2
+	
+	fmt.Println(s1, cap(s1)) 	// [10 11 3 6] 5
+	fmt.Println(s2, cap(s2)) 	// [10 2 3 6] 4
+	
+	s1 = append(s1, 7, 8)		// realocira s1
+	a[2] = 12					// ne deluje na s1
+	fmt.Println(s1, cap(s1))	// [10 11 3 6 7 8] 12
+\end{lstlisting}
+\end{center}
 
-import "fmt"
+\textbf{Mapa} je referentni tip podataka koji referiše na heš tabelu. U tabeli se čuvaju parovi ključ - vrednost, pri čemu je vrednost svakog ključa jedinstvena. Svi ključevi su istog tipa i sve vrednosti su istog tipa. Jedini uslov je da se tip ključa može porediti operatorom \texttt{==}, dok vrednosti mogu biti proizvoljnog tipa, uključujući i druge mape. 
 
-func main() {
-	var a [3]int
-	b := [...]int{1, 2, 3}
-	a[0] = 1
-	fmt.Println(a==b) // "false"
+Funkcija \texttt{make} se koristi prilikom alociranja prostora za novu mapu. Upis u mapu, postiiže se \texttt{naziv[ključ] = vrednost} notacijom. Ugrađena funkcija \texttt{delete}, koristi se za brisanje parova iz mape. Kao parametre, funkcija ima naziv mape i ključ para koji se briše. Ukoliko ključ ne postoji, funkcija neće ništa uraditi. Dodeljivanje vrednosti promenljivoj na osnovu ključa iz mape, postiže se \texttt{v := naziv[ključ]} notacijom, pri čemu, ukoliko ključ ne postoji, vrednost v će biti postavljena na podrazumevanu. Moguće je izvršiti proveru da li je određeni ključ definisan u mapi, upotrebom \texttt{v, ok := naziv[ključ]} ili  \texttt{\_, ok := naziv[ključ]} notacije, gde je \texttt{ok} promenljiva tipa \texttt{bool}, koja je nosi informaciju da li ključ postoji ili ne. 
 
-	type Point struct{ X, Y int }
-	p1 := Point{1, 2}
-	p2 := Point{Y:2}
-	p2.X = 1
-	fmt.Println(p1==p2) // "true"
+U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkurentnog korišćenja, potrebno je koristiti odgovarajuće mere sigurnosti koje su opisane u poglavlju \ref{conc}. Primer koji demonstrira rad sa mapama, prikazan je u listingu \ref{lst:map}.
 
-	c := new([3]int)
-	c[0] = 1
-	fmt.Println(a == *c) // "true"			
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira rad sa mapama, label={lst:map},  backgroundcolor=\color{background}]
+	m1 := make(map[string]int)
+	m1["a"] = 1
+	m2 := map[string]float32{"m": 1.23, "a": 2.34}
+	
+	_, ok := m2["b"]
+	delete(m2, "p")		// nema efekta
+	delete(m2, "a")
+	fmt.Println(m2, ok) // [m:1.23] false
+\end{lstlisting}
+\end{center}
+
+\section{Kontrole toka}
+
+U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch} i \texttt{for}. Naredba \texttt{if} se ponaša na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if-else if-else} strukturu. 
+
+Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima korišćenejem \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, bez potrebe navođenja \texttt{break}. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
+
+Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
+
+Sve kontrolne strukture zahtevaju upotrebu vitičarstih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba. Uslove nije potrbno navoditi unutar zagrada. Primer koji ilustruje upotrebu kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
+
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira upotrebu kontrolnih struktura, label={lst:control},  backgroundcolor=\color{background}]
+	a := [...]uint{1, 2, 3}
+	if len(a) > 1 {
+		for i,v := range a {	
+			fmt.Println(i,v) // indeks, vrednost
+		}
+	}
+	switch a[2] {
+    case 3:
+        fmt.Println("bigger than two")
+		fallthrough
+    case 2:
+        fmt.Println("bigger than one")
+    default:
+        fmt.Println("one")
+    }
+\end{lstlisting}
+\end{center}
+
+\section{Funkcije} \label{func}
+
+Funkcije u programskom jeziku Go, predstavljaju referentni tip podataka. Sintaksa za definisanje funkcije, prikazana je u listingu \ref{lst:funcDef}.
+
+\begin{center}
+\begin{lstlisting}[caption=Sintaksa za definisanje funckije, label={lst:funcDef},  backgroundcolor=\color{background}]
+func naziv(lista parametara) (lista rezultata) {
+	telo funkcije
 }
 \end{lstlisting}
 \end{center}
 
-\textbf{Mapa}
+ Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Varijadičke funkcije su funkcije sa promeljivim brojem argumenata i definišu se upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
 
-\section{Kontrole toka}
+Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
 
-\section{Funkcije i metodi} \label{metod}
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira rad sa funkcijama, label={lst:func},  backgroundcolor=\color{background}]
+func add(args ...int) int {
+	sum := 0
+	for _, v := range args {
+		sum += v
+	}
+	return sum
+}
+func calc(x, y int) (int, int) {
+	add := func() int {
+   		return x + y
+  	}
+	sub := func() int {
+   		return x - y
+  	}
+	return add(), sub()
+}	
+func power(x int) func(int)int {
+	return func(a int)int {
+		for i,res := 0,1 ; i<a ; i++ {
+			res *= x
+		}
+		return res
+	}
+}
+func main() {
+	fmt.Println(add(1,2,3))		// 6
+	fmt.Println(calc(1,2)) 		// 3, -1
+	fmt.Println(power(2)(4))	//16
+}
+\end{lstlisting}
+\end{center}
+
+\section{Metodi}  \label{metod}
+
+U programskom jeziku Go ne postoji pojam klase, ali je omogućeno definisanje metoda nad korisnički definisanim tipovima. Metod predstavlja običnu funkciju koja u sebi sadrži specijalni prijemnik (eng "receiver") za tip podataka nad kojim je metod definisan. Metod se definiše na isti način kao i funkcija, osim što se prijemnik navodi između ključne reči \texttt{func} i naziva metoda.
+
+Pozivanje metoda, postiže se navođenjem \texttt{.} i naziva metoda nakon promenljive za koju je potrebno pozvati metod. Ukoliko metod menja podatke promenljive nad kojom je pozvan, potrebno je koristiti prijemnik sa referencom. 
  
+Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira rad sa metodima, label={lst:metod},  backgroundcolor=\color{background}]
+type Point struct{ X, Y float64 }
+
+func (p Point) Distance(q Point) float64 {
+	return math.Sqrt((p.X-q.X)*(p.X-q.X)+(p.Y-q.Y)*(p.Y-q.Y))
+}
+
+func (p *Point) Translate(x, y float64) {
+	p.X += x
+	p.Y += y
+}
+
+func main() {
+	p1 := Point{0,0}
+	p2 := Point{1,1}
+
+	fmt.Println(p1.Distance(p2)) // 1.41421...
+	p2.Translate(5,2)
+	fmt.Println(p2)				// {6 3}
+}
+\end{lstlisting}
+\end{center}
+
+
 \section{Interfejsi}
+
+Interfejsi se koriste kao dodatno sredstvo abstrakcije i enkapsulacije podataka. Tip interfejs, definisan je kao skup potpisa metoda. Svaki interfejs se sastoji od vrednosti i konkretnog tipa. Vrednost tipa interfejs, može biti bilo koja vrednost čiji tip implentira zadate metode. Konkretni tipovi su svi tipovi podataka osim interfejsa.
+
+Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira rad sa interfejsima, label={lst:inter},  backgroundcolor=\color{background}]
+type geometry interface {
+    area() float64
+}
+
+type rect struct {width, height float64}
+type circle struct {radius float64}
+
+func (r rect) area() float64 {
+	return r.width * r.height
+}
+func (c circle) area() float64 {
+	return math.Pi * c.radius * c.radius
+}
+func measure(g geometry) {
+	fmt.Println(g, g.area(), g.perim())
+}
+
+func main(){
+	r := rect{width: 3, height: 4}	
+	c := circle{radius: 5}			
+	measure(r)	//{3 4} 12 
+  	measure(c)	//{5} 78.5398 
+}
+\end{lstlisting}
+\end{center}
+
+Predpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se predpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom predpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira predpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira predpostavljanje tipova kod interfejsa, label={lst:type},  backgroundcolor=\color{background}]
+	var i interface{} = "hello"
+
+	s := i.(string)
+	fmt.Println(s) 		// hello
+
+	s, ok := i.(string)
+	fmt.Println(s, ok) 	//hello true
+
+	f, ok := i.(float64)
+	fmt.Println(f, ok) 	//0 false
+\end{lstlisting}
+\end{center}
+
 
 \section{Refleksija}
 
 \section{Garbage collection}
 
-\section{Upravljanje greškama}
+\section{Upravljanje greškama} \label{error}
 
 \section{Testiranje}
 
@@ -263,7 +431,7 @@ func main() {
 
 
 % KONKURENTNO==============================================================================
-\chapter{Konkurentno programiranje u jeziku Go}
+\chapter{Konkurentno programiranje u jeziku Go} \label{conc}
 
 \section{Osnovni pojmovi konkurentnog programiranja}
 
@@ -1086,7 +1254,7 @@ func main() {
 \end{lstlisting}
 \end{center}
 
-\label{fileserver}Hendler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji definišu se restrikcije nad URL zahtevima za resurse i definiše se root direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava sa '/' to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. \texttt{DefaultServeMux} funkcioniše tako što dodaje '/' na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan \cite{http}. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
+\label{fileserver}Hendler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji definišu se restrikcije nad URL zahtevima za resurse i definiše se root direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava sa \texttt{/} to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. \texttt{DefaultServeMux} funkcioniše tako što dodaje \texttt{/} na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan \cite{http}. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
 
 \begin{center}
 \begin{lstlisting}[caption=Hendler za fajl sistem,label={lst:fileserver},  backgroundcolor=\color{background}]
@@ -1119,7 +1287,7 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 \end{lstlisting}
 \end{center}
 
-U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih vitičarstih zagrada. Primer šablona je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog šablona se pomoću \texttt{define} definiše naziv, a kraj šablona je potrebno naznačiti sa \texttt{end}. Omogućeno je iteriranje nad prosleđenim podacima, \texttt{if-else} naredbe i izvršavanje šablona unutar šablona. U ovom slučaju, iterira se nad mapom \texttt{Filters} koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju sa znakom '.', dok promenljive počinju sa znakom '\$' \cite{template}.
+U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih vitičarstih zagrada. Primer šablona je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog šablona se pomoću \texttt{define} definiše naziv, a kraj šablona je potrebno naznačiti sa \texttt{end}. Omogućeno je iteriranje nad prosleđenim podacima, \texttt{if-else} naredbe i izvršavanje šablona unutar šablona. U ovom slučaju, iterira se nad mapom \texttt{Filters} koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju znakom \texttt{.}, dok promenljive počinju znakom \texttt{\$} \cite{template}.
 
 \begin{center}
 \begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl2},  backgroundcolor=\color{background}]
