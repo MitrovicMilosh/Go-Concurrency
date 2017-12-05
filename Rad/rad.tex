@@ -401,10 +401,10 @@ func main(){
 \end{lstlisting}
 \end{center}
 
-Predpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se predpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom predpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira predpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
+Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se pretpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom pretpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira pretpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
 
 \begin{center}
-\begin{lstlisting}[caption=Primer koji demonstrira predpostavljanje tipova kod interfejsa, label={lst:type},  backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Primer koji demonstrira pretpostavljanje tipova kod interfejsa, label={lst:type},  backgroundcolor=\color{background}]
 	var i interface{} = "hello"
 
 	s := i.(string)
