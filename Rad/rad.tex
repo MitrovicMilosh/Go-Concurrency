@@ -167,7 +167,7 @@ Složenim tipovima podataka pripadaju \textbf{nizovi} i \textbf{strukture}. \tex
 Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima \texttt{==} i \texttt{!=} . Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
 \\
 
-\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i prestavlja jedno polje strukture. Definisanjem strukture se definiše novi tip podataka korišćenjem ključne reči \texttt{type} ispred definicije strukture. Poljima strukture se pristupa sa \texttt{.naziv\_polja} notacijom. 
+\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture se definiše novi tip podataka korišćenjem ključne reči \texttt{type} ispred definicije strukture. Poljima strukture se pristupa sa \texttt{.naziv\_polja} notacijom. 
 
 Ugnježdene strukture su dozvoljene, odnosno strukture koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
 
@@ -256,13 +256,17 @@ U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkuren
 
 \section{Kontrole toka}
 
-U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch} i \texttt{for}. Naredba \texttt{if} se ponaša na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if-else if-else} strukturu. 
+U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch}, \texttt{defer} i \texttt{for}. Naredba \texttt{if} se ponaša na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if, else if, else} strukturu. Pre uslova, moguće je navesti jednu naredbu koja je razdvojena sa \texttt{;} od uslova. 
 
 Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima korišćenejem \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, bez potrebe navođenja \texttt{break}. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
 
-Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
+Naredba \texttt{defer} odlaže izvršavanje navedene funkcije do trenutka završetka funkcije u kojoj se nalazi. Argumenti funkcije se određuju u trenutku navođenja \texttt{defer} naredbe, samo je  izvršavanje funkcije odloženo. Najčešća upotreba \texttt{defer} naredbe je za operacije koje se obavljaju u paru kao što je otvaranje i zatvaranje fajlova. Odmah nakon otvaranja fajla, moguće je \texttt{defer} naredbom pozvati funkciju za zatvaranje fajla, što olakšava programiranje i doprinosi čitljivijem kodu.
+
+Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. Za izlazak iz petlje, koristi se \texttt{break} naredba , a naredba \texttt{continue} za prelazak na sledeću iteraciju. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
 
 Sve kontrolne strukture zahtevaju upotrebu vitičarstih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba. Uslove nije potrbno navoditi unutar zagrada. Primer koji ilustruje upotrebu kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
+
+Osim navedenih kontrolni struktura, Go podržava i \texttt{go to} naredbe u kombinaciji sa labelama. Generalno, upotreba \texttt{go to} naredbi nije preporučena jer dovodi do loše strukture i nečitljivog koda.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira upotrebu kontrolnih struktura, label={lst:control},  backgroundcolor=\color{background}]
@@ -272,6 +276,7 @@ Sve kontrolne strukture zahtevaju upotrebu vitičarstih zagrada i u slučajevima
 			fmt.Println(i,v) // indeks, vrednost
 		}
 	}
+
 	switch a[2] {
     case 3:
         fmt.Println("bigger than two")
@@ -286,19 +291,12 @@ Sve kontrolne strukture zahtevaju upotrebu vitičarstih zagrada i u slučajevima
 
 \section{Funkcije} \label{func}
 
-Funkcije u programskom jeziku Go, predstavljaju referentni tip podataka. Sintaksa za definisanje funkcije, prikazana je u listingu \ref{lst:funcDef}.
-
+Funkcije u programskom jeziku Go, predstavljaju referentni tip podataka. Sintaksa za definisanje funkcije je:
 \begin{center}
-\begin{lstlisting}[caption=Sintaksa za definisanje funckije, label={lst:funcDef},  backgroundcolor=\color{background}]
-func naziv(lista parametara) (lista rezultata) {
-	telo funkcije
-}
-\end{lstlisting}
+\texttt{ func naziv(lista parametara) (lista rezultata) \{ telo funkcije \} } 
 \end{center}
 
- Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Varijadičke funkcije su funkcije sa promeljivim brojem argumenata i definišu se upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
-
-Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
+ Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Varijadičke funkcije su funkcije sa promenljivim brojem argumenata i definišu se upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa funkcijama, label={lst:func},  backgroundcolor=\color{background}]
@@ -310,22 +308,21 @@ func add(args ...int) int {
 	return sum
 }
 func calc(x, y int) (int, int) {
-	add := func() int {
-   		return x + y
-  	}
-	sub := func() int {
-   		return x - y
-  	}
+	add := func() int { return x + y }
+	sub := func() int { return x - y }
+
 	return add(), sub()
 }	
 func power(x int) func(int)int {
+	res := 1
 	return func(a int)int {
-		for i,res := 0,1 ; i<a ; i++ {
+		for i:=0; i<a; i++ {
 			res *= x
 		}
 		return res
 	}
 }
+
 func main() {
 	fmt.Println(add(1,2,3))		// 6
 	fmt.Println(calc(1,2)) 		// 3, -1
@@ -334,13 +331,15 @@ func main() {
 \end{lstlisting}
 \end{center}
 
+Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
+
+
+
 \section{Metodi}  \label{metod}
 
 U programskom jeziku Go ne postoji pojam klase, ali je omogućeno definisanje metoda nad korisnički definisanim tipovima. Metod predstavlja običnu funkciju koja u sebi sadrži specijalni prijemnik (eng "receiver") za tip podataka nad kojim je metod definisan. Metod se definiše na isti način kao i funkcija, osim što se prijemnik navodi između ključne reči \texttt{func} i naziva metoda.
 
 Pozivanje metoda, postiže se navođenjem \texttt{.} i naziva metoda nakon promenljive za koju je potrebno pozvati metod. Ukoliko metod menja podatke promenljive nad kojom je pozvan, potrebno je koristiti prijemnik sa referencom. 
- 
-Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa metodima, label={lst:metod},  backgroundcolor=\color{background}]
@@ -365,20 +364,18 @@ func main() {
 }
 \end{lstlisting}
 \end{center}
-
+ 
+Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
 
 \section{Interfejsi}
 
 Interfejsi se koriste kao dodatno sredstvo abstrakcije i enkapsulacije podataka. Tip interfejs, definisan je kao skup potpisa metoda. Svaki interfejs se sastoji od vrednosti i konkretnog tipa. Vrednost tipa interfejs, može biti bilo koja vrednost čiji tip implentira zadate metode. Konkretni tipovi su svi tipovi podataka osim interfejsa.
 
-Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
-
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa interfejsima, label={lst:inter},  backgroundcolor=\color{background}]
-type geometry interface {
-    area() float64
+type geometry interface { 
+	area() float64 
 }
-
 type rect struct {width, height float64}
 type circle struct {radius float64}
 
@@ -401,6 +398,8 @@ func main(){
 \end{lstlisting}
 \end{center}
 
+Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
+
 Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se pretpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom pretpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira pretpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
 
 \begin{center}
@@ -411,19 +410,88 @@ Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom ti
 	fmt.Println(s) 		// hello
 
 	s, ok := i.(string)
-	fmt.Println(s, ok) 	//hello true
+	fmt.Println(s, ok) 	// hello true
 
 	f, ok := i.(float64)
-	fmt.Println(f, ok) 	//0 false
+	fmt.Println(f, ok) 	// 0 false
 \end{lstlisting}
 \end{center}
 
 
 \section{Refleksija}
 
-\section{Garbage collection}
+U računarstvu, refleksija predstavlja sposobnost programa da izvrši ispitivanje svoje strukture i ponašanja u toku izvršavanja. Refleksija se može koristiti za ispitivanje tipova i promenljivih tokom izvršavanja, u zavisnosti od čega program može da preduzme odgovarajuće akcije. Go podržava refleksiju tipova koja je omogućena upotrebom paketa \texttt{reflect}.
+\\
+
+Unutar paketa, definisani su tipovi \texttt{Type} i \texttt{Value}, kao i funkcija \texttt{TypeOf} za dobijanje informacije o tipu promenljive, i funkcija \texttt{ValueOf} za dobijanje vrednosti promenljive. Funkcije kao argument prihvataju tip \texttt{interface\{\}}. 
+
+Za postavljanje vrednosti, postoje \texttt{Set} metodi za svaki tip podataka koji se pozivaju nad tipom \texttt{Value}, kao i metod \texttt{CanSet()} za proveru da li je moguće postaviti vrednost datoj promenljivi. Vrednost je moguće postaviti samo referentnim tipovima, odnosno promeniti vrednost na koju oni referišu. Set metodi se ne mogu pozivati nad promenljivom \texttt{Value} bez pripreme, već je nad njom prvo potrebno pozvati metod \texttt{Elem()} koji omogućava pristup vrednosti na koju promenljiva referiše.  
+
+Primer koji demonstrira osnovnu uporebu refleksije, prikazan je u listingu \ref{lst:ref}. Paket nudi još veliki broj drugih funkcija za refleksiju tipova i njihovu manipulaciju \cite{reflect}.
+
+Refleksija predstavlja jak alat ukoliko se upotrebljava na pravi način, ali trebalo bi je koristiti sa oprezom. Postoji nekoliko razloga za opreznost: mogućnost dolaska do greške u toku izvršavanja programa, koja bi mogla biti prijavljena tokom kompilacije, ukoliko program ne bi koristio refleksiju; smanjena čitljivost koda ukoliko program previše koristi refleksiju; sporije izvršavanje funkcija koje koriste refleksiju, naspram funkcija specijalizovanih za pojedinačne tipove \cite{bookGoProg}.
+
+ \begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira osnovnu upotrebu refleksije, label={lst:ref},  backgroundcolor=\color{background}]
+	var x float64 = 3.14
+	v := reflect.ValueOf(&x) 
+	
+	fmt.Println(v.Type())	// *float64
+	fmt.Println(v.CanSet())	// false
+	
+	v = v.Elem()
+	fmt.Println(v.CanSet())	// true
+	
+	v.SetFloat(3.15)
+	fmt.Println(x)			// 3.15
+\end{lstlisting}
+\end{center}
 
 \section{Upravljanje greškama} \label{error}
+
+Stanje greške u programskom jeziku Go, označava se \texttt{error} vrednostima. Tip \texttt{error} predstavlja ugrađeni interfejs koji zahteva implementiranje \texttt{Error} metoda koji kao rezultat vraća \texttt{string} sa informacijom o grešci. Ako neka funkcija kao rezultat vraća tip \texttt{error}, njegova vrednost će biti \texttt{nil} ukoliko nije došlo do greške. 
+
+Implementacijom \texttt{Error} metoda za neki tip, moguće je definisati novi tip greške. Ukoliko se upotrebljava već postojeći tip \texttt{error}, za definisanje poruke greške, koristi se funkcija \texttt{New} iz paketa \texttt{errors}. Primer koji demonstrira upravljanje greškama, prikazan je u listingu \ref{lst:error}.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer koji demonstrira upravljanje greškama, label={lst:error},  backgroundcolor=\color{background}]
+//definisanje novog tipa
+type MyError struct {
+	When time.Time
+	What string
+}
+func (e MyError) Error() string {
+	return fmt.Sprintf("%v: %v", e.When, e.What)
+}
+//funkcija koja koristi novi tip
+func divide1(a,b float64) (float64, error) {
+	if b == 0 {
+		return 0, &MyError{time.Now(),"division by zero"}
+	}else {
+		return a/b, nil
+	}
+}
+//funkcija koja koristi error tip
+func divide2(a,b float64) (float64, error) {
+	if b == 0 {
+		return 0, errors.New("Division by zero")
+	}else {
+		return a/b, nil
+	}
+}
+//provera greske u funkciji main
+func main() {
+	if v1, err := divide1(3.14,0); err != nil {
+		fmt.Println(err)				
+	}
+	if v2, err := divide2(3.14,0); err != nil {
+		fmt.Println(err)			
+	}
+}
+\end{lstlisting}
+\end{center}
+ 
+\section{Garbage collection}
 
 \section{Testiranje}
 
@@ -940,8 +1008,7 @@ ErathostenesSieve(n):
 
 Paralelizacija algoritma se postiže deljenjem opsega od 2 do n na jednake delove. Svaka nit/rutina dobija svoj deo opsega u okviru kojeg eliminiše brojeve koji nisu prosti. Za svaki prost broj je prvo potrebno odrediti njegov prvi umnožak unutar opsega. Iako svaka nit/rutina ima svoj opseg, ona mora da pristupa članovima niza drugih niti/rutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{n}$. To kao posledicu dovodi do mogućnosti da se u nekim slučajevima bespotrebno eliminišu umnošci brojeva koji nisu prosti ukoliko ih druga nit/rutina još uvek nije eliminisala. Problem je rešen tako što se proverava dodatni uslov prilikom eliminacije: da li je neka druga nit/rutina u međuvremenu označila da taj broj nije prost. Kodovi svih implementacija su dostupni na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/prime_sieve}}.
 \\
-\\
-\\
+
 
 
 \subsection{Go}
