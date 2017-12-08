@@ -70,9 +70,9 @@ U ovom poglavlju, opisane su karakteristike i osnovni koncepti programiranja jez
 
 Programski jezik Go je projekat koji razvija kompanija Google od 2007. godine. Postao je javno dostupan kao projekat otvorenog koda 2009. godine i u stalnom je razvoju. Cilj projekta je bio kreirati novi statički tipiziran jezik koji se kompilira, koji bi omogućavao jednostavno programiranje kao kod interpretiranih, dinamički tipizarnih programskih jezika. 
 
-Smatara se da pripada C familiji programskih jezika, ali pozajmljuje i adaptira ideje raznih drugih jezika, izbegavajući karakteristike koje dovode do komplikovanog i nepouzdanog koda. Iako nije objektno-orijentisan, Go podržava određene koncepte kao što su metodi i interfejsi koji pružaju feleksibilnu abstrakciju podataka. Omogućena je efikasna konkurentnost koja je ugrađena u sam jezik, kao i automatsko upravljanje memorijom, odnosno garbage collection \cite{bookGoProg}. 
+Smatara se da pripada C familiji programskih jezika, ali pozajmljuje i adaptira ideje raznih drugih jezika, izbegavajući karakteristike koje dovode do komplikovanog i nepouzdanog koda. Iako nije objektno-orijentisan, Go podržava određene koncepte kao što su metodi i interfejsi koji pružaju feleksibilnu abstrakciju podataka. Omogućena je efikasna konkurentnost koja je ugrađena u sam jezik, kao i automatsko upravljanje memorijom, odnosno sakupljanje smeća (eng. "garbage collection") \cite{bookGoProg}. 
 
-Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu različitih vrsta serverskih aplikacija, ali je pre svega jezik opšte namene pa se može koristiti za rešavanje svih vrsta problema. Ima primenu u raznim oblastima kao što su grafika, mobilne aplikacije, mašinsko učenje i mnoge druge. Osim kompanije Google, koristi se u velikom broju drugih kompanija širom sveta kao alternativa jezicima poput Python-a i Javascript-a, jer pruža znatno viši stepen efikasnosti i bezbednosti. Neke od većih kompanija koje koriste programski jezik Go, prikazane su na slici \ref{fig:comp} \cite{goCompany}.
+Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu različitih vrsta serverskih aplikacija, ali je pre svega jezik opšte namene pa se može koristiti za rešavanje svih vrsta problema. Ima primenu u raznim oblastima kao što su grafika, mobilne aplikacije, mašinsko učenje i još mnoge druge. Osim kompanije Google, koristi se u velikom broju drugih kompanija širom sveta kao alternativa jezicima poput Python-a i Javascript-a, jer pruža znatno viši stepen efikasnosti i bezbednosti. Neke od većih kompanija koje koriste programski jezik Go, prikazane su na slici \ref{fig:comp} \cite{goCompany}.
 
 \begin{figure}
 \begin{center}
@@ -81,6 +81,10 @@ Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu raz
 \caption{Neke od kompanija koje koriste programski jezik Go}
 \label{fig:comp}
 \end{figure}
+
+\section{Go alat}
+
+Alat \texttt{go} predstavalja osnovni alat za upravljanje Go kodovima. Neke od definisanih komande u okviru alata su: \texttt{build} za komiplaciju paketa, \texttt{run} za kompilaciju i izvršavanje Go programa, \texttt{test} za testiranje paketa, \texttt{get} za preuzimanje i instaliranje paketa, \texttt{fmt} za formatiranje koda paketa. Alat se upotrebljava \texttt{go komanda [argumenti]} notacijom.
 
 \section{Hello World}
 Hello World program u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje \texttt{;} , osim ako je potrebno navesti više naredbi u istoj liniji. 
@@ -102,16 +106,6 @@ func main() {
 Go je statički tipiziran jezik što znači da se promenljivoj dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. Pravilo koje važi za pakete važi i za promenljive, svaka deklarisana promenljiva mora biti upotrebljena.
 
 Primer prikazan u listingu \ref{lst:add} pokazuje definiciju i deklaraciju različitih vrsta promenljivih. Tip promenljive se ne mora ekspilicitno navesti, već se može zaključiti na osnovu dodele operatorom \texttt{:=} kada se promenljiva uvodi. Iako nije definisana, promenljiva \texttt{a} ima podrazumevanu vrednost koja je za numeričke tipove 0.
-\\
-
-Tipovi podataka koji su definisani u programskom jeziku Go, mogu se klasifikovati u četiri kategorije \cite{bookGoProg}: 
-\begin{enumerate}
-\item Bazični tipovi  (numerički, bulovski, teksturalni)
-\item Složeni tipovi (nizovi i strukture)
-\item Referentni tipovi (pokazivači, isečci, mape, kanali, funkcije)
-\item Interfejsni tipovi (interfejsi)
-\end{enumerate}
-
 
 \begin{center}
 \begin{lstlisting}[caption=Primer programa koji ilustruje rad sa promenljivama, label={lst:add},  backgroundcolor=\color{background}]
@@ -130,6 +124,16 @@ func main() {
 \end{lstlisting}
 \end{center}
 
+\newpage
+
+Tipovi podataka koji su definisani u programskom jeziku Go, mogu se klasifikovati u četiri kategorije \cite{bookGoProg}: 
+\begin{enumerate}
+\item Bazični tipovi  (numerički, bulovski, teksturalni)
+\item Složeni tipovi (nizovi i strukture)
+\item Referentni tipovi (pokazivači, isečci, mape, kanali, funkcije)
+\item Interfejsni tipovi (interfejsi)
+\end{enumerate}
+
 
 \subsection{Bazični tipovi podataka}
 
@@ -146,6 +150,7 @@ Bazični tipovi koji postoje u programskom jeziku Go, podeljeni su na:
 \end{itemize}
 
 Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija vrednost je unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
+\\
 
 Paket strings pruža veliki broj funkcija za manipulaciju tipom \texttt{string}. Iako u okviru paketa postoji funkcija \texttt{Compare}, Go dozvoljava poređenje stringova operatorom \texttt{==}, kao i ostalim relacionimi operatorima.
 \\
@@ -162,14 +167,21 @@ Operatori koji su definisani u Go-u, podeljeni su u sledeće kategorije:
 \end{itemize}
 
 \subsection{Složeni tipovi podataka}
-Složenim tipovima podataka pripadaju \textbf{nizovi} i \textbf{strukture}. \textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Za razliku od nizova, isečci, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom \texttt{[indeks]} notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti \texttt{...}, a dužina će biti zaključena na osnovu incijalizacije.
+U složene tipove podatka u programskom jeziku Go spadaju \textbf{nizovi} i \textbf{strukture}.
+\\
+
+\textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Za razliku od nizova, isečci, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom \texttt{[indeks]} notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti \texttt{...}, a dužina će biti zaključena na osnovu incijalizacije.
 
 Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima \texttt{==} i \texttt{!=} . Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
 \\
 
-\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture se definiše novi tip podataka korišćenjem ključne reči \texttt{type} ispred definicije strukture. Poljima strukture se pristupa sa \texttt{.naziv\_polja} notacijom. 
+\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture, definiše se novi tip podataka korišćenjem ključne reči \texttt{type} ispred same definicije strukture. Poljima strukture, pristupa se pomoću \texttt{.} i naziva polja. 
 
-Ugnježdene strukture su dozvoljene, odnosno strukture koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
+Ugnježdavanje struktura je dozvoljeno, odnosno definisanje struktura koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
+
+Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora \texttt{*} odnosno notacijom \texttt{(*naziv)[indeks]}. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti običnom \texttt{.} notacijom.
+
+\newpage
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa nizovima i strukturama, label={lst:arr_str},  backgroundcolor=\color{background}]
@@ -190,8 +202,6 @@ Ugnježdene strukture su dozvoljene, odnosno strukture koje sadrže druge strukt
 \end{lstlisting}
 \end{center}
 
-Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora \texttt{*} odnosno notacijom \texttt{(*naziv)[indeks]}. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti običnom \texttt{.} notacijom.
-
 \subsection{Referentni tipovi podataka}
 U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \textbf{mape}, \textbf{kanali} i \textbf{funkcije}. U ovom segementu, opisani su svi referentni tipovi podataka osim funkcija, kojima je posvećen segment \ref{func}, i kanala, koji su opisani u narednom poglavlju čija je tema konkurentnost, u segementu \ref{chanel}. 
 \\
@@ -199,11 +209,9 @@ U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \te
 \textbf{Pokazivač} referiše na vrednost neke promenljive koja se trenutno čuva u memoriji. Pokazivači kao vrednost čuvaju lokaciju promenljive u memoriji na koju referišu. Za dobijanje lokacije promenljive, koristi se operator \texttt{\&}. Za dereferenciranje pokazivača, odnosno dobijanje vrednosti na koju pokazivač referiše, koristi se operator \texttt{*}.
 \\
 
-\textbf{Isečak} (eng. "slice") u programskom jeziku Go, predstavlja fleksibilan pogled na elemente niza. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za trenuntan podatak o njegovoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
+\textbf{Isečak} (eng. "slice") u programskom jeziku Go, predstavlja fleksibilan pogled na elemente niza. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za podatak o njegovoj trenutnoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
 
-Definisanje isečka nad nizom se postiže korišćenjem \texttt{niz[od:do]} notacije pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je počtak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo \texttt{:}, isečak će sadržati sve elemente niza. 
-
-Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira elemente jednog isečka u drugi i kao rezultat vraća broj kopiranih elemenata. Maksimalan broj elemenata koji će biti kopiran, jednak je dužini kraćeg isečka. Dozvoljeno je da isečci pre kopiranja dele elemente. Funkcija \texttt{append}, koristi se za dodavanje elemenata isečku. Tokom rada, ukoliko ne postoji dovoljno mesta, funkcija može imati potrebu da realocira niz i zbog toga kao rezultat vraća ažuriranu referencu na isečak. Nakon poziva funkcije \texttt{append}, moguće je da isečci koji su delili elemente niza, pokazuju na različite nizove, što je i prikazano na slici \ref{fig:slice} \cite{bookGoProg}. Primer koji ilustruje rad sa isečcima, prikazan je u listingu \ref{lst:slice}
+Definisanje isečka nad nizom, postiže se korišćenjem \texttt{niz[od:do]} notacije, pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je početak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo \texttt{:} , isečak će sadržati sve elemente niza. 
 
 \begin{figure}
 \begin{center}
@@ -235,9 +243,12 @@ Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira element
 \end{lstlisting}
 \end{center}
 
-\textbf{Mapa} je referentni tip podataka koji referiše na heš tabelu. U tabeli se čuvaju parovi ključ - vrednost, pri čemu je vrednost svakog ključa jedinstvena. Svi ključevi su istog tipa i sve vrednosti su istog tipa. Jedini uslov je da se tip ključa može porediti operatorom \texttt{==}, dok vrednosti mogu biti proizvoljnog tipa, uključujući i druge mape. 
+Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira elemente jednog isečka u drugi i kao rezultat vraća broj kopiranih elemenata. Maksimalan broj elemenata koji će biti kopiran, jednak je dužini kraćeg isečka. Dozvoljeno je da isečci pre kopiranja dele elemente. Funkcija \texttt{append}, koristi se za dodavanje elemenata isečku. Tokom rada, ukoliko ne postoji dovoljno mesta, funkcija može imati potrebu da realocira niz i zbog toga kao rezultat vraća ažuriranu referencu na isečak. Nakon poziva funkcije \texttt{append}, moguće je da isečci koji su delili elemente niza, pokazuju na različite nizove, što je i prikazano na slici \ref{fig:slice} \cite{bookGoProg}. Primer koji ilustruje rad sa isečcima, prikazan je u listingu \ref{lst:slice}
+\\
 
-Funkcija \texttt{make} se koristi prilikom alociranja prostora za novu mapu. Upis u mapu, postiiže se \texttt{naziv[ključ] = vrednost} notacijom. Ugrađena funkcija \texttt{delete}, koristi se za brisanje parova iz mape. Kao parametre, funkcija ima naziv mape i ključ para koji se briše. Ukoliko ključ ne postoji, funkcija neće ništa uraditi. Dodeljivanje vrednosti promenljivoj na osnovu ključa iz mape, postiže se \texttt{v := naziv[ključ]} notacijom, pri čemu, ukoliko ključ ne postoji, vrednost v će biti postavljena na podrazumevanu. Moguće je izvršiti proveru da li je određeni ključ definisan u mapi, upotrebom \texttt{v, ok := naziv[ključ]} ili  \texttt{\_, ok := naziv[ključ]} notacije, gde je \texttt{ok} promenljiva tipa \texttt{bool}, koja je nosi informaciju da li ključ postoji ili ne. 
+\textbf{Mapa} je referentni tip podataka koji referiše na heš tabelu. U tabeli se čuvaju parovi ključ - vrednost, pri čemu je vrednost svakog ključa jedinstvena. Svi ključevi su istog tipa i sve vrednosti su istog tipa. Jedini uslov je da se tip ključa može porediti operatorom \texttt{==} , dok vrednosti mogu biti proizvoljnog tipa, uključujući i druge mape. 
+
+Funkcija \texttt{make} se koristi prilikom alociranja prostora za novu mapu. Upis u mapu, postiiže se \texttt{naziv[ključ] = vrednost} notacijom. Ugrađena funkcija \texttt{delete}, koristi se za brisanje parova iz mape. Kao parametre, funkcija ima naziv mape i ključ para koji se briše. Ukoliko ključ ne postoji, funkcija nema nikakav efekati. Dodeljivanje vrednosti promenljivoj na osnovu ključa iz mape, postiže se \texttt{v := naziv[ključ]} notacijom, pri čemu, ukoliko ključ ne postoji, vrednost v će biti postavljena na podrazumevanu. Moguće je izvršiti proveru da li je određeni ključ definisan u mapi, upotrebom \texttt{v, ok := naziv[ključ]} ili  \texttt{\_, ok := naziv[ključ]} notacije, gde je \texttt{ok} promenljiva tipa \texttt{bool}, koja je nosi informaciju da li ključ postoji ili ne. 
 
 U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkurentnog korišćenja, potrebno je koristiti odgovarajuće mere sigurnosti koje su opisane u poglavlju \ref{conc}. Primer koji demonstrira rad sa mapama, prikazan je u listingu \ref{lst:map}.
 
@@ -256,17 +267,11 @@ U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkuren
 
 \section{Kontrole toka}
 
-U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch}, \texttt{defer} i \texttt{for}. Naredba \texttt{if} se ponaša na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if, else if, else} strukturu. Pre uslova, moguće je navesti jednu naredbu koja je razdvojena sa \texttt{;} od uslova. 
+U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch}, \texttt{for} i \texttt{defer}. Naredba \texttt{if}, ponaša se na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if, else if, else} strukturu. Pre uslova, moguće je navesti jednu naredbu koja je razdvojena sa \texttt{;} od uslova. 
 
-Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima korišćenejem \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, bez potrebe navođenja \texttt{break}. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
+Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima upotrebom \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, u suprotnom izvršava se \texttt{default} slučaj. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
 
-Naredba \texttt{defer} odlaže izvršavanje navedene funkcije do trenutka završetka funkcije u kojoj se nalazi. Argumenti funkcije se određuju u trenutku navođenja \texttt{defer} naredbe, samo je  izvršavanje funkcije odloženo. Najčešća upotreba \texttt{defer} naredbe je za operacije koje se obavljaju u paru kao što je otvaranje i zatvaranje fajlova. Odmah nakon otvaranja fajla, moguće je \texttt{defer} naredbom pozvati funkciju za zatvaranje fajla, što olakšava programiranje i doprinosi čitljivijem kodu.
-
-Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. Za izlazak iz petlje, koristi se \texttt{break} naredba , a naredba \texttt{continue} za prelazak na sledeću iteraciju. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
-
-Sve kontrolne strukture zahtevaju upotrebu vitičarstih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba. Uslove nije potrbno navoditi unutar zagrada. Primer koji ilustruje upotrebu kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
-
-Osim navedenih kontrolni struktura, Go podržava i \texttt{go to} naredbe u kombinaciji sa labelama. Generalno, upotreba \texttt{go to} naredbi nije preporučena jer dovodi do loše strukture i nečitljivog koda.
+Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. Za izlazak iz petlje, koristi se \texttt{break} naredba, a naredba \texttt{continue} za prelazak na sledeću iteraciju. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira upotrebu kontrolnih struktura, label={lst:control},  backgroundcolor=\color{background}]
@@ -289,14 +294,28 @@ Osim navedenih kontrolni struktura, Go podržava i \texttt{go to} naredbe u komb
 \end{lstlisting}
 \end{center}
 
+Naredba \texttt{defer} odlaže izvršavanje navedene funkcije do trenutka završetka funkcije u kojoj se nalazi. Argumenti funkcije se određuju u trenutku navođenja \texttt{defer} naredbe, samo je izvršavanje funkcije odloženo. Naredba garantuje da će se funkcija izvršiti i u slučaju dolaska do greške. Najčešća upotreba \texttt{defer} naredbe je za operacije koje se obavljaju u paru, kao što je otvaranje i zatvaranje fajlova. Odmah nakon otvaranja fajla, moguće je \texttt{defer} naredbom pozvati funkciju za zatvaranje fajla, što osigurava da će se fajl zatvoriti i doprinosi čitljivijem kodu. 
+
+Naredbe \texttt{if} i \texttt{for} zahtevaju upotrebu vitičarstih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba, a uslove nije potrebno navoditi unutar zagrada. Primer koji ilustruje upotrebu standardnih kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
+
+Osim navedenih kontrolni struktura, Go podržava i \texttt{go to} naredbe u kombinaciji sa labelama. Generalno, upotreba \texttt{go to} naredbi nije preporučena jer dovodi do loše strukture i nečitljivog koda.
+
+
 \section{Funkcije} \label{func}
 
-Funkcije u programskom jeziku Go, predstavljaju referentni tip podataka. Sintaksa za definisanje funkcije je:
+Funkcije u programskom jeziku Go, predstavljaju referentni tip podataka. Sintaksa za definisanje funkcije, prikazana je u listingu \ref{lst:funcDef}.
+
 \begin{center}
-\texttt{ func naziv(lista parametara) (lista rezultata) \{ telo funkcije \} } 
+\begin{lstlisting}[caption=Sintaksa za definisanje funkcije, label={lst:funcDef},  backgroundcolor=\color{background}]
+func naziv(lista parametara) (lista rezultata) {
+	telo funkcije 
+} 
+\end{lstlisting}
 \end{center}
 
- Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Varijadičke funkcije su funkcije sa promenljivim brojem argumenata i definišu se upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
+ Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Postoje i varijadičke funkcije, odnosno funkcije sa promenljivim brojem argumenata. Varijadičke funkcije se definišu upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
+
+Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa funkcijama, label={lst:func},  backgroundcolor=\color{background}]
@@ -331,15 +350,13 @@ func main() {
 \end{lstlisting}
 \end{center}
 
-Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
-
-
-
 \section{Metodi}  \label{metod}
 
 U programskom jeziku Go ne postoji pojam klase, ali je omogućeno definisanje metoda nad korisnički definisanim tipovima. Metod predstavlja običnu funkciju koja u sebi sadrži specijalni prijemnik (eng "receiver") za tip podataka nad kojim je metod definisan. Metod se definiše na isti način kao i funkcija, osim što se prijemnik navodi između ključne reči \texttt{func} i naziva metoda.
 
 Pozivanje metoda, postiže se navođenjem \texttt{.} i naziva metoda nakon promenljive za koju je potrebno pozvati metod. Ukoliko metod menja podatke promenljive nad kojom je pozvan, potrebno je koristiti prijemnik sa referencom. 
+ 
+Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa metodima, label={lst:metod},  backgroundcolor=\color{background}]
@@ -364,12 +381,12 @@ func main() {
 }
 \end{lstlisting}
 \end{center}
- 
-Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
 
 \section{Interfejsi}
 
 Interfejsi se koriste kao dodatno sredstvo abstrakcije i enkapsulacije podataka. Tip interfejs, definisan je kao skup potpisa metoda. Svaki interfejs se sastoji od vrednosti i konkretnog tipa. Vrednost tipa interfejs, može biti bilo koja vrednost čiji tip implentira zadate metode. Konkretni tipovi su svi tipovi podataka osim interfejsa.
+
+Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa interfejsima, label={lst:inter},  backgroundcolor=\color{background}]
@@ -398,8 +415,6 @@ func main(){
 \end{lstlisting}
 \end{center}
 
-Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
-
 Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se pretpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom pretpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira pretpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
 
 \begin{center}
@@ -420,16 +435,15 @@ Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom ti
 
 \section{Refleksija}
 
-U računarstvu, refleksija predstavlja sposobnost programa da izvrši ispitivanje svoje strukture i ponašanja u toku izvršavanja. Refleksija se može koristiti za ispitivanje tipova i promenljivih tokom izvršavanja, u zavisnosti od čega program može da preduzme odgovarajuće akcije. Go podržava refleksiju tipova koja je omogućena upotrebom paketa \texttt{reflect}.
-\\
+U računarstvu, refleksija predstavlja sposobnost programa da izvrši ispitivanje svoje strukture i ponašanja u toku izvršavanja. Refleksija se može koristiti za ispitivanje tipova promenljivih tokom izvršavanja, u zavisnosti od čega program može da preduzme odgovarajuće akcije. Go podržava refleksiju tipova koja je omogućena upotrebom paketa \texttt{reflect}.
 
-Unutar paketa, definisani su tipovi \texttt{Type} i \texttt{Value}, kao i funkcija \texttt{TypeOf} za dobijanje informacije o tipu promenljive, i funkcija \texttt{ValueOf} za dobijanje vrednosti promenljive. Funkcije kao argument prihvataju tip \texttt{interface\{\}}. 
+Unutar paketa, definisani su tipovi \texttt{Type} i \texttt{Value}, funkcija \texttt{TypeOf} za dobijanje informacije o tipu promenljive i funkcija \texttt{ValueOf} za dobijanje vrednosti promenljive. Funkcije kao argument prihvataju tip \texttt{interface\{\}}. 
 
 Za postavljanje vrednosti, postoje \texttt{Set} metodi za svaki tip podataka koji se pozivaju nad tipom \texttt{Value}, kao i metod \texttt{CanSet()} za proveru da li je moguće postaviti vrednost datoj promenljivi. Vrednost je moguće postaviti samo referentnim tipovima, odnosno promeniti vrednost na koju oni referišu. Set metodi se ne mogu pozivati nad promenljivom \texttt{Value} bez pripreme, već je nad njom prvo potrebno pozvati metod \texttt{Elem()} koji omogućava pristup vrednosti na koju promenljiva referiše.  
 
 Primer koji demonstrira osnovnu uporebu refleksije, prikazan je u listingu \ref{lst:ref}. Paket nudi još veliki broj drugih funkcija za refleksiju tipova i njihovu manipulaciju \cite{reflect}.
 
-Refleksija predstavlja jak alat ukoliko se upotrebljava na pravi način, ali trebalo bi je koristiti sa oprezom. Postoji nekoliko razloga za opreznost: mogućnost dolaska do greške u toku izvršavanja programa, koja bi mogla biti prijavljena tokom kompilacije, ukoliko program ne bi koristio refleksiju; smanjena čitljivost koda ukoliko program previše koristi refleksiju; sporije izvršavanje funkcija koje koriste refleksiju, naspram funkcija specijalizovanih za pojedinačne tipove \cite{bookGoProg}.
+Refleksija predstavlja jak alat ukoliko se upotrebljava na pravi način, ali trebalo bi je koristiti sa oprezom. Postoji nekoliko razloga za opreznost: mogućnost dolaska do greške u toku izvršavanja programa koja bi mogla biti prijavljena tokom kompilacije ukoliko program ne bi koristio refleksiju; smanjena čitljivost koda ukoliko program previše koristi refleksiju; sporije izvršavanje funkcija koje koriste refleksiju, naspram funkcija specijalizovanih za pojedinačne tipove \cite{bookGoProg}.
 
  \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira osnovnu upotrebu refleksije, label={lst:ref},  backgroundcolor=\color{background}]
@@ -451,7 +465,11 @@ Refleksija predstavlja jak alat ukoliko se upotrebljava na pravi način, ali tre
 
 Stanje greške u programskom jeziku Go, označava se \texttt{error} vrednostima. Tip \texttt{error} predstavlja ugrađeni interfejs koji zahteva implementiranje \texttt{Error} metoda koji kao rezultat vraća \texttt{string} sa informacijom o grešci. Ako neka funkcija kao rezultat vraća tip \texttt{error}, njegova vrednost će biti \texttt{nil} ukoliko nije došlo do greške. 
 
-Implementacijom \texttt{Error} metoda za neki tip, moguće je definisati novi tip greške. Ukoliko se upotrebljava već postojeći tip \texttt{error}, za definisanje poruke greške, koristi se funkcija \texttt{New} iz paketa \texttt{errors}. Primer koji demonstrira upravljanje greškama, prikazan je u listingu \ref{lst:error}.
+Implementacijom \texttt{Error} metoda za neki tip, moguće je definisati novi tip greške. Ukoliko se upotrebljava već postojeći tip \texttt{error}, za definisanje poruke greške koristi se funkcija \texttt{New} iz paketa \texttt{errors}. Primer koji demonstrira upravljanje greškama, prikazan je u listingu \ref{lst:error}.
+
+Na ovaj način omogućeno je elegantno upravljanje greškama. Funkcija \texttt{panic} je ugrađena funkcija koja se koristi za prekidanje toka izvršavanja u slučaju ozbiljnijih grešaka i ne predviđenih situacija. Ukoliko funkcija F pozove funkciju \texttt{panic}, njeno izvršavanje se prekida, a zatim se izvršavaju \texttt{defer} pozivi funkcija nakon čega se funkcija F vraća svom pozivaocu. Tada se za pozivaoca, funkcija F ponaša kao poziv funkcije \texttt{panic} i proces se ponavlja dokle god sve funkcije u tekućoj gorutini ne prestanu sa radom i dok program ne pukne. Ugrađene funkcije obično pozivaju \texttt{panic} ukoliko dođe do neke nepredviđene greške ili situacije koja se nije mogla otkriti tokom faze kompilacije, ali moguće je pozvati funkciju i manuelno. 
+
+Pored funkcije \texttt{panic}, postoji i ugrađena funkcija \texttt{recover} koji služi za preuzimanje kontrole gorutine koje je u stanju \texttt{panic}. Funkciju \texttt{recover}, ima jedino smisla koristiti unutar \texttt{defer} nardbe. Ukoliko je tekuća gorutina u stanju \texttt{panic}, \texttt{recover} funkcija će preuzeti vrednost koju je dobila funkcija \texttt{panic} i nastaviti normalno izvršavanje programa.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira upravljanje greškama, label={lst:error},  backgroundcolor=\color{background}]
@@ -491,11 +509,70 @@ func main() {
 \end{lstlisting}
 \end{center}
  
-\section{Garbage collection}
+\section{Sakupljanje smeća}
+
+Programski jezik Go ima automatsko upravljanje memorijom odnosno sakupljanje smeća (eng. "garbage collection"). Sakupljač skenira memoriju, pronalazi objekte na koje više ne postoji ni jedna referenca i nakon toga ih briše i oslobađa memoriju. Upotrebom paketa \texttt{runtime}, sakupljač se može eksplicitno pozvati korišćenjem \texttt{GC()} funkcije. 
+
+Od verzije Go 1.5, sakupljač smeća\cite{garbage} je kreiran da bude konkurentni, trobojni, označi-počisti (eng. "mark-sweep") sakupljač. Kod trobojnih sakupljača, svaki objekat je bele, sive ili crne boje i hip se posmatra kao jedan povezani graf. Na početku ciklusa, svi objekti su beli. Sakuplač prvo posećuje sve korene grafa koji predstavljaju objekte kojima se može pristupiti direktno iz aplikacije, kao što su globalne promenljive i promenljive na steku, koje njih boji u sivo. Nakon toga, skaupljač bira neki od sivih objekata, boji ga u crno i proverava da li poseduje pokazivače ka drugim objektima. Ukoliko pronađe pokazivač ka belom objektu, označava ga sivom bojom. Proces se ponavlja dokle god postoje sivi objekti. Na kraju, belom bojom su označeni objekti do kojih nije moguće doći, odnosno objekte na koje niko ne referiše.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{tricolor.png}
+\end{center}
+\caption{Prikaz označavanja objekata kod trobojnog algoritma}
+\label{fig:tricolor}
+\end{figure}
+
+Čitav ovaj proces, izvršava se konkurentno sa aplikacijom, koja se još naziva i mutator jer menja pokazivače dok je sakupljač aktivan. Mutator ne sme da narušava pravilo da nijedan crni objekat ne pokazuje na beli, kako sakupljač ne bi izgubio evidenciju objekata koji su ubačeni u deo hipa koji je već posetio. Za očuvanje ovog pravila, zadužena je barijera za pisanje (eng. "write barrier") koja predstavlja funkciju koja se aktivira prilikom promene pokazivača na hipu. Barijera označava beli objekat kao sivi ukoliko u tom trenutku postoji neki pokazivač koji pokazuje na njega, čime se osigurava da će ga pre ili kasnije sakupljač obraditi, odnosno proveriti da li poseduje pokazivače ka drugim objektima. Šematski prikaz trobojnog algoritma, prikazan je na slici \ref{fig:tricolor}.
+
+Sakupljač obavlja što veći deo posla konkurentno, međutim potrebno je na kratko da zaustavi sve (eng "stop the world") kako bi proverio potencijalne izvore sivih objekata. Pronalaženje pravog trenutka za zaustavljanje i njegovo samo trajanje, poboljšava se svakom novom distribucijom jezika Go. Od verzije Go 1.8, pauze uobičajeno traju manje od 100 mikrosekundi, a često se dešava da je njihovo trajanje samo 10 mikrosekundi, što je značajno unapređenje od verzije Go 1.5 gde su pauze trajale nekoliko milisekundi.
 
 \section{Testiranje}
 
+Programski jezik Go ima ugrađenu podršku za automatsko testiranje paketa. Testiranje se izvršava pomoću \texttt{go test} alata i \texttt{testing} paketa. Alat se koristi za testiranje funkcija i kao rezultat daje vrednosti \texttt{PASS} ili \texttt{FAIL}. Benčmark funkcije za testiranje performansi su takođe podržane. Za alat veliki broj flegova koji omogućava različite opcije izvršavanja testova kao što su broj ponavlja benčmark testova ili broj korišćenih procesora prilikom testiranja. Testovi se izdvajaju u poseban test fajl. 
+
+Funkcije za testiranje u nazvu imaju prefiks \texttt{Test}, a zatim naziv funkcije koju testiraju. Kao argument, funkcije imaju parametar \texttt{T} koji se koristi za obaveštavanje o neuspešnim testovima i logovanje dodatnih informacija. Benčmark funkcije imaju prefiks \texttt{Benchmark}, a kao argument imaju parametar \texttt{B} koji poseduje veliki broj istih metoda kao i parametar \texttt{T}, sa dodatnim stavkama koje su potrebne za merenje performansi kao što je polje \texttt{N} koje označava broj ponavalja operacije koja se testira.
+
+Alat \texttt{go test} takođe podržava i funkcije primere (eng. "example functions") čija je primarna uloga dokumentacija koda. Funkcije primeri imaju prefiks  \texttt{Example}, a kao argument nemaju nikakve parametre i ne vraćaju nikakav rezultat. Alat prevodi i izvršava ove funkcije, a ukoliko imaju neki ispis, on se ispisuje na standardnom izlazu. Pod komentarom koji počinje sa \texttt{Output:} , moguće je navesti ispis funkcije koji će biti upoređen sa ispisom funkcije na standardnom izlazu. Primer funkcija za testiranje, prikazan je u listingu \ref{lst:test}.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer različitih tipova funkcija za testiranje, label={lst:test},  backgroundcolor=\color{background}]
+// funkcija koja se testira
+func Sum(x int, y int) int {  
+	return x + y
+}
+// funkcija za testiranje
+func TestSum(t *testing.T) {  
+	total := Sum(1, 2)
+	if total != 3 {
+		t.Errorf("Sum was incorrect, got: %d, want: %d.", total, 3)
+	}
+}
+// benchmark funkcija
+func BenchmarkSum(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Sum(2,2)
+	}
+}
+// example funkcija
+func ExampleSum() {
+	fmt.Println(Sum(5,0))
+	fmt.Println(Sum(1,3))
+	// Output:
+	// 5
+	// 4
+}
+
+\end{lstlisting}
+\end{center}
+
 \section{Paketi}
+
+U okviru same distribucije programskog jezika Go, postoji veliki broj paketa standardne biblioteke koji obezbeđuju različite usluge. Neki od osnovnih paketa su upotrebljeni u primerima: \texttt{fmt} za formatirani ulaz/izlaz; \texttt{strings} za rad sa stringovima; \texttt{math} sa implementacijama matematičkih funkcija. Još jedan paket koji se često upotrebljava je \texttt{os} paket koji predstavlja interfejs ka operativnom sistemu i omogućava funkcionalnosti kao što su rad sa fajl sistemom, pristup argumentima komandne linije i pokretanje procesa.
+
+U standardnoj biblioteci, takođe postoje paketi za rad sa SQL bazama podataka, kriptografskim funkcijama, kompresiju podataka, rad sa slikama,  podršku za mrežno programiranje i još mnogi drugi. Pored paketa standardne biblioteke, postoje dodatni i prošireni paketi u okviru Go projekta koji imaju labavije uslove kompatibilnosti Go verzija. Ovde se mogu pronaći paketi za razvoj aplikacija za mobilne platforme, eksperimentalni debager, prošireni kriptografksi i mrežni paketi. 
+
+Paketi van distribucije samog jezika, mogu se preuzeti korišćenjem \texttt{go get} komande i navođenja repozitorijuma u kome se paket nalazi. Na web sajtu \url{https://godoc.org/} mogu se naći paketi i njihove dokumentacije koje razvijaju članovi Go zajednice koja vremenom postaje sve veća. Paketi su odobreni od strane Go projekta i mogu se naći paketi koji obezbeđuju najrazličitije alate za programiranje kao i API-je mnogih postojećih servisa.
 
 
 % KONKURENTNO==============================================================================
@@ -559,7 +636,7 @@ U ovom poglavlju su izloženi primeri konkurentnih Go programa i poređenje impl
 \label{gil} GIL (Global Iinterpreter Lock) is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once.
 
 \section{Poređenje na primerima jednostavnih algoritama}
-Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija k\^{o}da. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. 
+Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija k\^{o}da. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. Verzija jezika korišćena za Go primere je 1.8.
 
 
 
@@ -1261,7 +1338,7 @@ Kao primer upotrebe programskog jezika Go, razvijena je serverska aplikacija\ ko
 
 \section{Serverska aplikacija}
 
-Razvijena serverska aplikacija se bavi primenom različitih filtera na slikama. Omogućava primenu postojećih predefinisanih filtera kao i kreiranje sopstvenog, kombinovanjem različitih ponuđenih filtera i unošenjem željenih vrednosti za pojedine karakteristike. Slika koje se obrađuje se može upload-ovati sa računara ili se može proslediti njen URL. Svi filteri se primenjuju paralelno nakon čega se mogu videti pojedinačni rezultati obrade koji su dostupni za preuzimanje. Kompletan kod aplikacije je dostupan na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/blob/master/server/server.go}}. Grafički interfejs aplikacije je prikazan na slici \ref{fig:interface}.
+Razvijena serverska aplikacija se bavi primenom različitih filtera na slikama. Omogućava primenu postojećih predefinisanih filtera kao i kreiranje sopstvenog, kombinovanjem različitih ponuđenih filtera i unošenjem željenih vrednosti za pojedine karakteristike. Slika koje se obrađuje se može upload-ovati sa računara ili se može proslediti njen URL. Svi filteri se primenjuju paralelno nakon čega se mogu videti pojedinačni rezultati obrade koji su dostupni za preuzimanje. Kompletan kod aplikacije je dostupan na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/blob/master/server/server.go}}. Za razvoj, korišćena je Go 1.8 verzija programskog jezika. Grafički interfejs aplikacije je prikazan na slici \ref{fig:interface}.
 
 \begin{figure}
 \begin{center}
