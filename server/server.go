@@ -187,56 +187,46 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ImageHandler(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	done := false
-	//for loop if the server is busy
-	for ;; {
-		select {
-		case semaphore <- struct{}{}:
 
-			defer func() { <-semaphore }()
+	select {
+	case semaphore <- struct{}{}:
 
-			var f_info file_info
-			p := processor{w,r}
+		defer func() { <-semaphore }()
 
-			r.Body = http.MaxBytesReader(w, r.Body, safety_max_file_size)
-			if !p.open_file(&f_info) {return}
+		var f_info file_info
+		p := processor{w,r}
 
-			if f_info.Url_file != nil {
-				defer f_info.Url_file.Close()
-			}else if f_info.Source_file != nil {
-				defer f_info.Source_file.Close()
-			}
+		r.Body = http.MaxBytesReader(w, r.Body, safety_max_file_size)
+		if !p.open_file(&f_info) {return}
 
-			if !p.check_file_size(f_info.File_size){return}
-
-			dir_path := create_user_directory()
-			extension, original := create_and_copy_file(dir_path,f_info)
-			defer original.Close()
-
-			if !p.check_file_type(dir_path, original) {return}
-
-			img := decode_image(extension, original)
-			p.rotate(&img)
-
-			custom := p.create_custom_filter()
-			img_paths := apply_filters(&img, custom, dir_path, extension)
-
-			data := tmpl_data{Filters : img_paths}
-			tmpl, _ := template.ParseFiles("results.html")
-			tmpl.ExecuteTemplate(w, "results", data)
-
-			start_cleaner_goroutine(dir_path)
-			done = true
-
-		default:
-			if time.Since(start) > timeout {
-				ErrorHandler(w,"Server too busy, try again later... ")
-				done = true
-			}
+		if f_info.Url_file != nil {
+			defer f_info.Url_file.Close()
+		}else if f_info.Source_file != nil {
+			defer f_info.Source_file.Close()
 		}
 
-		if done { break }
+		if !p.check_file_size(f_info.File_size){return}
+
+		dir_path := create_user_directory()
+		extension, original := create_and_copy_file(dir_path,f_info)
+		defer original.Close()
+
+		if !p.check_file_type(dir_path, original) {return}
+
+		img := decode_image(extension, original)
+		p.rotate(&img)
+
+		custom := p.create_custom_filter()
+		img_paths := apply_filters(&img, custom, dir_path, extension)
+
+		data := tmpl_data{Filters : img_paths}
+		tmpl, _ := template.ParseFiles("results.html")
+		tmpl.ExecuteTemplate(w, "results", data)
+
+		start_cleaner_goroutine(dir_path)
+
+	case <- time.After(timeout):
+		ErrorHandler(w,"Server too busy, try again later... ")
 	}
 }
 
