@@ -35,17 +35,22 @@
 
 \autor{Miloš Mitrović}
 \naslov{Konkurentnost u programskom jeziku Go}
-\godina{2017}
+\godina{2018}
 \mentor{dr Milena \textsc{Vujošević Janičić}\\ Univerzitet u Beogradu, Matematički fakultet}
 \komisijaA{dr Vesna \textsc{Marinković}\\  Univerzitet u Beogradu, Matematički fakultet}
 \komisijaB{dr Milan \textsc{Banković}\\  Univerzitet u Beogradu, Matematički fakultet}
 
 
 \apstr{
-text
+Situacija u računarstvu u današnje vreme višejezgarnih procesora, mrežnih sistema i velikih serverskih projekata koji se mogu sastojati od nekoliko desetina miliona linija koda, značajno se razlikuje od sredine u kojoj su kreirani jezici kao što su C, C++ i Python. Programski jezik Go je upravo dizajniran sa ciljem postizanja maksimalne produktivnosti u ovakvoj sredini, na takav način da programeru maksimalno olakša sam proces razvoja softvera.
+
+Go je statički tipizirani programski jezik koji se kompilira, sa jednostavnom sintaksom koja omogućava razvoj kvalitetnog softvera sa malim brojem linija koda. Jedna od glavnih osobina koje Go čini posebnim je njegova konkurentnost koja je ugrađena u sam jezik i na intuitivan način obezbeđuje programeru pisanje memorijski i vremenski efikasnih programa sa veoma čitljivim kodom.
+
+Rad opisuje karakteristike jezika Go, posebno istražuje njegovu konkurentnost i daje rezultate uporednih testova konkurentnog izvršavanja implementacija izabranih algoritima u jezicima Go, C, C++ i Python. Go predstavlja jezik opšte namene, ali zbog svoje dobro realizovane konkurentnosti, pogodan je za razvoj serverskih aplikacija, pa je iz tog razloga kao primer upotrebe razvijena serverska aplikacija koja demonstrira način na koji se konkurentnost može iskoristiti, kao i pojedine druge aspekte programskog jezika.
 }
 
-\kljucnereci{programski jezik Go, konkurentno programiranje}
+
+\kljucnereci{programski jezik Go, konkurentno programiranje, serverska aplikacija}
 
 \begin{document}
 
@@ -55,39 +60,31 @@ text
 \posveta{Mojoj sestri Ivoni}
 \apstrakt
 \tableofcontents*
-
 \mainmatter
 
 \chapter{Uvod}
+
+Programski jezik Go je projekat koji razvija kompanija Google od 2007. godine. Postao je javno dostupan kao projekat otvorenog koda 2009. godine i u stalnom je razvoju. Cilj projekta je bio kreirati novi statički tipiziran jezik koji se kompilira, koji bi omogućavao jednostavno programiranje kao kod interpretiranih, dinamički tipizarnih programskih jezika. 
+
+Smatara se da Go pripada C familiji programskih jezika, ali pozajmljuje i adaptira ideje raznih drugih jezika, izbegavajući karakteristike koje dovode do komplikovanog i nepouzdanog koda. Iako nije objektno-orijentisan, Go podržava određene koncepte kao što su metodi i interfejsi koji pružaju feleksibilnu apstrakciju podataka. Go omogućava efikasnu konkurentnost koja je ugrađena u sam jezik, kao i automatsko upravljanje memorijom, odnosno sakupljanje smeća. 
+
+Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu različitih vrsta serverskih aplikacija, ali je pre svega jezik opšte namene pa se može koristiti za rešavanje svih vrsta problema. Ima primenu u raznim oblastima kao što su grafika, mobilne aplikacije, mašinsko učenje i još mnoge druge. Osim kompanije Google, koristi se u velikom broju drugih kompanija kao alternativa jezicima poput Python-a i Javascript-a, jer pruža znatno viši stepen efikasnosti i bezbednosti.
+
+U radu su istražene i opisane karakteristike programskog jezika Go (glava 2), sa akcentom na njegove mogućnosti za konkurentno programiranje (glava 3). Implementirana su konkurentna rešenja izabranih algoritama u programskim jezicima Go, C, C++, Python, i urađena je uporedna analiza vremenskih i memorijskih zahteva u  zavisnosti od dimenzije problema i broja jezgara na kojima se softver izvršava (glava 4). Kao primer upotrebe, razvijena je serverska aplikacija koja demonstrira korišćenje konkurentnosti kao i drugih aspekata jezika Go (glava 5).
 
 % GO OPIS==============================================================================
 
 \chapter{Karakteristike programskog jezika Go}
 
-U ovom poglavlju, opisane su karakteristike i osnovni koncepti programiranja jezika Go.  Konkurentnost jezika je detaljnije opisana i njoj je posvećeno naredno poglavlje.
-
-\section{Projekat Go}
-
-Programski jezik Go je projekat koji razvija kompanija Google od 2007. godine. Postao je javno dostupan kao projekat otvorenog koda 2009. godine i u stalnom je razvoju. Cilj projekta je bio kreirati novi statički tipiziran jezik koji se kompilira, koji bi omogućavao jednostavno programiranje kao kod interpretiranih, dinamički tipizarnih programskih jezika. 
-
-Smatara se da pripada C familiji programskih jezika, ali pozajmljuje i adaptira ideje raznih drugih jezika, izbegavajući karakteristike koje dovode do komplikovanog i nepouzdanog koda. Iako nije objektno-orijentisan, Go podržava određene koncepte kao što su metodi i interfejsi koji pružaju feleksibilnu abstrakciju podataka. Omogućena je efikasna konkurentnost koja je ugrađena u sam jezik, kao i automatsko upravljanje memorijom, odnosno sakupljanje smeća (eng. "garbage collection") \cite{bookGoProg}. 
-
-Zbog svojih osobina kao što je konkurentnost, Go je posebno dobar za izradu različitih vrsta serverskih aplikacija, ali je pre svega jezik opšte namene pa se može koristiti za rešavanje svih vrsta problema. Ima primenu u raznim oblastima kao što su grafika, mobilne aplikacije, mašinsko učenje i još mnoge druge. Osim kompanije Google, koristi se u velikom broju drugih kompanija širom sveta kao alternativa jezicima poput Python-a i Javascript-a, jer pruža znatno viši stepen efikasnosti i bezbednosti. Neke od većih kompanija koje koriste programski jezik Go, prikazane su na slici \ref{fig:comp} \cite{goCompany}.
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=2]{companies.png}
-\end{center}
-\caption{Neke od kompanija koje koriste programski jezik Go}
-\label{fig:comp}
-\end{figure}
+U ovoj glavi, opisane su karakteristike i osnovni koncepti programiranja jezika Go.  Konkurentnost jezika je detaljnije opisana i njoj je posvećena glava \ref{conc}.
 
 \section{Go alat}
 
-Alat \texttt{go} predstavalja osnovni alat za upravljanje Go kodovima. Neke od definisanih komande u okviru alata su: \texttt{build} za komiplaciju paketa, \texttt{run} za kompilaciju i izvršavanje Go programa, \texttt{test} za testiranje paketa, \texttt{get} za preuzimanje i instaliranje paketa, \texttt{fmt} za formatiranje koda paketa. Alat se upotrebljava \texttt{go komanda [argumenti]} notacijom.
+Alat \texttt{go} predstavalja osnovni alat za upravljanje Go kodovima. Neke od definisanih komande u okviru alata su: \texttt{build} za kompilaciju paketa, \texttt{run} za kompilaciju i izvršavanje Go programa, \texttt{test} za testiranje paketa, \texttt{get} za preuzimanje i instaliranje paketa, \texttt{fmt} za formatiranje koda paketa. Alat se upotrebljava \texttt{go komanda [argumenti]} notacijom.
 
-\section{Hello World}
-Hello World program u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje \texttt{;} , osim ako je potrebno navesti više naredbi u istoj liniji. 
+\section{Početni primer}
+
+Početni primer \textit{Hello World} u jeziku Go, prikazan je u listingu \ref{lst:hello}. Na početku programa navodi se naziv paketa. Svaki paket koji sadrži \texttt{main} funkciju, mora nositi naziv \texttt{main}. Sa \texttt{import} naredbom, navode se nazivi svih paketa koji se koriste u programu. Go ne dozvoljava importovanje suvišnih paketa, već se mogu navesti samo paketi koji se upotrebljavaju u programu. Ukoliko se navede paket koji se ne koristi, biće prijavljena greška tokom kompilacije. Nakon svake naredbe, nije obavezno navođenje znaka \texttt{;} , osim ako je potrebno navesti više naredbi u istoj liniji. 
 
 \begin{center}
 \begin{lstlisting}[caption=Hello World program u jeziku Go,label={lst:hello},  backgroundcolor=\color{background}]
@@ -103,7 +100,7 @@ func main() {
 
 \section{Tipovi podataka}
 
-Go je statički tipiziran jezik što znači da se promenljivoj dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova već se konverzija mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. Pravilo koje važi za pakete važi i za promenljive, svaka deklarisana promenljiva mora biti upotrebljena.
+Go je statički tipiziran jezik što znači da se promenljivoj dodeljuje tip prilikom njene deklaracije i on se ne može menjati tokom izvršavanja programa. Za razliku od C-a, Go ne podržava automatsku konverziju tipova vrednosti već se konverzija vrednosti mora navesti eksplicitno, u suprotnom prijavljuje se greška prilikom kompilacije. Pravilo koje važi za pakete važi i za promenljive, svaka deklarisana promenljiva mora biti upotrebljena.
 
 Primer prikazan u listingu \ref{lst:add} pokazuje definiciju i deklaraciju različitih vrsta promenljivih. Tip promenljive se ne mora ekspilicitno navesti, već se može zaključiti na osnovu dodele operatorom \texttt{:=} kada se promenljiva uvodi. Iako nije definisana, promenljiva \texttt{a} ima podrazumevanu vrednost koja je za numeričke tipove 0.
 
@@ -128,7 +125,7 @@ func main() {
 
 Tipovi podataka koji su definisani u programskom jeziku Go, mogu se klasifikovati u četiri kategorije \cite{bookGoProg}: 
 \begin{enumerate}
-\item Bazični tipovi  (numerički, bulovski, teksturalni)
+\item Bazični tipovi  (numerički, bulovski, tekstualni)
 \item Složeni tipovi (nizovi i strukture)
 \item Referentni tipovi (pokazivači, isečci, mape, kanali, funkcije)
 \item Interfejsni tipovi (interfejsi)
@@ -149,8 +146,7 @@ Bazični tipovi koji postoje u programskom jeziku Go, podeljeni su na:
 
 \end{itemize}
 
-Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija vrednost je unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. U pozadaini, svaka konstanta predstavlja jedan od osnovnih tipova i ne može se definisati za neku drugu vrstu podataka. 
-\\
+Konstante (\texttt{const}) u Go-u, predstavljaju izraze čija vrednost je unapred poznata kompilatoru i čija evaluacija se izvršava tokom kompilacije, a ne tokom izvršavanja programa. Konstante se mogu definisati samo za bazične tipove podataka. 
 
 Paket strings pruža veliki broj funkcija za manipulaciju tipom \texttt{string}. Iako u okviru paketa postoji funkcija \texttt{Compare}, Go dozvoljava poređenje stringova operatorom \texttt{==}, kao i ostalim relacionimi operatorima.
 \\
@@ -166,22 +162,23 @@ Operatori koji su definisani u Go-u, podeljeni su u sledeće kategorije:
 
 \end{itemize}
 
+Upotreba nad određenim tipovima podataka, uloga i arnost Go operatora, definisani su na isti način kao u jeziku C. Izuzeci su naglašeni ukoliko postoje. 
+
 \subsection{Složeni tipovi podataka}
 U složene tipove podatka u programskom jeziku Go spadaju \textbf{nizovi} i \textbf{strukture}.
 \\
 
-\textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Za razliku od nizova, isečci, koji su opisani u sledeđem segmentu, su promenljive dužine. Elementima niza se pristupa standardnom \texttt{[indeks]} notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti \texttt{...}, a dužina će biti zaključena na osnovu incijalizacije.
+\textbf{Niz} predstavlja sekvencu elemenata fiksne dužine, određenog tipa podataka. Elementima niza se pristupa standardnom \texttt{[indeks]} notacijom, gde prvi element ima indeks 0. Ugrađena funkcija \texttt{len}, koristi se za dobijanje podatka o dužini niza. Dužina niza se mora navesti prilikom deklaracije ili, ukoliko se izvršava i inicijalizacija, umesto dužine, može se navesti znak \texttt{...} , a dužina će biti zaključena na osnovu incijalizacije.
 
 Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima \texttt{==} i \texttt{!=} . Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
 \\
 
-\textbf{Strukture} su složeni podaci kuji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture, definiše se novi tip podataka korišćenjem ključne reči \texttt{type} ispred same definicije strukture. Poljima strukture, pristupa se pomoću \texttt{.} i naziva polja. 
+\textbf{Strukture} su složeni podaci koji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture, definiše se novi tip podataka korišćenjem ključne reči \texttt{type} ispred same definicije strukture. Poljima strukture, pristupa se pomoću znak \texttt{.} i naziva polja. Prazne strukture \texttt{struct\{\}}, mogu se koristiti za komunikaciju preko kanala u slučajevima kada nije bitan sadržaj poruke već samo davanje signala. U implementaciji \textit{quicksort} algoritma u potpoglavlju \ref{qs:go}, prikazan je primer upotrebe praznih struktura za realizaciju semafora. 
 
-Ugnježdavanje struktura je dozvoljeno, odnosno definisanje struktura koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u segementu \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
+Ugnježdavanje struktura je dozvoljeno, odnosno definisanje struktura koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u poglavlju \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
 
-Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora \texttt{*} odnosno notacijom \texttt{(*naziv)[indeks]}. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti običnom \texttt{.} notacijom.
+Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenljivih, može se koristiti ugrađena funkcija \texttt{new} koja vraća pokazivač na alocirani niz ili strukturu. Nizovi se funkcijama prosleđuju kao kopija, ne preko reference kao što je slučaj u drugim jezicima poput C-a. Prenošenje niza preko reference, mora se eksplicitno naglasiti korišćenjem pokazivača. Pristupanje vrednostima niza unutar funkcije, postiže se korišćenjem operatora \texttt{*} odnosno notacijom \texttt{(*naziv)[indeks]}. Ukoliko se struktura prosledi funkciji preko reference, poljima se može pristupiti uobičajenom upotrebom znaka \texttt{.} i naziva polja.
 
-\newpage
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa nizovima i strukturama, label={lst:arr_str},  backgroundcolor=\color{background}]
@@ -203,15 +200,15 @@ Prilikom alociranja memorije za nizove i strukture umesto deklarisanja promenlji
 \end{center}
 
 \subsection{Referentni tipovi podataka}
-U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \textbf{mape}, \textbf{kanali} i \textbf{funkcije}. U ovom segementu, opisani su svi referentni tipovi podataka osim funkcija, kojima je posvećen segment \ref{func}, i kanala, koji su opisani u narednom poglavlju čija je tema konkurentnost, u segementu \ref{chanel}. 
+U referentne tipove podataka spadaju \textbf{pokazivači}, \textbf{isečci}, \textbf{mape}, \textbf{kanali} i \textbf{funkcije}. U ovom segementu, opisani su svi referentni tipovi podataka osim funkcija, kojima je posvećeno potpoglavlje \ref{func}, i kanala, koji su opisani u glavi \ref{conc} čija je tema konkurentnost, u poglavlju \ref{chanel}. 
 \\
 
 \textbf{Pokazivač} referiše na vrednost neke promenljive koja se trenutno čuva u memoriji. Pokazivači kao vrednost čuvaju lokaciju promenljive u memoriji na koju referišu. Za dobijanje lokacije promenljive, koristi se operator \texttt{\&}. Za dereferenciranje pokazivača, odnosno dobijanje vrednosti na koju pokazivač referiše, koristi se operator \texttt{*}.
 \\
 
-\textbf{Isečak} (eng. "slice") u programskom jeziku Go, predstavlja fleksibilan pogled na elemente niza. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za podatak o njegovoj trenutnoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
+\textbf{Isečak} (eng. "slice") u programskom jeziku Go, predstavlja pogled na elemente niza. Za razliku od nizova, isečci su promenljive dužine. Svaki isečak se sastoji od tri podatka: pokazivača na niz, dužine i kapaciteta. Sintaksa za rad sa isečcima je ista kao i za rad sa nizovima, osim što prilikom deklaracije nije potrebno navoditi dužinu isečka. Za alociranje isečaka, koristiti se ugrađena funkcija \texttt{make}, koja kao parametre ima tip, dužinu i kapacitet isečka. Funkcija kreira isečak koji sadrži onoliko elemenata kolika mu je zadata dužina, koji su postavljeni na podrazumevane vrednosti. Kapacitet isečka nije fiksan, a za podatak o njegovoj trenutnoj vrednosti koristi se ugrađena funkcija \texttt{cap}.
 
-Definisanje isečka nad nizom, postiže se korišćenjem \texttt{niz[od:do]} notacije, pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je početak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo \texttt{:} , isečak će sadržati sve elemente niza. 
+Definisanje isečka nad nizom, postiže se korišćenjem \texttt{niz[od:do]} notacije, pri čemu se gornja granica ne uključuje. Ukoliko se donja granica izostavi, donja granica je početak niza, ukoliko se gornja granica izostavi, gornja granica je kraj niza, a ukoliko se navede samo znak \texttt{:} , isečak će sadržati sve elemente niza. 
 
 \begin{figure}
 \begin{center}
@@ -248,9 +245,9 @@ Za rad sa isečcima postoji ugrađena funkcija \texttt{copy} koja kopira element
 
 \textbf{Mapa} je referentni tip podataka koji referiše na heš tabelu. U tabeli se čuvaju parovi ključ - vrednost, pri čemu je vrednost svakog ključa jedinstvena. Svi ključevi su istog tipa i sve vrednosti su istog tipa. Jedini uslov je da se tip ključa može porediti operatorom \texttt{==} , dok vrednosti mogu biti proizvoljnog tipa, uključujući i druge mape. 
 
-Funkcija \texttt{make} se koristi prilikom alociranja prostora za novu mapu. Upis u mapu, postiiže se \texttt{naziv[ključ] = vrednost} notacijom. Ugrađena funkcija \texttt{delete}, koristi se za brisanje parova iz mape. Kao parametre, funkcija ima naziv mape i ključ para koji se briše. Ukoliko ključ ne postoji, funkcija nema nikakav efekati. Dodeljivanje vrednosti promenljivoj na osnovu ključa iz mape, postiže se \texttt{v := naziv[ključ]} notacijom, pri čemu, ukoliko ključ ne postoji, vrednost v će biti postavljena na podrazumevanu. Moguće je izvršiti proveru da li je određeni ključ definisan u mapi, upotrebom \texttt{v, ok := naziv[ključ]} ili  \texttt{\_, ok := naziv[ključ]} notacije, gde je \texttt{ok} promenljiva tipa \texttt{bool}, koja je nosi informaciju da li ključ postoji ili ne. 
+Funkcija \texttt{make} se koristi prilikom alociranja prostora za novu mapu. Upis u mapu, postiiže se \texttt{naziv[ključ] = vrednost} notacijom. Ugrađena funkcija \texttt{delete}, koristi se za brisanje parova iz mape. Kao parametre, funkcija ima naziv mape i ključ para koji se briše. Ukoliko ključ ne postoji, funkcija nema nikakav efekat. Dodeljivanje vrednosti promenljivoj na osnovu ključa iz mape, postiže se \texttt{v := naziv[ključ]} notacijom, pri čemu, ukoliko ključ ne postoji, vrednost \texttt{v} će biti postavljena na podrazumevanu. Moguće je izvršiti proveru da li je određeni ključ definisan u mapi, upotrebom \texttt{v, ok := naziv[ključ]} ili  \texttt{\_, ok := naziv[ključ]} notacije, gde je \texttt{ok} promenljiva tipa \texttt{bool}, koja je nosi informaciju da li ključ postoji ili ne. 
 
-U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkurentnog korišćenja, potrebno je koristiti odgovarajuće mere sigurnosti koje su opisane u poglavlju \ref{conc}. Primer koji demonstrira rad sa mapama, prikazan je u listingu \ref{lst:map}.
+U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkurentnog korišćenja, potrebno je koristiti odgovarajuće mere sigurnosti koje su opisane u glavi \ref{conc}. Primer koji demonstrira rad sa mapama, prikazan je u listingu \ref{lst:map}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa mapama, label={lst:map},  backgroundcolor=\color{background}]
@@ -267,11 +264,11 @@ U programskom jeziku Go, operacije nad mapama nisu atomične i prilikom konkuren
 
 \section{Kontrole toka}
 
-U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch}, \texttt{for} i \texttt{defer}. Naredba \texttt{if}, ponaša se na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if, else if, else} strukturu. Pre uslova, moguće je navesti jednu naredbu koja je razdvojena sa \texttt{;} od uslova. 
+U programskom jeziku Go, naredbe za kontrolu toka izvršavanja su \texttt{if}, \texttt{switch}, \texttt{for} i \texttt{defer}. Naredba \texttt{if}, ponaša se na isti način kao i u drugim jezicima i omogućava standardnu \texttt{if, else if, else} strukturu. Pre uslova, moguće je navesti jednu naredbu koja je razdvojena sa znakom\texttt{;} od uslova. 
 
-Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima upotrebom \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, u suprotnom izvršava se \texttt{default} slučaj. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
+Naredba \texttt{switch} omogućava ispitivanje uslova po slučajevima upotrebom \texttt{switch case default} stukture. Ukoliko je uslov za neki slučaj (\texttt{case}) zadovoljen, izvršiće se deo koda naveden nakon znaka \texttt{:} , do definicije seledećeg slučaja ili kraja naredbe, u suprotnom izvršava se \texttt{default} slučaj. Ukoliko se na kraju slučaja navede \texttt{fallthrough} naredba, izvršava se i k\^{o}d slučaja direktno ispod. Za pojedinačni slučaj moguće je navodti više uslova razdvojenim zarezima. 
 
-Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. Za izlazak iz petlje, koristi se \texttt{break} naredba, a naredba \texttt{continue} za prelazak na sledeću iteraciju. For petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
+Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja ima standardnu trodelnu strukturu razdvojenu znakom \texttt{;} , gde se prvi deo  izvršava samo jedanput na početku, drugi deo predstavlja uslov koji se proverava na početku svake iteracije a treći deo predstavlja inkrementalni korak koji se izvršava na kraju svake iteracije. Za izlazak iz petlje, koristi se \texttt{break} naredba, a naredba \texttt{continue} za prelazak na sledeću iteraciju. \texttt{For} petlja se može koristiti zajedno sa \texttt{range} naredbom za iteriranje kroz sekvencijalne strukture kao što su nizovi, isečci i mape. 
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira upotrebu kontrolnih struktura, label={lst:control},  backgroundcolor=\color{background}]
@@ -296,7 +293,7 @@ Jedina petlja koja postoji u programskom jeziku Go jeste \texttt{for}. Petlja im
 
 Naredba \texttt{defer} odlaže izvršavanje navedene funkcije do trenutka završetka funkcije u kojoj se nalazi. Argumenti funkcije se određuju u trenutku navođenja \texttt{defer} naredbe, samo je izvršavanje funkcije odloženo. Naredba garantuje da će se funkcija izvršiti i u slučaju dolaska do greške. Najčešća upotreba \texttt{defer} naredbe je za operacije koje se obavljaju u paru, kao što je otvaranje i zatvaranje fajlova. Odmah nakon otvaranja fajla, moguće je \texttt{defer} naredbom pozvati funkciju za zatvaranje fajla, što osigurava da će se fajl zatvoriti i doprinosi čitljivijem kodu. 
 
-Naredbe \texttt{if} i \texttt{for} zahtevaju upotrebu vitičarstih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba, a uslove nije potrebno navoditi unutar zagrada. Primer koji ilustruje upotrebu standardnih kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
+Naredbe \texttt{if} i \texttt{for} zahtevaju upotrebu vitičastih zagrada i u slučajevima kada se u bloku nalazi samo jedna naredba, a uslove nije potrebno navoditi unutar zagrada. Primer koji ilustruje upotrebu standardnih kontrolnih struktura prikazan je u listingu \ref{lst:control}. 
 
 Osim navedenih kontrolni struktura, Go podržava i \texttt{go to} naredbe u kombinaciji sa labelama. Generalno, upotreba \texttt{go to} naredbi nije preporučena jer dovodi do loše strukture i nečitljivog koda.
 
@@ -313,7 +310,7 @@ func naziv(lista parametara) (lista rezultata) {
 \end{lstlisting}
 \end{center}
 
- Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Postoje i varijadičke funkcije, odnosno funkcije sa promenljivim brojem argumenata. Varijadičke funkcije se definišu upotrebom \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
+ Osim što mogu imati proizvoljan broj argumenata, funkcije mogu imati više povratnih vrednosti. Postoje i varijadičke funkcije, odnosno funkcije sa promenljivim brojem argumenata. Varijadičke funkcije se definišu upotrebom znaka \texttt{...} ispred tipa argumenta koji se može pojaviti nula ili više puta. 
 
 Omogućeno je definisanje funkcija unutar funkcija, gde unutrašnja funkcija ima pristup svim promenljivama spoljašnje funkcije, kao i  definisanje anonimnih funkcija, odnosno funkcija bez imena koje se izvršavaju na mestu gde su definisane. Funkcije predstavljaju tipove prvog reda i mogu se prosleđivati drugim funkcijama i dodeljivati promenljivama. Primer rada sa funkcijama, prikazan je u listingu \ref{lst:func}.
 
@@ -354,9 +351,9 @@ func main() {
 
 U programskom jeziku Go ne postoji pojam klase, ali je omogućeno definisanje metoda nad korisnički definisanim tipovima. Metod predstavlja običnu funkciju koja u sebi sadrži specijalni prijemnik (eng "receiver") za tip podataka nad kojim je metod definisan. Metod se definiše na isti način kao i funkcija, osim što se prijemnik navodi između ključne reči \texttt{func} i naziva metoda.
 
-Pozivanje metoda, postiže se navođenjem \texttt{.} i naziva metoda nakon promenljive za koju je potrebno pozvati metod. Ukoliko metod menja podatke promenljive nad kojom je pozvan, potrebno je koristiti prijemnik sa referencom. 
+Pozivanje metoda, postiže se navođenjem znaka \texttt{.} i naziva metoda nakon promenljive za koju je potrebno pozvati metod. Ukoliko metod menja podatke promenljive nad kojom je pozvan, potrebno je koristiti prijemnik sa referencom. 
  
-Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa\cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
+Go nema definisane nivoe vidljivosti  pomoću ključnih reči kao što su \texttt{public}, \texttt{private} i \texttt{protected}. Jedini mehanizam za kontrolu vidljivosti je sledeći: svi identifikatori koji počinju velikom slovom, biće eksportovani van paketa, svi identifikatori koji počinju malim slovom, neće biti eksportovani van paketa \cite{bookGoProg}. Isto pravilo važi i za polja strukture. Na taj način struktrure nad kojima su definisani metodi mogu da oponašaju klase i enkapsulaciju podataka. Primer koji demonstrira rad sa metodima, prikazan je u listingu \ref{lst:metod}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa metodima, label={lst:metod},  backgroundcolor=\color{background}]
@@ -384,9 +381,9 @@ func main() {
 
 \section{Interfejsi}
 
-Interfejsi se koriste kao dodatno sredstvo abstrakcije i enkapsulacije podataka. Tip interfejs, definisan je kao skup potpisa metoda. Svaki interfejs se sastoji od vrednosti i konkretnog tipa. Vrednost tipa interfejs, može biti bilo koja vrednost čiji tip implentira zadate metode. Konkretni tipovi su svi tipovi podataka osim interfejsa.
+Interfejsi se koriste kao dodatno sredstvo apstrakcije i enkapsulacije podataka. Tip interfejs, definisan je kao skup potpisa metoda. Svaki interfejs se sastoji od vrednosti i konkretnog tipa. Vrednost tipa interfejs, može biti bilo koja vrednost čiji tip implentira zadate metode. Konkretni tipovi su svi tipovi podataka osim interfejsa.
 
-Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške koje su opisane u segmentu \ref{error}, takođe predtavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
+Tip zadovoljava neki interfejs ukoliko implementira sve metode koje taj interfejs zahteva. Unutar interfejsa, moguće je navoditi i nazive drugih interfejsa, koji takođe moraju biti zadovoljeni. Svi tipovi zadovoljavaju prazan interfejs (\texttt{interface\{\}}). Mnogi paketi i funkcije koriste interfejse, kao što je već viđeni paket \texttt{fmt} sa interfejsom \texttt{Stringer} koji se koristi za definisanje ispisa određenog tipa podataka. Greške, koje su opisane poglavlju \ref{error}, takođe predstavljaju interfejs. Primer koji demonstrira rad sa interfejsima, prikazan je u listingu \ref{lst:inter}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira rad sa interfejsima, label={lst:inter},  backgroundcolor=\color{background}]
@@ -415,7 +412,7 @@ func main(){
 \end{lstlisting}
 \end{center}
 
-Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a T naziv konkretnog tipa. Ukoliko se pretpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom pretpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja nosi informaciju da li je predpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira pretpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
+Pretpostavljanje tipova (eng. "type assertion") omogućava pristup konkretnom tipu u okviru interfejsa, što se postiže sa \texttt{i.(T)}, gde je i promenljiva tipa interfejs, a \texttt{T} naziv konkretnog tipa. Ukoliko se pretpostavi pogrešan tip, dolazi do greške.  Za proveru da li interfejs sadrži određeni tip, prilikom pretpostavljanja mogu se vratiti dve vrednosti, vrednost tipa i \texttt{bool} vrednost koja sadrži informaciju da li je pretpostavljanje uspešno. Za obradu pojedinačnih slučajeva za svaki od mogućih tipova može se koristiti naredba \texttt{switch}.  Primer koji demonstrira pretpostavljanje tipova, prikazan je u listingu \ref{lst:type}.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer koji demonstrira pretpostavljanje tipova kod interfejsa, label={lst:type},  backgroundcolor=\color{background}]
@@ -439,9 +436,9 @@ U računarstvu, refleksija predstavlja sposobnost programa da izvrši ispitivanj
 
 Unutar paketa, definisani su tipovi \texttt{Type} i \texttt{Value}, funkcija \texttt{TypeOf} za dobijanje informacije o tipu promenljive i funkcija \texttt{ValueOf} za dobijanje vrednosti promenljive. Funkcije kao argument prihvataju tip \texttt{interface\{\}}. 
 
-Za postavljanje vrednosti, postoje \texttt{Set} metodi za svaki tip podataka koji se pozivaju nad tipom \texttt{Value}, kao i metod \texttt{CanSet()} za proveru da li je moguće postaviti vrednost datoj promenljivi. Vrednost je moguće postaviti samo referentnim tipovima, odnosno promeniti vrednost na koju oni referišu. Set metodi se ne mogu pozivati nad promenljivom \texttt{Value} bez pripreme, već je nad njom prvo potrebno pozvati metod \texttt{Elem()} koji omogućava pristup vrednosti na koju promenljiva referiše.  
+Za postavljanje vrednosti, postoje \texttt{Set} metodi za svaki tip podataka koji se poziva nad tipom \texttt{Value}, kao i metod \texttt{CanSet} za proveru da li je moguće postaviti vrednost datoj promenljivi. Vrednost je moguće postaviti samo referentnim tipovima, odnosno promeniti vrednost na koju oni referišu. \texttt{Set} metodi se ne mogu pozivati nad promenljivom \texttt{Value} bez pripreme, već je nad njom prvo potrebno pozvati metod \texttt{Elem} koji omogućava pristup vrednosti na koju promenljiva referiše.  
 
-Primer koji demonstrira osnovnu uporebu refleksije, prikazan je u listingu \ref{lst:ref}. Paket nudi još veliki broj drugih funkcija za refleksiju tipova i njihovu manipulaciju \cite{reflect}.
+Primer koji demonstrira osnovnu upotrebu refleksije, prikazan je u listingu \ref{lst:ref}. Paket nudi još veliki broj drugih funkcija za refleksiju tipova i njihovu manipulaciju \cite{reflect}.
 
 Refleksija predstavlja jak alat ukoliko se upotrebljava na pravi način, ali trebalo bi je koristiti sa oprezom. Postoji nekoliko razloga za opreznost: mogućnost dolaska do greške u toku izvršavanja programa koja bi mogla biti prijavljena tokom kompilacije ukoliko program ne bi koristio refleksiju; smanjena čitljivost koda ukoliko program previše koristi refleksiju; sporije izvršavanje funkcija koje koriste refleksiju, naspram funkcija specijalizovanih za pojedinačne tipove \cite{bookGoProg}.
 
@@ -467,7 +464,7 @@ Stanje greške u programskom jeziku Go, označava se \texttt{error} vrednostima.
 
 Implementacijom \texttt{Error} metoda za neki tip, moguće je definisati novi tip greške. Ukoliko se upotrebljava već postojeći tip \texttt{error}, za definisanje poruke greške koristi se funkcija \texttt{New} iz paketa \texttt{errors}. Primer koji demonstrira upravljanje greškama, prikazan je u listingu \ref{lst:error}.
 
-Na ovaj način omogućeno je elegantno upravljanje greškama. Funkcija \texttt{panic} je ugrađena funkcija koja se koristi za prekidanje toka izvršavanja u slučaju ozbiljnijih grešaka i ne predviđenih situacija. Ukoliko funkcija F pozove funkciju \texttt{panic}, njeno izvršavanje se prekida, a zatim se izvršavaju \texttt{defer} pozivi funkcija nakon čega se funkcija F vraća svom pozivaocu. Tada se za pozivaoca, funkcija F ponaša kao poziv funkcije \texttt{panic} i proces se ponavlja dokle god sve funkcije u tekućoj gorutini ne prestanu sa radom i dok program ne pukne. Ugrađene funkcije obično pozivaju \texttt{panic} ukoliko dođe do neke nepredviđene greške ili situacije koja se nije mogla otkriti tokom faze kompilacije, ali moguće je pozvati funkciju i manuelno. 
+Na ovaj način omogućeno je elegantno upravljanje greškama. Funkcija \texttt{panic} je ugrađena funkcija koja se koristi za prekidanje toka izvršavanja u slučaju ozbiljnijih grešaka i nepredviđenih situacija. Ukoliko funkcija F pozove funkciju \texttt{panic}, njeno izvršavanje se prekida, a zatim se izvršavaju \texttt{defer} pozivi funkcija nakon čega se funkcija F vraća svom pozivaocu. Tada se za pozivaoca, funkcija F ponaša kao poziv funkcije \texttt{panic} i proces se ponavlja dokle god sve funkcije u tekućoj gorutini ne prestanu sa radom i dok program ne pukne. Ugrađene funkcije obično pozivaju \texttt{panic} ukoliko dođe do neke nepredviđene greške ili situacije koja se nije mogla otkriti tokom faze kompilacije, ali moguće je pozvati funkciju i manuelno. 
 
 Pored funkcije \texttt{panic}, postoji i ugrađena funkcija \texttt{recover} koji služi za preuzimanje kontrole gorutine koje je u stanju \texttt{panic}. Funkciju \texttt{recover}, ima jedino smisla koristiti unutar \texttt{defer} nardbe. Ukoliko je tekuća gorutina u stanju \texttt{panic}, \texttt{recover} funkcija će preuzeti vrednost koju je dobila funkcija \texttt{panic} i nastaviti normalno izvršavanje programa.
 
@@ -511,9 +508,9 @@ func main() {
  
 \section{Sakupljanje smeća}
 
-Programski jezik Go ima automatsko upravljanje memorijom odnosno sakupljanje smeća (eng. "garbage collection"). Sakupljač skenira memoriju, pronalazi objekte na koje više ne postoji ni jedna referenca i nakon toga ih briše i oslobađa memoriju. Upotrebom paketa \texttt{runtime}, sakupljač se može eksplicitno pozvati korišćenjem \texttt{GC()} funkcije. 
+Programski jezik Go ima automatsko upravljanje memorijom odnosno sakupljanje smeća (eng. "garbage collection"). Sakupljač skenira memoriju, pronalazi objekte na koje više ne postoji ni jedna referenca i nakon toga ih briše i oslobađa memoriju. Upotrebom paketa \texttt{runtime}, sakupljač se može eksplicitno pozvati korišćenjem \texttt{GC} funkcije. 
 
-Od verzije Go 1.5, sakupljač smeća\cite{garbage} je kreiran da bude konkurentni, trobojni, označi-počisti (eng. "mark-sweep") sakupljač. Kod trobojnih sakupljača, svaki objekat je bele, sive ili crne boje i hip se posmatra kao jedan povezani graf. Na početku ciklusa, svi objekti su beli. Sakuplač prvo posećuje sve korene grafa koji predstavljaju objekte kojima se može pristupiti direktno iz aplikacije, kao što su globalne promenljive i promenljive na steku, koje njih boji u sivo. Nakon toga, skaupljač bira neki od sivih objekata, boji ga u crno i proverava da li poseduje pokazivače ka drugim objektima. Ukoliko pronađe pokazivač ka belom objektu, označava ga sivom bojom. Proces se ponavlja dokle god postoje sivi objekti. Na kraju, belom bojom su označeni objekti do kojih nije moguće doći, odnosno objekte na koje niko ne referiše.
+Od verzije Go 1.5, sakupljač smeća \cite{garbage} je kreiran da bude konkurentni, trobojni, označi-počisti (eng. "mark-sweep") sakupljač. Kod trobojnih sakupljača, svaki objekat je bele, sive ili crne boje i hip se posmatra kao jedan povezani graf. Na početku ciklusa, svi objekti su beli. Sakuplač prvo posećuje sve korene grafa koji predstavljaju objekte kojima se može pristupiti direktno iz aplikacije, kao što su globalne promenljive i promenljive na steku, koje boji u sivo. Nakon toga, skaupljač bira neki od sivih objekata, boji ga u crno i proverava da li poseduje pokazivače ka drugim objektima. Ukoliko pronađe pokazivač ka belom objektu, označava ga sivom bojom. Proces se ponavlja dokle god postoje sivi objekti. Na kraju, belom bojom su označeni objekti do kojih nije moguće doći, odnosno objekti na koje niko ne referiše.
 
 \begin{figure}
 \begin{center}
@@ -529,9 +526,9 @@ Sakupljač obavlja što veći deo posla konkurentno, međutim potrebno je na kra
 
 \section{Testiranje}
 
-Programski jezik Go ima ugrađenu podršku za automatsko testiranje paketa. Testiranje se izvršava pomoću \texttt{go test} alata i \texttt{testing} paketa. Alat se koristi za testiranje funkcija i kao rezultat daje vrednosti \texttt{PASS} ili \texttt{FAIL}. Benčmark funkcije za testiranje performansi su takođe podržane. Za alat veliki broj flegova koji omogućava različite opcije izvršavanja testova kao što su broj ponavlja benčmark testova ili broj korišćenih procesora prilikom testiranja. Testovi se izdvajaju u poseban test fajl. 
+Programski jezik Go ima ugrađenu podršku za automatsko testiranje paketa. Testiranje se izvršava pomoću \texttt{go test} alata i \texttt{testing} paketa. Alat se koristi za testiranje funkcija i kao rezultat daje vrednosti \texttt{PASS} ili \texttt{FAIL}. Benčmark funkcije za testiranje performansi su takođe podržane. Sa alatom dolazi veliki broj flegova koji omogućava različite opcije kao što su broj ponavljanja benčmark testova ili broj korišćenih procesora prilikom testiranja. Testovi se izdvajaju u poseban test fajl. 
 
-Funkcije za testiranje u nazvu imaju prefiks \texttt{Test}, a zatim naziv funkcije koju testiraju. Kao argument, funkcije imaju parametar \texttt{T} koji se koristi za obaveštavanje o neuspešnim testovima i logovanje dodatnih informacija. Benčmark funkcije imaju prefiks \texttt{Benchmark}, a kao argument imaju parametar \texttt{B} koji poseduje veliki broj istih metoda kao i parametar \texttt{T}, sa dodatnim stavkama koje su potrebne za merenje performansi kao što je polje \texttt{N} koje označava broj ponavalja operacije koja se testira.
+Funkcije za testiranje u nazvu imaju prefiks \texttt{Test}, a zatim naziv funkcije koju testiraju. Kao argument, funkcije imaju parametar \texttt{T} koji se koristi za obaveštavanje o neuspešnim testovima i logovanje dodatnih informacija. Benčmark funkcije imaju prefiks \texttt{Benchmark}, a kao argument imaju parametar \texttt{B} koji poseduje veliki broj istih metoda kao i parametar \texttt{T}, sa dodatnim stavkama koje su potrebne za merenje performansi kao što je polje \texttt{N} koje označava broj ponavljanja operacije koja se testira.
 
 Alat \texttt{go test} takođe podržava i funkcije primere (eng. "example functions") čija je primarna uloga dokumentacija koda. Funkcije primeri imaju prefiks  \texttt{Example}, a kao argument nemaju nikakve parametre i ne vraćaju nikakav rezultat. Alat prevodi i izvršava ove funkcije, a ukoliko imaju neki ispis, on se ispisuje na standardnom izlazu. Pod komentarom koji počinje sa \texttt{Output:} , moguće je navesti ispis funkcije koji će biti upoređen sa ispisom funkcije na standardnom izlazu. Primer funkcija za testiranje, prikazan je u listingu \ref{lst:test}.
 
@@ -570,27 +567,177 @@ func ExampleSum() {
 
 U okviru same distribucije programskog jezika Go, postoji veliki broj paketa standardne biblioteke koji obezbeđuju različite usluge. Neki od osnovnih paketa su upotrebljeni u primerima: \texttt{fmt} za formatirani ulaz/izlaz; \texttt{strings} za rad sa stringovima; \texttt{math} sa implementacijama matematičkih funkcija. Još jedan paket koji se često upotrebljava je \texttt{os} paket koji predstavlja interfejs ka operativnom sistemu i omogućava funkcionalnosti kao što su rad sa fajl sistemom, pristup argumentima komandne linije i pokretanje procesa.
 
-U standardnoj biblioteci, takođe postoje paketi za rad sa SQL bazama podataka, kriptografskim funkcijama, kompresiju podataka, rad sa slikama,  podršku za mrežno programiranje i još mnogi drugi. Pored paketa standardne biblioteke, postoje dodatni i prošireni paketi u okviru Go projekta koji imaju labavije uslove kompatibilnosti Go verzija. Ovde se mogu pronaći paketi za razvoj aplikacija za mobilne platforme, eksperimentalni debager, prošireni kriptografksi i mrežni paketi. 
+U standardnoj biblioteci, takođe postoje paketi za rad sa SQL bazama podataka, kriptografskim funkcijama, kompresiju podataka, rad sa slikama,  podršku za mrežno programiranje i još mnogi drugi. Pored paketa standardne biblioteke, postoje dodatni i prošireni paketi u okviru Go projekta koji imaju labavije uslove kompatibilnosti Go verzija. Ovde se mogu pronaći paketi za razvoj aplikacija za mobilne platforme, eksperimentalni debager, prošireni kriptografski i mrežni paketi. 
 
-Paketi van distribucije samog jezika, mogu se preuzeti korišćenjem \texttt{go get} komande i navođenja repozitorijuma u kome se paket nalazi. Na web sajtu \url{https://godoc.org/} mogu se naći paketi i njihove dokumentacije koje razvijaju članovi Go zajednice koja vremenom postaje sve veća. Paketi su odobreni od strane Go projekta i mogu se naći paketi koji obezbeđuju najrazličitije alate za programiranje kao i API-je mnogih postojećih servisa.
+Paketi van distribucije samog jezika, mogu se preuzeti korišćenjem \texttt{go get} komande i navođenja repozitorijuma u kome se paket nalazi. Na veb sajtu \url{https://godoc.org/} mogu se naći paketi i njihove dokumentacije koje razvijaju članovi Go zajednice koja vremenom postaje sve veća. Paketi su odobreni od strane Go projekta i mogu se naći paketi koji obezbeđuju najrazličitije alate za programiranje kao i API-je mnogih postojećih servisa.
 
 
 % KONKURENTNO==============================================================================
 \chapter{Konkurentno programiranje u jeziku Go} \label{conc}
 
+U ovoj glavi, objašnjeni su osnovni pojmovi i problemi koji se javljaju kod konkurentnog programiranja. Nakon toga, opisano je kako je konkurentnost realizovana u programskom jeziku Go, kako se ona upotrebljava i načini na koji se rešavaju određeni problemi. 
+
 \section{Osnovni pojmovi konkurentnog programiranja}
 
-\section{Go-rutine}
+U računarstvu, konkurentnost označava mogućnost procesa da određene delove izvršava nezavisno jedne od drugih, bez uticanja na sam rezultat programa. Pojam konkurentnosti se često poistovećuje sa paralelizmom. Za razliku od konkurentnosti, paralelizam podrazumeva da se delovi jednog procesa izvršavaju istovremeno, dok konkurentnost samo definiše celine koje se mogu izvršavati u preklapajućim vremenskim intervalima, ali ne obavezno istovremeno. 
+
+\subsection{Niti}
+
+Osnovni pojam u konkurentnom programiranju predstavlja nit. Niti su osnovne jedinice za izvršavanje u okviru procesa. Jedan proces se može sastojati od više niti koje se izvršavaju konkurentno. Niti jednog procesa dele određene resurse kao što su k\^{o}d segement i segement podataka, ali poseduju i sopstvene resurse kao što je stek. 
+
+Korišćenje niti donosi mnoge prednosti kao što su ušteda memorijskog prostora i vremena. Niti zauzimaju manje prostora nego pojedinačni procesi jer dele određene resurse i kao rezultat se kreiraju znatno brže od procesa. Takođe, niti omogućavaju aplikacijma da obavljaju druge, nezavisne zadatke dok su neki delovi blokirani ili zauzeti. Serverske aplikacije često koriste kreiranje niti umesto kreiranja procesa za svakog novog korisnika jer se niti brže kreiraju i zauzimaju manje prostora, pa je omogućeno da se brže odgovori na zahteve i opsluži veći broj korisnika \cite{os}.  
+
+\subsection{Problemi}
+
+Osim prednosti koje konkurentnost donosi, postoje problemi koji se mogu javiti pri manipulaciji zajedničkih podataka i resursa. Nekontrolisano pristupanje zajedničkim podacima može dovesto do neispravnih rezultata. Ukoliko su neki resursi deljeni, kao na primer standardni izlaz, nesinhronizovani ispis može proizvesti ispreplitane, nečitljive poruke. Situacija u kojoj krajnji rezultat zavisi od redosleda izvršavanja koraka različitih procesa ili niti koji manipulišu zajedničkim podacima ili resursima naziva se trka za resurse (eng. "race condition") \cite{os}.
+
+Na slici \ref{fig:race} levo, prikazan je jednostavan primer u kome se javlja problem trke za resurse. Problem se javlja jer uvećanje vrednosti deljene promenljive ne predstavlja atomičnu operaciju. Promena vrednosti podrazumeva, čitanje tekuće vrednosti i pravljenje lokalne kopije, uvećanje lokalne kopije i na kraju izmenu originalne vrednosti. U primeru, nit 1 čita vrednost deljene promenljive, kopira je, uvećava lokalnu kopiju i zatim ažurira tekuću vrednost deljene promenljive. Nakon toga, nit 2 čita tekuću vrednost deljene promenljive, pravi lokalnu kopiju i uvećava je. Pre nego što je nit 2 imala priliku da ažurira vrednost, nit 1 ponovo pristupa deljenoj promenljivi, čita i kopira njenu vrednost. Na kraju, kada obe niti ažuriraju vrednost deljene promenljive, ona će biti uvećana samo jedanput, što nije bio željeni rezultat. Problem koji se javio u primeru, kao i drugi problemi koje može izazvati trka za resurse, rešavaju se različitim načinima sinhronizacije toka izvršavanja niti.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.22]{race.png}
+\end{center}
+\caption{Primer problema u kome se javlja trka za resurse (levo) i primer rešavanja istog problema upotrebom muteksa (desno) }
+\label{fig:race}
+\end{figure}
+
+\subsection{Sinhronizacija}
+
+Sinhronizacija niti predstavlja mehanizam koji osigurava da dve ili više niti neće istovremeno izvršavati deo koda u kojem se pristupa zajedničkim podacima. Neki od mehanizama koji se koriste su muteksi, semafori i barijere. 
+
+Muteksi (eng. "MUTual EXclusion", međusobno isključivanje) ili katanci predstavljaju najjednostavniji mehanizam za sinhronizaciju. Ukoliko nit počinje da izvršava problematični deo koda, koji se naziva kritična sekcija, prvo zaključava muteks što onemogućava drugim nitima da pristupe kritičnoj sekciji. Nakon izlaska iz kritične sekcije, nit otključava muteks, a nit koja je bila blokirana može da pristupi kritičnoj sekciji. U primeru prikazanom na slici \ref{fig:race}, kritična sekcija predstavlja uvećanje deljene promenljive i postavljanjem muteksa onemogućeno je da joj niti istovremeno pristupe, čime je problem izbegnut. 
+
+Semafor predstavlja strukturu koja u zavisnosti od zadovoljenosti uslova blokira ili propušta niti. Barijera za grupu niti označava mesto u kodu gde sve niti moraju da se zaustave i sačekaju dok sve niti iz grupe ne stignu do tog mesta. U zavisnosti od programskog jezika i sistema, postoji i drugi mehanizmi sinhronizacije, kao i razni algoritmi i projektni uzorci koji olakšavaju rešavanje različitih problema.
+
+Upotrebljavanje sinhronizacije na neispravan način, tokom izvršavanja može dovesti do problema kao što su mrtva petlja ili izgladnjivanje. Mrtva petlja se dešava u situacijima kada više niti čeka na resurse koje drže druge niti koje takođe čekaju na resurse, tako da postoji zatvoreni lanac čekanja bez napredovanja. Izgladnjivanje predstavlja situaciju u kojoj neke niti imaju veću prednost i time onemogućavaju drugim nitima da dođu do resursa. Probleme koji se javljaju kod konkurentnosti je ponekad teško uočiti jer se ne pojavljuju prilikom svakog izvršavanja, ali mogu dovesti do smanjenih performansi ili neupotrebljivog rešenja. 
+
+\section{Gorutine}
+
+U programskom jeziku Go, kada je u pitanju konkurentnost, osnovni pojam predstavljaju gorutine. Reč gorutina je nastala spajanjem reči go i reči korutina, koja označava funkciju koja se nezavisno izvršava. Gorutine su stvar koja je karakteristična samo za jezik Go i predstavljaju niti niže kategorije. Kada se program pokrene, jedina gorutina koja postoji je glavna gorutina koja poziva funkciju \texttt{main}. Nove gorutine, kreiraju se upotrebom naredbe \texttt{go} i navođenjem funkcije koja će se izvršavati u novoj gorutini konkurentno. 
+
+Gorutine se kreiraju sa stekom male veličine od nekoliko kilobajta, koji u zavisnosti od potreba može da se proširuje. Ova karakteristika omogućava kreiranje i izvršavanje velikog broja gorutina. Go poseduje sopstveni M:N planer izvršavanja gorutina koji mapira proizvoljan broj gorutina M u proizvoljan broj niti operativnog sistema N, što omogućava da se više gorutina može mapirati u jednu nit operativnog sistema. 
+
+Rantajm (eng. "runtime") programskog jezika Go, automatski suspenduje gorutine koje su postale blokirane i nastavlja njihovo izvršavanje kada postanu odblokirane. Takođe, ukoliko se više gorutina izvršava na jednoj niti operativnog sistema, ako jedna od njih postane blokirana, rantajm premešta ostale gorutine na drugu nit operativnog sistema kako i one ne bi bile blokirane \cite{bookConc}. 
 
 \section{Kanali} \label{chanel}
 
+Kanali (\texttt{chan}) pripadaju referentnom tipu podataka koji omogućava dvosmernu komunikaciju između dve gorutine. Tip kanala definiše tip vrednosti koju je moguće poslati kroz kanal. Operator strelice \texttt{<-} , koristi se za prosleđivanje i preuzimanje vredosti u, odnosno iz kanala u zavisnosti sa koje strane strelice se kanal nalazi. Kanal se kreira upotrebom funkcije \texttt{make} u kojoj se navodi tip kanala.
+
+U kanalu bez bafera, u jednom trenutku može se nalaziti samo jedna vrednost. Ukoliko neka gorutina pokuša da preuzme vrednost iz kanala, ona postaje blokirana do trenutka dok druga gorutina ne pošalje vrednost kroz isti kanal. Slično, ukoliko vrednost iz kanala nije preuzeta, gorutina postaje blokirana ako pokuša da pošalje novu vrednost kroz kanal, do trenutka dok druga gorutina ne preuzme vrednost iz tog kanala. Na ovaj način, kanalima može da se postigne sinhronizacija izršavanja gorutina.
+
+Primer upotrebe kanala, prikazan je u primeru \ref{lst:chan1}. U \texttt{main} funkciji, definiše se isečak \texttt{s} i kreira se kanal \texttt{c} tipa \texttt{int}. Funkcija \texttt{sum}, poziva se u jednoj gorutini za prvu polovinu, a u drugoj gorutini za drugu polovinu isečka. Funkcijama je kao argument prosleđen kanal \texttt{c}. Nakon poziva funkcija, preuzimaju se izračunate vrednosti iz kanala. Glavna gorutina je u ovom trenutku blokirana, sve dok obe gorutine ne pošalju svoje izračunate vrednosti. U funkciji se prvo izračunava suma isečka koje se zatim šalje kroz kanal \texttt{c}. Gorutina će biti blokirana ukoliko je druga gorutina već poslala svoju vrednost kroz kanal, a \texttt{main} funkcija u glavnoj gorutini je još uvek nije preuzela. 
+
+\begin{center}
+\begin{lstlisting}[caption=Primer upotrebe kanala, label={lst:chan1},  backgroundcolor=\color{background}]
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c <- sum 
+}
+
+func main() {
+	s := []int{1, 2, 3, 4, 5, 6}
+
+	c := make(chan int)
+	go sum(s[:len(s)/2], c)
+	go sum(s[len(s)/2:], c)
+	x, y := <-c, <-c 
+
+	fmt.Println(x, y, x+y)	// 15 6 21 
+}							// redosled ispisa brojeva 15 i 6 varira
+\end{lstlisting}
+\end{center}
+
+Pošiljalac može zatvoriti kanal upotrebom \texttt{close} funkcije. Za razliku od fajlova, kanale nije neophodno zatvoriti. Zatvaranje kanala se koristi kako bi primalac znao da se nove vrednosti više neće slati. Slanje kroz zatvoreni kanal dovodi do greške. Primaoc može proveriti da li je kanal zatvoren korišćenjem dodatne promenljive prilikom naredbe preuzimanja: \texttt{v, ok := <-ch}. For petlja u kombinaciji sa naredbom \texttt{range}, može se koristiti za preuzimanje vrednosti iz kanala do trenutka zatvaranja. 
+
+Moguće je definisati kanale sa baferom kroz koji se mogu poslati više od jedne vrednosti bez blokiranja prilikom slanja. Veličina bafera, definiše se prilikom kreiranja kanala u funkciji make. Podrazumevana vrednost bafera je 1. Funkcija \texttt{cap}, koristi se za dobijanje veličine bafera kanala. Osim dvosmernih, mogu se definisati i jednosmerni kanali upotrebom operatora strelice. Smer kanala označen je pozicijom opratora strelice u odnosu na ključnu reč \texttt{chan}. Konverzija dvosmernog kanala u jednosmerni je dozvoljena, dok suprotna situacija nije. 
+
+Primer upotrebe jednosmernih kanala i kanala sa baferom, prikazan je u listingu \ref{lst:chan2}. U \texttt{main} funkciji, kreira se dvosmerni kanal \texttt{c} sa baferom veličine 10, a zatim se funkcija \texttt{fibonacci} poziva u novoj gorutini. U for petlji se ispisuju vrednosti koje su poslate kroz kanal do njegovog zatvaranja. Funkcija \texttt{fibonacci} kao argumente ima  broj Fibonačijevih brojeva koji je potrebno da generiše \texttt{n} i usmereni kanal \texttt{c}. Prilikom poziva ove funkcije dolazi do konverzije dvosmernog kanala u jednosmerni kanal za slanje. U petlji se kroz kanal šalju vrednosti nakon čega se kanal zatvara.
+
+\begin{center}
+\begin{lstlisting}[caption=Primer upotrebe jednosmernog kanala i kanala sa baferom, label={lst:chan2},  backgroundcolor=\color{background}]
+func fibonacci(n int, c chan<- int) {
+	x, y := 0, 1
+	for i := 0; i < n; i++ {
+		c <- x
+		x, y = y, x+y
+	}
+	close(c)
+}
+
+func main() {
+	c := make(chan int, 10)
+	go fibonacci(cap(c), c)
+	for i := range c {
+		fmt.Println(i) // 0 1 1 2 3 5 8 13 21 34
+	}
+}
+\end{lstlisting}
+\end{center}
+
 \section{Sinhronizacija}
+
+Već je pomenuto da kanali svojim mehanizmom blokiranja mogu da koriste kao sredstvo za sinhronizaciju izvršavanja gorutina. Ipak, pored ugrađenih mehanizama, Go obezbeđuje paket \texttt{sync} kao dodatno sredstvo za sinhronizaciju. U okviru paketa \texttt{sync}, nalaze se strukture za sinhronizaciju kao što su \texttt{Mutex}, \texttt{WaitGroup} i \texttt{Once}.
+
+\texttt{WaitGroup} tip predstavlja vid barijere koji čeka na završavanje grupe gorutina. Pre nego što se gorutine kreiraju, potrebno je pozvati metod \texttt{Add} nad promenljivom \texttt{wg} tipa \texttt{WaitGroup}, koji kao argument ima broj gorutina koji je potrebno sačekati. Svakoj gorutini, potrebno je proslediti referencu na \texttt{wg} koja na kraju svog izvršavanja poziva metod \texttt{Done}. Pozivanjem metoda \texttt{Wait}, tekuća gorutina se blokira i čeka na završetak rada svih gorutina.  Metod \texttt{Done} ima efekat dekrementiranja brojača definisanog metodom \texttt{Add}, a kada se brojač spusti na nulu, gorutina koja je pozvala \texttt{Wait} postaje odblokirana. Suvišni poziv metoda \texttt{Done}, odnosno spuštanje brojača ispod nule, dovodi do greške. 
+
+\begin{center}
+\begin{lstlisting}[caption=Primer upotrebe \texttt{sync} paketa za sinhronizaciju, label={lst:sync},  backgroundcolor=\color{background}]
+var wg sync.WaitGroup
+var once sync.Once
+var mutex sync.Mutex
+var count=0
+
+func f(x int){
+	once.Do(func(){fmt.Println("The numbers are:")})
+	
+	mutex.Lock()
+	count++
+	mutex.Unlock()
+	
+	fmt.Println(x)
+	wg.Done()
+}
+
+func main() {
+	wg.Add(3)
+	go f(21); go f(4); go f(9);	
+	wg.Wait()
+	fmt.Println("Count =",count)	//The numbers are: 9 21 4 Count = 3 
+}							// redosled ispisa brojeva 9, 21 i 4 varira
+\end{lstlisting}
+\end{center}
+
+Struktura \texttt{Once}, ima implementira metod \texttt{Do} koji garantaju da će funkcija koja mu je prosleđena biti izvršena samo prvi put. Tip  \texttt{Mutex} predstavlja jednostavni katanac sa dva metoda: za zaključavanje \texttt{Lock} i otključavanje \texttt{Unlock}. Takođe postoji i muteks za čitanje i pisanje \texttt{RWMutex}, koji nudi dodatne metode \texttt{RLock} i \texttt{RUnlock} koji dopuštaju labaviji stepen ekskluzivnosti i dozvoljavaju istovremeno čitanje podataka u kritičnoj sekciji.
+
+Primer koji demonstrira upotrebu \texttt{sync} paketa za sinhronizaciju, prikazan je u listingu \ref{lst:sync}. Muteks je upotrebljen prilikom inkrementiranja globalne promenljive \texttt{count}, tip \texttt{once} je upotrebljen za početni ispis, a grupa za čekanje je upotrebljena prilikom čekanja na završetak rada svih gorutina.
+
+U \texttt{sync} paketu, definsane se i druge strukture za sinhronizaciju ali osim tipova \texttt{WaitGroup}  i \texttt{Once}, uglavnom su namenjene za upotrebu bibliotečkih funkcija niskog nivoa. Sinhronizacija na visokom nivou, bolje se postiže upotrebom kanala i komunikacije \cite{sync}. 
 
 \section{Select naredba}
 
-\section{Dizajn pattern-i}
+U programskom jeziku Go postoji specijalna naredba \texttt{select} koja funkcioniše kao naredba \texttt{switch} i upotrebljava se samo za kanale. Kao slučajevi se navode naredbe slanja ili preuzimanja, u odnosno iz kanala. Naredba je blokirana do trenutka kada neki od slučajeva može da se izvrši. Ukoliko je u jednom trenutku moguće izvršiti  više slučajeva, jedan se bira na slučajan način. Primer korišćenja \texttt{select} naredbe za implementaciju isteka vremena konekcije, prikazan je u listingu \ref{lst:select}. Funkcija \texttt{After} kreira kanal kroz koji nakon zadatog vremena šalje podatak o trenutnom vremenu.
 
-\section{Data race detektor}
+\begin{center}
+\begin{lstlisting}[caption=Primer upotrebe \texttt{select} naredbe, label={lst:select},  backgroundcolor=\color{background}]
+select {
+case msg1 := <- c1:
+	fmt.Println( msg1)
+case msg2 := <- c2:
+	fmt.Println( msg2)
+case <- time.After(10 * time.Second):
+	fmt.Println("timeout")
+default:
+	fmt.Println("nothing ready")
+}					
+\end{lstlisting}
+\end{center}
+
+\section{Detektor trke za resurse} \label{datarace}
+
+\texttt{Race} detektor je koristan alat za automatsko detektovanje postojanja trke za resursima koji dolazi sa osnovnom distribucijom jezika Go. Koristi se dodavanjem flega \texttt{-race} nakon komande \texttt{run}, \texttt{test}, \texttt{build} ili \texttt{install} u okviru \texttt{go} alata. U izlazu koji detektor proizvodi, navedeni su pozivi gorutina sa funkcijama koje pokušavaju da izvrše nesinhronozovano čitanje i pisanje određenog dela memorije. Primer upozorenja koje detektor trke za resursima daje za implementaciju \textit{Eratostenovog sita} iz poglavlja \ref{erathost}, prikazano je na slici \ref{fig:datarace}.
 
 \begin{figure}
 \begin{center}
@@ -617,7 +764,7 @@ Goroutine 83 (running) created at:
       /home/cg/root/7238354/main.go:72 +0x126
 \end{Verbatim}
 
-\caption{Primer upozorenja koje data race detektor daje za implementaciju Eratostenovog sita}
+\caption{Primer upozorenja koje detektor trke za resurse daje za implementaciju Eratostenovog sita}
 \label{fig:datarace}
 \end{center}
 \end{figure}
@@ -626,25 +773,39 @@ Goroutine 83 (running) created at:
 %PRIMERI ==============================================================================
 
 \chapter {Poređenje sa drugim programskim jezicima}
-U ovom poglavlju su izloženi primeri konkurentnih Go programa i poređenje implementacija nekoliko jednostavnih algoritama u jezicima C, C++ i Python. Primeri ilustruju na koji način se može koristiti konkurentnost u jeziku Go i kakva je njegova efikasnost u odnosu na druge pomenute jezike. Prvo sledi kratak pregled programskih jezika C, C++ i Python i njihove konkurentnosti a zatim poređenje implementacija algoritama quicksort, množenje matrica i Eratostenovo sito.
+U ovoj glavi, izložene su konkurentne implementacija tri jednostavna algoritma u jezicima Go, C, C++ i Python.  Implementacije demonstriraju upotrebu konkurentnosti u jeziku Go, kao i kakvi su njegovi vremenski i memorijski zahtevi u odnosu na druge pomenute jezike. Prvo sledi kratak pregled programskih jezika C, C++ i Python, a zatim poređenje i rezultati testiranja implementacija algoritama \textit{quicksort}, \textit{množenje matrica} i \textit{Eratostenovo sito}.
 
 \section{C}
 
+Programski jezik C je statički tipizirani, imperativni jezik opšte namene. Kreiran je sa svrhom ponovnog implementiranja Unix operativnog sistema početkom 70-ih godina prošlog veka. Naredbe u jeziku C, efikasno se mapiraju u standardne mašinske instrukcije što ga čini idealnog za implementaciju sistemskih aplikacija. C predstavlja jedan od najkorišćenijih programskih jezika i uticao je na razvoj mnogih drugih jezika, uključujući i jezik Go. 
+
+Konkurentno izvršavanje je omogućeno upotrebom biblioteka. Postoji veliki izbor biblioteka koje obezbeđuju podršku za konkurentno izvršavanje, a za potrebe ovog rada izabrana je biblioteka \texttt{pthreads} \cite{pthr} iz standardne biblioteke. Biblioteka obezbeđuje sredstva za kreiranje i izvršavanje niti, kao i za njihovu sinhronizaciju. Za sinhronizaciju niti u okviru biblioteke definisani su muteksi i uslovne promenljive (promenljive koje dozvoljavaju pristup kada je uslov zadovoljen). 
+
 \section{C++}
 
+C++ je imperativni, objektno-orijentisani jezik opšte namene. Nastao je kao nadogradnja jezika C sa svrhom kreiranja efikasnog jezika sa visokim stepenom apstrakcije podataka koji ima mogućnost upravljanja memorijom na niskom nivou. Kompatibilan je sa C-om tako da se biblioteke i k\^{o}d koji su implementirani za C, mogu koristiti i u C++-u.
+
+Postoji širok izbor biblioteka koje obezbeđuju konkurentnost u jeziku C++, a u ovom radu upotrebljene su standardna i \texttt{OpenMP} biblioteka. Standardna biblioteka \cite{std} nudi više mogućnosti od biblioteke \texttt{pthreads}, kao što su, na primer, šabloni \texttt{future} i \texttt{promise}. Šablon \texttt{future} omogućava mehanizam za čekanje rezultata asinhronih operacija, a šablon \texttt{promise} omogućava čuvanje vrednosti kojoj se kasnije može asinhrono pristupiti. 
+
+\texttt{OpenMP} biblioteka \cite{omp} na efikasan način obezbeđuje jednostavno programiranje konkurentnih programa upotrebom paralelnih blokova. U okviru direktive paralelnog bloka, navode se podešavanja, kao i podaci koji mogu biti deljeni između niti i podaci koji su specifični za svaku nit pojedinačno. Takođe postoje strukture kao što su paralelna \texttt{for} petlja, muteksi i barijere. 
+
 \section{Python}
-\label{gil} GIL (Global Iinterpreter Lock) is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once.
 
-\section{Poređenje na primerima jednostavnih algoritama}
-Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija k\^{o}da. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. Verzija jezika korišćena za Go primere je 1.8.
+Python je dinamički tipizirani, interpretirani jezik opšte namene. Jedan od osnovnih ciljeva jezika je jednostavno pisanje čitljivog koda u što manje linija. Python podržava više programskih paradigmi, uključujući funkcionalnu i objektno-orijentisanu i ima široku upotrebu od razvoja za veb do naučnog izračunavanja. 
 
+\label{gil}
+U python-u je omogućeno konkurentno programiranje, međutim nije realizovano na najefikasniji način. Probleme prilikom konkurentnog izvršavanja proizvodi GIL (eng. "Global Interpreter Lock", katanac globalnog interpretera). GIL predstavlja mehanizam koji se koristi za sinhronizovano izvršavanje niti tako da se samo jedna nit istog procesa može izvršavati u jednom trenutku. Na ovaj način je onemogućeno paralelno izvršavanje dve ili više niti istog procesa. Ipak, neki zadaci kao što su ulazno/izlazne operacije, mogu se izvršavati nezavisno od GIL-a, kao i pojedine biblioteke (npr. numpy).
 
+U ovom radu za konkurentno programiranje korišćena je biblioteka \texttt{threading} \cite{thr}, koja omogućava standardna sredstva za manipulaciju nitima i njihovu sinhronizaciju. Kako bi se izbegao problem koji proizvodi GIL, biblioteka \texttt{multiprocessing} omogućava konkurentno izvršavanje procesa, međutim u ovom radu je razmatrano samo konkurentno izvršavanje niti. Paralelno izvršavanje niti se može postići instalacijom dodatnih modula kao što je \texttt{Parallel Python PP} \cite{pp}, koji je upotrebljen za jednu od implementacija \textit{quicksort} algoritma.
+
+\section{Poređenje konkurentnih implementacija}
+Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija k\^{o}da. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. Verzija jezika korišćena za Go implementacije je 1.8.
 
 % Quicksort==============================================================================
 \section{Quicksort}
-Quicksort je algoritam za sortiranje brojeva u mestu koji spada u grupu algoritama podeli i vladaj. U svakom koraku, jedan element - pivot se postavlja na svoju poziciju u sortiranom nizu i deli se na dva podniza particionisanjem, jedan u kome su svi brojevi veći od pivota i drugi u kome su svi brojevi manji od pivota, koji se zatim sortiraju rekurzivno.  Pseudo kod algoritma je prikazan na slici \ref{fig:qs_pseudo}. 
+\textit{Quicksort} je algoritam za sortiranje brojeva u mestu koji spada u grupu algoritama podeli i vladaj. U svakom koraku, jedan element - pivot, postavlja se na svoju poziciju u sortiranom nizu i deli se na dva podniza particionisanjem, jedan u kome su svi brojevi veći od pivota i drugi u kome su svi brojevi manji od pivota, koji se zatim sortiraju rekurzivno.  Pseudo kod algoritma je prikazan na slici \ref{fig:qs_pseudo}. 
 
-Paralelizacija algoritma je izvršena tako što se za svaki rekurzivni poziv pokreće po jedna nit/rutina do određene granice kada se prelazi u sekvencijalni režim rada. Za testiranje su korišćeni pseudoslučajno generisani nizovi različitih dužina. Kodovi svih implementacija su dostupni na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/quicksort}}.
+Paralelizacija algoritma je izvršena tako što se za svaki rekurzivni poziv pokreće po jedna nit/gorutina do određene granice kada se prelazi u sekvencijalni režim rada. Za testiranje su korišćeni pseudoslučajno generisani nizovi različitih dužina. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/quicksort}}.
 
 \begin{figure}
 \begin{center}
@@ -676,12 +837,15 @@ algorithm partition(A, lo, hi) :
 
 \subsection{Go}
 \label{qs:go}
-Implementacija \ref{lst:qs} koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i select naredbe gde kapacitet kanala označava maksimalan broj aktivnih go-rutina. U select naredbi se pokušava "dobijanje tokena" odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nam nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da je moguće dobiti token odnosno uspešno poslati praznu strukturu kroz kanal pokreće se go-rutina za rekurzivni poziv, u suprotnom, ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake go-rutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto.
+Implementacija prikazana u listingu \ref{lst:qs}, koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i select naredbe gde kapacitet kanala označava maksimalan broj aktivnih gorutina. U \texttt{select} naredbi, pokušava se "dobijanje tokena", odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da je moguće dobiti token, odnosno uspešno poslati praznu strukturu kroz kanal, pokreće se gorutina za rekurzivni poziv, u suprotnom, ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake gorutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto.
 
- Kako bi se sačekalo da sve go-rutine završile sa svojim radom, za sinhronizaciju se koriste wait grupe. Svaki konkurentni poziv funkcije kreira svoju wait grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da unapred nije poznato kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati wait grupi da je završeno sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
+ Kako bi se sačekalo da sve gorutine završe sa svojim radom, za sinhronizaciju se koriste grupe za čekanje (\texttt{WaitGroup}). Svaki konkurentni poziv funkcije kreira svoju grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da unapred nije poznato kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati grupi za čekanje da je završeno sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
+
+\subsection{C}
+Za razliku od Go implementacije, ovde je upotrebljena dubina rekurzije za ograničavanje broja niti koje program kreira. Kada se dostigne zadata dubina rekurzije program više ne kreira nove niti već prelazi u sekvencijalni režim rada. Svaki konkurentni poziv funkcije kreira po dve nove niti ukoliko maksimalna dubina nije dostignuta, nakon čega se \texttt{join} funkcijom čeka na njihov završetak rada.
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne quicksort funkcije,label={lst:qs},float,  backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Go implementacija konkurentne quicksort funkcije,label={lst:qs},  backgroundcolor=\color{background}]
 var semaphore = make(chan struct{}, 100)
 
 func QuickSortConcurrent(a *[]int, low, hi int) {
@@ -723,25 +887,22 @@ func QuickSortConcurrent(a *[]int, low, hi int) {
 \end{lstlisting}
 \end{center}
 
-\subsection{C}
-Za razliku od Go implementacije, ovde je upotrebljena dubina rekurzije za ograničavanje broja niti koje program kreira. Kada se dostigne zadata dubina rekurzije program više ne kreira nove niti već prelazi u sekvencijalni režim rada. Svaki konkurentni poziv funkcije kreira po dve nove niti ukoliko maksimalna dubina nije dostignuta, nakon čega se join funkcijom čeka na njihov završetak sa radom.
-
 \subsection{C++}
-Za C++ su razmatrane dve implementacije: prva, u kojoj je niz reprezentovan strukturom vektor i koristi standardnu biblioteku, i druga, koja koristi običan niz int-ova i OpenMP biblioteku. 
-Prva implementacija ima koncept dubine rekurzije za restrikciju broja niti na isti način kao što je realizovano u C-u. Druga, u kojoj je upotrebljena OpenMP biblioteka, ima mogućnost da postavi maksimalni broj aktivnih niti u jednom trenutku.
+Za C++ su razmatrane dve implementacije: prva, u kojoj je niz reprezentovan strukturom vektor i koristi standardnu biblioteku, i druga, koja koristi običan niz \texttt{int}-ova i \texttt{omp} biblioteku. Prva implementacija ima koncept dubine rekurzije za restrikciju broja niti na isti način kao što je realizovano u C-u. Druga, u kojoj je upotrebljena \texttt{omp} biblioteka, ima mogućnost da postavi maksimalni broj aktivnih niti u jednom trenutku.
+
 
 \subsection{Python}
-Ovde se takođe razmatraju dve implementacije koje koriste različite pakete za realizaciju konkurentnosti. Kod prve implementacije koristi se threading paket i postavlja se maksimalni broj aktivnih niti. U drugoj verziji je iskorišćen Parallel Python paket sa već pomenutim konceptom dubine rekurzije za kontrolu broja niti. 
+Ovde se takođe razmatraju dve implementacije koje koriste različite pakete za realizaciju konkurentnosti. Kod prve implementacije koristi se \texttt{threading} biblioteka i postavlja se maksimalni broj aktivnih niti. U drugoj verziji je iskorišćen \texttt{Parallel Python} modul sa već pomenutim konceptom dubine rekurzije za kontrolu broja niti. 
 
 \subsection{Rezultati}\label{qs:rez}
 
-Vremenska efikasnost implementacija u zavisnosti od veličine niza je prikazana u tabeli \ref{tab:qs1}.  C i C++ OpenMP implementacija su se pokazale kao najefikasnije. Vreme izvršavanja Go implementacije je uporedivo za nizove od milion i 10 miliona dok je za niz od 100 miliona brojeva potrebno dva puta više vremena u odnosu na C i C++ OpenMP implementacije. C++ verzija sa standardnom bibliotekom je značajno sporija od pomenutih implementacija, ali je Python-u potrebno najviše vremena i nije bilo mogućnosti testirati ga za niz od 100 miliona brojeva.
+Vremenska efikasnost implementacija u zavisnosti od veličine niza je prikazana u tabeli \ref{tab:qs1}.  C i C++ OpenMP implementacija su se pokazale kao najefikasnije. Vreme izvršavanja Go implementacije je uporedivo za nizove od milion i 10 miliona dok je za niz od 100 miliona brojeva potrebno dva puta više vremena u odnosu na C i C++ \texttt{omp} implementacije. C++ verzija sa standardnom bibliotekom je značajno sporija od pomenutih implementacija. Python-u je potrebno najviše vremena i nije bilo mogućnosti testirati ga za niz od 100 miliona brojeva.
 \\
 
-U odnosu na sekvencijalno izvršavanje, najveće ubrzanje ima C. Sekvencijalno se najbrže izvršava Go i za niz od milion brojeva mu je potrebno isto vremena kao i pri konkurentnom izvršavanju.  Ubrzanje postoji za nizove veće dužine međutim ono je manje u odnosu na C i C++ OpenMP verziju. 
+U odnosu na sekvencijalno izvršavanje, najveće ubrzanje ima C. Sekvencijalno se najbrže izvršava Go i za niz od milion brojeva, potrebno mu je isto vremena kao i pri konkurentnom izvršavanju.  Ubrzanje postoji za nizove veće dužine međutim ono je manje u odnosu na C i C++ \texttt{omp} verziju. 
 \\
 
-Kod Python threading implementacije, konkurentno izvršavanje je sporije u odnosu na sekvencijalno kao direktna posledica GIL-a, što je objašnjeno u segmentu \ref{gil}. Verzija koja koristi Parallel Python paket pokazuje da je moguće napraviti konkurentan program sa nitima u Pythonu koji je efikasniji u odnosu na sekvencijalno izvršavanje. Međutim i ova verzija je višestruko sporija u odnosu na implementacije u drugim jezicima. Napomena da rezultati dobijeni testiranjem na drugom računaru služe samo kao relativan odnos sekvencijalnog i konkurentog izvršavanja, a ne za poređenje sa drugim implementacijama, usled različite brzine izvršavanja.
+Kod Python \texttt{threading} implementacije, konkurentno izvršavanje je sporije u odnosu na sekvencijalno kao direktna posledica GIL-a, što je objašnjeno u segmentu \ref{gil}. Verzija koja koristi \texttt{Parallel Python} modul pokazuje da je moguće napraviti konkurentan program sa nitima u Pythonu, koji je efikasniji u odnosu na sekvencijalno izvršavanje. Međutim, i ova Python verzija je višestruko sporija u odnosu na implementacije u drugim jezicima. Napomena da rezultati dobijeni testiranjem na drugom računaru služe samo kao relativan odnos sekvencijalnog i konkurentog izvršavanja, a ne za poređenje sa drugim implementacijama, usled različite brzine izvršavanja.
 \\
 
 \begin{table}
@@ -764,7 +925,7 @@ Python pp\textsuperscript{*}	& 4.35		&58.87		& - 			& 8.46		& 118.33		& - 			\\ 
 \end{table}
 
 
-U tabeli \ref{tab:qs5} je prikazano prosečno vreme izvršavanja implementacija sa različitim brojem niti/rutina. Python implementacija nije testirana iz razloga što se sa većim brojem niti izvršava sve sporije. Najbolje vreme se postiže sa 100 niti/rutina za Go i C++ OpenMP verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom.  Prilikom ostalih testiranja je korišćen onaj broj niti/rutina za koji implementacija pokazuje najbolje rezultate. Svi prikazani rezultati Python implementacije su testirani sa 30 niti. 
+U tabeli \ref{tab:qs5} je prikazano prosečno vreme izvršavanja implementacija sa različitim brojem niti/rutina. Python implementacija nije testirana iz razloga što se sa većim brojem niti, vreme izvršavanja samo povećava. Najbolje vreme se postiže sa 100 niti/gorutina za Go i C++ \texttt{omp} verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom.  Prilikom ostalih testiranja je korišćen onaj broj niti/gorutina za koji implementacija pokazuje najbolje rezultate. Svi prikazani rezultati Python implementacije, testirani su sa 30 niti. 
 \\
 
 \begin{table}
@@ -783,7 +944,7 @@ C++ std 	&6.44	&5.39	&4.37			&\textbf{3.77}	&4.82\\
 \end{center}
 \end{table}
 
-Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi za izvršavanje, za niz od 10 miliona brojeva je prikazana na slici \ref{fig:qs1}. Python nije testiran jer broj jezgara ne utiče na njegovu brzinu izvršavanja. Ubrzanje sa povećanjem broja jezgara je najzastupljenije kod C++ verzije sa OpenMP bibliotekom. Kod ostalih implementacija, najveća razlika u brzini se vidi između izvršavanja sa 4 i 8 jezgara dok je razlika između 24 i 48 jezgara minimalna. 
+Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi za izvršavanje, za niz od 10 miliona brojeva je prikazana na slici \ref{fig:qs1}. Python nije testiran jer broj jezgara ne utiče na njegovu brzinu izvršavanja. Ubrzanje sa povećanjem broja jezgara je najzastupljenije kod C++ \texttt{omp} verzije. Kod ostalih implementacija, najveća razlika u brzini se vidi između izvršavanja sa 4 i 8 jezgara dok je razlika između 24 i 48 jezgara minimalna. 
 \\
 
 \begin{figure}
@@ -818,7 +979,7 @@ Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se korist
 \end{center}
 \end{figure}
 
-Maksimalna upotreba memorije za nizove različitih dužina je prikazana u tabeli \ref{tab:qs3}. Obe verzije u C++-u su podjednako efikasne i potrebno im je najmanje memorije u odnosu na druge implementacije. C je približno efikasan kao i C++ osim što i za nizove manjih dužina zahteva veliku količinu memorije. Go koristi dva puta više memorije nego ostale implementacije dok je Pythonu potrebna višestruko veća količina memorije.
+Maksimalna upotreba memorije za nizove različitih dužina je prikazana u tabeli \ref{tab:qs3}. Obe verzije u C++-u su podjednako efikasne i potrebno im je manje memorije u odnosu na druge implementacije. C je približno efikasan kao i C++ osim što i za nizove manjih dužina zahteva veliku količinu memorije. Go koristi dva puta više memorije nego ostale implementacije dok je Python-u potrebna višestruko veća količina memorije.
 \\
 
 \begin{table}
@@ -838,7 +999,7 @@ Python pp	& 49.6		&411.8		& - 			\\ \hline
 \end{center}
 \end{table}
 
-Dužine implementacija, prikazane su u tabeli \ref{tab:qs4}.  Za implementaciju algoritma, u C-u je potrebno najviše linija  k\^{o}da, dok je u Pythonu potrebno najmanje.
+Dužine implementacija, prikazane su u tabeli \ref{tab:qs4}.  Za implementaciju algoritma u C-u, potreban je najveći broj linija koda, dok je u Python-u potreban najmanji broj linija.
 
 \begin{table}
 \begin{center}
@@ -852,22 +1013,22 @@ Br. linija koda& 119	& 98	&84		&79		&55		&43	 \\ \hline
 \end{center}
 \end{table}
 
-\subsection{Zaključak}
+\subsection{Rezime}
 
-Na ovom primeru Go se pokazao vremenski efikasan isto koliko i C i C++ za nizove dužine do 10 miliona dok mu je potrebno dva puta više vremena za nizove dužine od 100 miliona, ali se prilkom sekvencijalnog izvršavanja ispostavio kao najefikasniji. Potrebno mu je dva puta više memorije nego C-u i C++-u ali je i memorijski i vremenski višestruko efikasniji od Pythona.  Dužina koda je uporediva sa C-om i C++-om.
+Za konkurentnu implementaciju \textit{quicksort} algoritma, Go se pokazao vremenski efikasan isto koliko C i C++ za nizove dužine do 10 miliona, dok mu je potrebno dva puta više vremena za nizove dužine od 100 miliona brojeva, ali prilkom sekvencijalnog izvršavanja ispostavio se kao najefikasniji. Što se tiče memorijskih zahteva, Go koristi dva puta više memorije nego C i C++, ali je i memorijski i vremenski višestruko efikasniji od Pythona. Dužina koda Go implementacije, uporediva je sa C-om i C++-om.
 
 % Matrix==============================================================================
 
 \section{Množenje matrica}
-Implementiran je standardni algoritam za množenje matrica. Vrednost na poziciji \textit{ij} proizvoda matrica A i B se izračunava kao: $$(AB)_{ij} = \sum_{k=1}^{n} A_{ik}B_{kj}$$ gde je n dužina matrice A. 
+Za izradu implementacija, upotrebljen je standardni algoritam za \textit{množenje matrica}. Vrednost na poziciji \textit{ij} proizvoda matrica A i B, izračunava se kao: $$(AB)_{ij} = \sum_{k=1}^{n} A_{ik}B_{kj}$$ gde je \texttt{n} dužina matrice A. 
 
-Algoritam je paralelizovan tako što svaka nit/rutina računa po jedan red matrice, odnosno jedan red prve matrice množi sa svim kolonama druge matrice. Za testiranje su korišćene pseudoslučajno generisane kvadratne matrice različitih dimenzija. Kodovi svih implementacija su dostupni na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/matrix_multiplication}}.
+Algoritam je paralelizovan tako što svaka nit/gorutina računa po jedan red matrice, odnosno, jedan red prve matrice množi sa svim kolonama druge matrice. Za testiranje, korišćene su pseudoslučajno generisane kvadratne matrice različitih dimenzija. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/matrix_multiplication}}.
 
 \subsection{Go}
-Restrikcija broja go-rutina se ostvaruje pomoću semafora na isti način kao što je urađeno u prethodnom primeru \ref{qs:go}. Može se primetiti u implementaciji \ref{lst:matrix} da je neophodno go-rutinama  proselditi \texttt{i} kao argument anonimne funkcije kako bi svaka imala svoju kopiju. U suprotnom, u svakoj sledećoj iterciji for petlje vrednost \texttt{i} bi bila ažurirana u svim go-rutinama. Za razliku od prethodnog primera gde se niz koji se sortira prenosi pomoću reference, ovde su rezultujuća i početne matrice definisane kao globalne. Ni u ovom slučaju nije potrebno zaključavanje jer se početne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka go-rutina popunjava samo svoj red. 
+Restrikcija broja gorutina, ostvaruje se pomoću semafora na isti način kao što je urađeno u prethodnoj implementaciji u poglavlju \ref{qs:go}. U implementaciji prikazanoj u listingu\ref{lst:matrix}, može se primetiti da je neophodno gorutinama proselditi \texttt{i} kao argument anonimne funkcije kako bi svaka gorutina imala svoju kopiju. U suprotnom, u svakoj sledećoj iteraciji \texttt{for} petlje vrednost \texttt{i} bi bila ažurirana u svim gorutinama. Za razliku od prethodne implementacije gde se niz koji se sortira prenosi pomoću reference, ovde su matrice definisane kao globalne. Nije potrebno nikakvo zaključavanje jer se početne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka gorutina popunjava samo svoj red. 
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za množenje matrica,label={lst:matrix},float, backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za množenje matrica,label={lst:matrix}, backgroundcolor=\color{background}]
 func multiply(){
 	wg := sync.WaitGroup{}
 	wg.Add(n)
@@ -892,13 +1053,12 @@ func multiply(){
 \end{center}
 
 \subsection{Ostale implementacije}
-Implementacije u ostalim jezicima su realizovane na sličan način. Maksimalan broj niti koji se kreira u toku izvršavanja programa se unapred zadaje. Za C++ razmatrane su dve implementacije. Jedna je ostvarena pomoću OpenMP biblioteke i koristi običan niz za reprezntaciju matrice, dok druga koristi strukturu vektor i standardnu biblioteku.
+Implementacije u ostalim jezicima su realizovane na sličan način. Maksimalan broj niti koji se kreira u toku izvršavanja programa zadaje se unapred. Za C++ razmatrane su dve implementacije. Jedna implementacija je ostvarena pomoću \texttt{omp} biblioteke i koristi običan niz za reprezntaciju matrice, dok druga koristi strukturu vektor i standardnu biblioteku.
 
 
 \subsection{Rezultati}
 
-Grafik brzine izvršavanja u zavisnosti od veličine matrice je prikazan na slici \ref{fig:matrix1}. Python se izvršava znatno sporije od ostalih implementacija tako da nije bilo mogućnosti testirati ga na ulazima iste veličine, a rezultati testiranja Python implementacije su prikazani u tabeli \ref{tab:matrix1}. Na grafiku se vidi da je C implementacija najefikasnija, a zatim C++ verzija sa OpenMP bibliotekom, dok verzija sa standardnom bibliotekom radi najsporije. Za matrice manje veličine Go radi podjednako efikasno kao i OpenMP verzija C++ implementacije, ali za matricu veličine 1500, potrebno je dva puta više vremena, što je približno četiri puta više nego C-u. 
-\newpage
+Grafik brzine izvršavanja u zavisnosti od veličine matrice, prikazan je na slici \ref{fig:matrix1}. Python se izvršava znatno sporije od ostalih implementacija tako da nije bilo mogućnosti testirati ga na ulazima iste veličine, a rezultati testiranja Python implementacije, prikazani su u posebnoj tabeli. Na osnovu grafika se zaključuje da je C implementacija najefikasnija, a zatim C++ verzija sa \texttt{omp} bibliotekom, dok C++ verzija sa standardnom bibliotekom radi najsporije. Za matrice manje veličine, Go radi podjednako efikasno kao i C++ \texttt{omp} verzija, ali za matricu veličine 1500, Go zahteva dva puta više vremena nego C++, što je približno četiri puta više nego C. 
 
 \begin{figure}
 \begin{center}
@@ -932,7 +1092,7 @@ Grafik brzine izvršavanja u zavisnosti od veličine matrice je prikazan na slic
 \end{figure}
 
 
-Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 1000 je prikazano u tabeli \ref{tab:matrix5}. Najbolje vreme se ponovo postiže sa 100 niti/rutina za Go i C++ OpenMP verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom. Kod ostalih testiranja je korišćen onaj broj niti/rutina za koji implementacija pokazuje najbolje rezultate. 
+Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 1000, prikazano je u tabeli \ref{tab:matrix5}. Najbolje vreme se postiže sa 100 niti/gorutina za Go i C++ \texttt{omp} verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom. Kod ostalih testiranja, korišćen je onaj broj niti/gorutina za koji implementacija pokazuje najbolje rezultate. 
 \\
 
 \begin{table}
@@ -950,7 +1110,7 @@ C++ std	&15.31&8.71&3.21&\textbf{3.06} \\ \hline
 \end{center}
 \end{table}
 
-Rezultati testiranja implementacija na različitom broju jezgara prikazani su na slici \ref{fig:matrix3}. Na grafiku se vidi velika razlika u brzini između sekvencijalnog (na jednom jezgru) i konkurentnog izvršavanja. Brzina raste do 16 i 24 jezgara, dok povećanje na 48 jezgara, ne donosi značajno ubrzanje. 
+Rezultati testiranja implementacija na različitom broju jezgara, prikazani su na slici \ref{fig:matrix3}. Na grafiku se može videti velika razlika u brzini između sekvencijalnog (na jednom jezgru) i konkurentnog izvršavanja. Brzina izvršavanja raste do 16 i 24 jezgara, dok povećanje na 48 jezgara, ne donosi značajno ubrzanje. 
 \\
 
 \begin{figure}
@@ -985,7 +1145,7 @@ Rezultati testiranja implementacija na različitom broju jezgara prikazani su na
 \end{center}
 \end{figure}
 
-Python se izvršava višestruko sporije i potrebno mu je više od 90 sekundi za matricu veličine 500, dok je ostalim implementacijama potrebno manje od jedne sekunde. Konkurentno izvršavanje je ponovo sporije od sekvencijalnog zbog već pomenutog problema sa GIL-om u odeljku \ref{gil}. Rezultati su prikazani u tabeli \ref{tab:matrix1}.
+Rezultati python implementacije, prikazani su u tabeli \ref{tab:matrix1}. Python se izvršava višestruko sporije i potrebno mu je više od 90 sekundi za matricu veličine 500, dok je ostalim implementacijama potrebno manje od jedne sekunde. Konkurentno izvršavanje je ponovo sporije od sekvencijalnog zbog već pomenutog problema sa GIL-om u poglavlju \ref{gil}.
 \\
 
 \begin{table}
@@ -1003,9 +1163,8 @@ n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 \end{center}
 \end{table}
 
-
-Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica je prikazan na slici \ref{fig:matrix2}. Memorijska efikasnost se u ovom primeru poklapa sa vremenskom. C i C++ OpenMP vezija su najefikasnije dok Go koristi dva puta više memorije. C++ verzija sa standardnom bibliotekom zahteva najveću količinu memorije. 
-\newpage
+Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica, prikazan je na slici \ref{fig:matrix2}. Memorijska efikasnost implementacija se poklapa sa vremenskom. C i C++ \texttt{omp} vezija su najefikasnije dok Go koristi dva puta više memorije. C++ verzija sa standardnom bibliotekom zahteva najveću količinu memorije. 
+\\
 
 \begin{figure}
 \begin{center}
@@ -1038,7 +1197,7 @@ Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica je prikaza
 \end{figure}
 
 
-Broj linija k\^{o}da svih  implementacija, prikazan je u tabeli \ref{tab:matrix2}. Python ima najkraću implementaciju sa samo 28 linija k\^{o}da. Najduža implementacija je C++ verzija sa standardnom bibliotekom jer je razdvojena na klase i nekoliko fajlova radi jednostavnijeg korišćenja.  
+Broj linija koda svih  implementacija, prikazan je u tabeli \ref{tab:matrix2}. Python ima najkraću implementaciju sa samo 28 linija koda. Najduža implementacija je C++ verzija sa standardnom bibliotekom usled razdvajanja na klase i nekoliko fajlova radi jednostavnijeg korišćenja.  
 
 \begin{table}
 \begin{center}
@@ -1052,15 +1211,14 @@ Br. linija koda&170		& 75	& 70	&50		&28		\\ \hline
 \end{center}
 \end{table}
 
-\subsection{Zaključak}
+\subsection{Rezime}
 
-Go se ponovo pokazao vremenski efikasan koliko C i C++ za ulaze manjih dimenzija, dok za velike ulaze zahteva dva puta više vremena. Takođe, potrebna mu je dva puta veća količina memorije ali je neuporedivo vremenski i memorijski efikasniji od Python-a. Potreban je približno isti broj linija k\^{o}da za implementaciju algoritma koliko i u C-u.
-
+Za konkurentnu implementaciju algoritma \textit{množenja matrica}, Go se pokazao vremenski efikasan koliko C i C++ za ulaze manjih dimenzija, dok za velike ulaze zahteva dva puta više vremena. Takođe, potrebna mu je dva puta veća količina memorije ali je neuporedivo vremenski i memorijski efikasniji od Python-a. Potreban je približno isti broj linija k\^{o}da za implementaciju algoritma koliko i u C-u.
 
 % Prime==============================================================================
 
-\section{Eratostenovo sito}
-Eratostenovo sito je algoritam za određivanje prostih brojeva manjih od n. Ideja algoritma je da se elimnišu svi brojevi koji nisu prosti između 2 i n. Na početku se pretpostavlja da su svi brojevi prosti odnosno definiše se niz od n bulovskih vrednosti postavljenih na true. Kreće se od prvog prostog broja što je 2 tako što se eliminiše svaki drugi broj počevši od $2^{2}$, a zatim se prelazi na sledeći prost broj i postupak se ponavlja. Uopšteno, za i-ti prost broj eliminiše se svaki i-ti broj počevši od  $i^{2}$. Postupak je dovoljno ponoviti za proste brojeve koji su manji od $\sqrt{n}$. Pseudokod algoritma je prikazan na slici \ref{fig:prime_pseudo}.
+\section{Eratostenovo sito} \label{erathost}
+Eratostenovo sito je algoritam za određivanje prostih brojeva manjih od n. Ideja algoritma je da se eliminišu svi brojevi koji nisu prosti između 2 i \texttt{n}. Na početku se pretpostavlja da su svi brojevi prosti, odnosno definiše se niz od \texttt{n} bulovskih vrednosti postavljenih na \texttt{true}. Polazi se od prvog prostog broja što je 2, tako što se eliminiše svaki drugi broj počevši od $2^{2}$, a zatim, prelazi se na sledeći prost broj i postupak se ponavlja. Uopšteno, za \texttt{i}-ti prost broj eliminiše se svaki i-ti broj počevši od  $\texttt{i}^{2}$. Postupak je dovoljno ponoviti za proste brojeve koji su manji od $\sqrt{\texttt{n}}$. Pseudokod algoritma je prikazan na slici \ref{fig:prime_pseudo}.
 
 \begin{figure}
 \begin{center}
@@ -1083,17 +1241,7 @@ ErathostenesSieve(n):
 \end{center}
 \end{figure}
 
-Paralelizacija algoritma se postiže deljenjem opsega od 2 do n na jednake delove. Svaka nit/rutina dobija svoj deo opsega u okviru kojeg eliminiše brojeve koji nisu prosti. Za svaki prost broj je prvo potrebno odrediti njegov prvi umnožak unutar opsega. Iako svaka nit/rutina ima svoj opseg, ona mora da pristupa članovima niza drugih niti/rutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{n}$. To kao posledicu dovodi do mogućnosti da se u nekim slučajevima bespotrebno eliminišu umnošci brojeva koji nisu prosti ukoliko ih druga nit/rutina još uvek nije eliminisala. Problem je rešen tako što se proverava dodatni uslov prilikom eliminacije: da li je neka druga nit/rutina u međuvremenu označila da taj broj nije prost. Kodovi svih implementacija su dostupni na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/prime_sieve}}.
-\\
-
-
-
-\subsection{Go}
-
-Koristi se globalni niz od n bulovskih promenljivih postavljenih na podrzumevanu vrednost - false umesto na true radi jednostavnosti.  Funkcija koja kreira go-rutine je prikazana u listingu \ref{lst:prime1}. Za svaki broj koji je trenutno označen kao prost, najpre je potrebno je odrediti njegov prvi umnožak, a zatim, označiti sve njegove umnoške unutar opsega, što je i prikazano u listingu \ref{lst:prime2}. Kao što je već pomenuto, ako svaka go-rutina ima svoj opseg, ona mora da pristupa i članovima niza drugih go-rutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{n}$. To kao posledecu dovodi do pojave data race-a, međutim, u ovom slučaju je to dopustivo i nisu potrebni muteksi upravo zato što proveravamo dodatni uslov da li je pročitana vrednost u međuvremenu bila menjana. Ako se data race detektor pozove, dobija se izveštaj koji upozorava da postoji data race. Primer izveštaja se može videti na slici \ref{fig:datarace}. 
-
-\subsection{Ostale implementacije}
-Implementacije u ostalim jezicima su realizovane na isti načini. Za C++ je razmatrana samo jedna implementacija koja koristi OpenMP biblioteku.
+Paralelizacija algoritma se postiže deljenjem opsega od 2 do \texttt{n} na jednake delove. Svaka nit/gorutina dobija svoj deo opsega u okviru kojeg eliminiše brojeve koji nisu prosti. Za svaki prost broj je prvo potrebno odrediti njegov prvi umnožak unutar opsega. Iako svaka nit/gorutina ima svoj opseg, ona mora da pristupa članovima niza drugih niti/gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do mogućnosti da se u nekim slučajevima bespotrebno eliminišu umnošci brojeva koji nisu prosti ukoliko ih druga nit/gorutina još uvek nije eliminisala. Problem je rešen tako što se proverava dodatni uslov prilikom eliminacije: da li je neka druga nit/gorutina u međuvremenu označila da taj broj nije prost. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/prime_sieve}}.
 
 \begin{center}
 \begin{lstlisting}[caption=Go implementacija konkurentne funkcije za određivanje prostih brojeva manjih od n,label={lst:prime1},backgroundcolor=\color{background}]
@@ -1117,8 +1265,12 @@ func Prime(list *[]bool, n int, is_concurrent bool){
 \end{lstlisting}
 \end{center}
 
+\subsection{Go}
+
+Koristi se globalni niz od \texttt{n} bulovskih promenljivih postavljenih na podrzumevanu vrednost \texttt{false} umesto na \texttt{true} radi jednostavnosti.  Funkcija koja kreira gorutine, prikazana je u listingu \ref{lst:prime1}. Za svaki broj koji je trenutno označen kao prost, najpre je potrebno je odrediti njegov prvi umnožak, a zatim, označiti sve njegove umnoške unutar opsega, što je i prikazano u listingu \ref{lst:prime2}. Kao što je već pomenuto, ako svaka gorutina ima svoj opseg, ona mora da pristupa i članovima niza drugih gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do pojave trke za resursima, međutim, u ovom slučaju je to dopustivo i nisu potrebni muteksi, upravo zato što se proverava dodatni uslov da li je pročitana vrednost u međuvremenu bila menjana. Ako se detektor trke za resurse pozove, dobija se izveštaj koji upozorava da je ona prisutna. Primer izveštaja se može videti u poglavlju \ref{datarace}na slici \ref{fig:datarace}. 
+
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za označavanje prostih brojeva,label={lst:prime2},float, backgroundcolor=\color{background},belowskip=-1.2 \baselineskip]
+\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za označavanje prostih brojeva,label={lst:prime2}, backgroundcolor=\color{background}]
 func mark_prime(list *[]bool,first,last,sqrt int,wg *sync.WaitGroup){
 	for i:=2;  i<= sqrt && i*i<= last; i++{
 		if !(*list)[i] {
@@ -1143,9 +1295,12 @@ func mark_prime(list *[]bool,first,last,sqrt int,wg *sync.WaitGroup){
 \end{lstlisting}
 \end{center}
 
+\subsection{Ostale implementacije}
+Implementacije u ostalim jezicima su realizovane na isti načini. Za C++ je razmatrana samo jedna implementacija koja koristi \texttt{omp} biblioteku.
+
 \subsection{Rezultati}
 
-Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je predstavljeno grafikom na slici \ref{fig:prime1}. Python ponovo nije mogao da bude uključen usled znatno sporijeg izvršavanja, a rezultati su prikazani u posebnoj tabeli. Go implementacija se pokazala kao najefikasnija a zatim implementacija u C++-u. C je znatno sporiji i njegovo izvršavanje se meri u sekundama dok Go i C rade ispod jedne sekunde. U odnosu na sekvencijano izvršavanje, Go ima najveće ubrzanje. Pri konkurentnom izvršavanju, veličina ulaza nema značajan uticaj tako da za Go i C++ nema velike razlike u brzini kada n iznosi 500 miliona ili 1 bilion. 
+Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija, predstavljeno je grafikom na slici \ref{fig:prime1}. Python nije mogao da bude uključen na ovom grafiku usled znatno sporijeg izvršavanja, a rezultati Python implementacije, prikazani su u posebnoj tabeli. Go implementacija se pokazala kao najefikasnija. C++ implementacija je približno efikasna koliko je i Go, i obe rade ispod jedne sekunde za najveći ulaz. C implementacija je znatno sporija i njeno izvršavanje se meri u sekundama. U odnosu na sekvencijano izvršavanje, Go ima najveće ubrzanje. Pri konkurentnom izvršavanju, veličina ulaza nema značajan uticaj i nema velike razlike u brzini kada \texttt{n} iznosi 500 miliona ili 1 milijardu. 
 \\
 
 \pgfplotsset{ every non boxed x axis/.style={} }
@@ -1204,8 +1359,7 @@ Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija je pre
 \end{center}
 \end{figure}
 
-U tabeli \ref{tab:prime5} je prikazano vreme izvršavanja sa različitim brojem niti/rutina kada je n = 500 miliona. Sve tri implementacije postižu najbolje performanse sa 1000 niti/rutina što je iskorišćeno prilikom svih ostalih testiranja.
-\\
+U tabeli \ref{tab:prime5}, prikazano je vreme izvršavanja sa različitim brojem niti/gorutina kada je n = 500 miliona. Sve tri implementacije postižu najbolje performanse sa 1000 niti/gorutina što je iskorišćeno prilikom svih ostalih testiranja.
 
 \begin{table}
 \begin{center}
@@ -1220,10 +1374,9 @@ C++  &4.53	&2.84	&\textbf{0.73}&0.76\\ \hline
 \label{tab:prime5}
 \end{center}
 \end{table}
-\vspace*{-\baselineskip}
 
 
-Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara je prikazan na slici \ref{fig:prime3}. Kod svih implementacija postoji ubrzanje sa povećanjem broja jezgara, ali ne postoji značajna razlika u brzini prilikom izvršavanja sa 24 i 48 jezgara.
+Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara, prikazan je na slici \ref{fig:prime3}. Kod svih implementacija postoji ubrzanje sa povećanjem broja jezgara, ali ne postoji značajna razlika u brzini prilikom izvršavanja sa 24 i 48 jezgara.
 \\
 
 \begin{figure}
@@ -1255,7 +1408,7 @@ Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara je prika
 \end{center}
 \end{figure}
 
-Python je testiran za deset puta manju vrednost n u odnosu na ostale implementacije i rezultati testiranja su prikazani u tabeli \ref{tab:prime1}. Python-u je potrebno više od jednog minuta, dok Go za deset puta veću vrednost radi ispod jedne sekunde. Upotreba memorije je četiri puta veća nego kod ostalih implementacija i potrebno mu je više vremena pri konkurentnom izvršavanju nego pri sekvencijalnom usled već pomenutog problema sa GIL-om u odeljku \ref{gil}.
+Python je testiran za deset puta manju vrednost \texttt{n} u odnosu na ostale implementacije i rezultati testiranja su prikazani u tabeli \ref{tab:prime1}. Prilikom izvršavanja algoritma, Python-u je potrebno više od jednog minuta, dok Go za deset puta veću vrednost radi ispod jedne sekunde. Upotreba memorije je četiri puta veća nego kod ostalih implementacija i potrebno je više vremena pri konkurentnom izvršavanju nego pri sekvencijalnom usled već pomenutog problema sa GIL-om u odeljku \ref{gil}.
 \\
 
 \begin{table}
@@ -1275,8 +1428,7 @@ n[$10^{6}$] & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 \end{center}
 \end{table}
 
-
-Maksimalna upotreba memorije u zavisnosti od n prikazana je na slici \ref{fig:prime2}. Sve tri implementacije imaju približno istu upotrebu memorije. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebno onoliko MB memorije koliko miliona iznosi vrednost n.
+Maksimalna upotreba memorije u zavisnosti od \texttt{n}, prikazana je na slici \ref{fig:prime2}. Sve tri implementacije imaju slične memorijske zahteve. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebna količina memorije direktno proporcijalna vrednosti \texttt{n}.
 \\
 
 \begin{figure}
@@ -1308,9 +1460,7 @@ Maksimalna upotreba memorije u zavisnosti od n prikazana je na slici \ref{fig:pr
 \end{center}
 \end{figure}
 
-\newpage
-
-Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. I u ovom primeru najkraća implementacija je u Python-u dok je u C-u najduža. Go se ponovo nalazi između C-a i C++-a po broju linija k\^{o}da.
+Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. Najkraća implementacija algoritma je u Python-u, dok je u C-u najduža. Go se ponovo nalazi između C-a i C++-a po broju linija koda.
 
 \begin{table}
 \begin{center}
@@ -1325,16 +1475,15 @@ Br. linija koda& 89		& 78	&61	&42		 \\ \hline
 \end{table}
 
 
-\subsection{Zaključak}
+\subsection{Rezime}
 
-Za ovaj algoritam, Go implementacija se ispostavila kao vremenski najefikasnija sa značajnim ubrzanjem u odnosu na sekvencijalno izvršavanje. Upotreba memorije je približno ista kolika je i kod C-a i C++-a kao i dužina k\^{o}da implementacije.
-
+Za implementaciju algoritma \textit{Eratostenovo sito}, Go implementacija se ispostavila kao vremenski najefikasnija sa značajnim ubrzanjem u odnosu na sekvencijalno izvršavanje. Upotreba memorije je približno ista kolika je kod C-a i C++-a, kao i dužina koda implementacije.
 
 %Aplikacija================================================================
 
 \chapter{Primer upotrebe programskog jezika Go}
 
-Kao primer upotrebe programskog jezika Go, razvijena je serverska aplikacija\ koja demonstrira korišćenje konkurentnosti kao i drugih aspekata jezika. U ovom poglavlju je predstavljena struktura aplikacije i opisani su pojedinačni delovi koji ilustruju različite karakteristike programskog jezika. 
+Kao primer upotrebe programskog jezika Go, razvijena je serverska aplikacija\ koja demonstrira korišćenje konkurentnosti kao i drugih aspekata jezika. U ovoj glavi, predstavljena je struktura aplikacije i opisani su pojedinačni delovi koji ilustruju različite karakteristike programskog jezika. 
 
 \section{Serverska aplikacija}
 
@@ -1379,11 +1528,11 @@ func main() {
 \end{center}
 
 
-Funkcija \texttt{HandleFunc} se koristi za registrovanje hendler funkcija za određeni šablon. Kao parametre, hendler funkcija ima \texttt{ResponseWriter} koji se koristi za konstrukciju HTTP odgovora i \texttt{Request} koji sadrži sve podatke HTTP zahteva. Funkcija \texttt{ListenAndServe} osluškuje na zadatoj adresi (prvi parametar) TCP mreže i poziva \texttt{Serve} funkciju kojoj prosleđuje \texttt{Handler} (drugi parametar). U pozadini, funkcija \texttt{Serve} kreira novu gorutinu za svaku HTTP konekciju i poziva \texttt{Handler}. Ukoliko je \texttt{Handler} nil, koristi se \texttt{DefaultServeMux} multiplekser koji uparuje URL zahteve sa registrovanim šablonima i poziva odgovarajuću hendler funkciju \cite{http}.
+Funkcija \texttt{HandleFunc} se koristi za registrovanje hendler funkcija za određeni šablon. Kao parametre, hendler funkcija ima \texttt{ResponseWriter} koji se koristi za konstrukciju HTTP odgovora i \texttt{Request} koji sadrži sve podatke HTTP zahteva. Funkcija \texttt{ListenAndServe} osluškuje na zadatoj adresi (prvi parametar) TCP mreže i poziva \texttt{Serve} funkciju kojoj prosleđuje \texttt{Handler} (drugi parametar). U pozadini, funkcija \texttt{Serve} kreira novu gorutinu za svaku HTTP konekciju i poziva \texttt{Handler}. Ukoliko je \texttt{Handler} \texttt{nil}, koristi se \texttt{DefaultServeMux} multiplekser koji uparuje URL zahteve sa registrovanim šablonima i poziva odgovarajuću hendler funkciju \cite{http}.
 
-Server se može implementirati u Go-u  koristeći samo dva paketa i manje od deset linija koda što je karakateristično za dinamički tipizirane, interpretirane jezike kao što su Python, PHP, Ruby i drugi. U C/C++ -u, koji su statički tipizirani jezici koji se kompiliraju, kao što je i Go, je potrebno devet bibiloteka i više od pedeset linija koda.\cite{server}
+Server se može implementirati u Go-u  koristeći samo dva paketa i manje od deset linija koda što je karakateristično za dinamički tipizirane, interpretirane jezike kao što su Python, PHP, Ruby i drugi. U C/C++ -u, koji su statički tipizirani jezici koji se kompiliraju, kao što je i Go, je potrebno devet bibiloteka i više od pedeset linija koda \cite{server}.
 
-Deo koda koji se odnosi na kreiranje servera u aplikaciji, nalazi se u \texttt{main} funkciji koja je prikazana u listingu \ref{lst:main}. \texttt{HandleFunc} funkcijom, registrovane su dve hendler funkcije: \texttt{DefaultHandler} koja se poziva kada se pristupa početnoj strani i \texttt{ImageHandler} koja se poziva prilikom obrade slike i prikazivanja rezultata. \texttt{Handle} funkcija se koristi za registrovanje \texttt{Handler}-a za fajl sistem i šablona koji se odnosi na zahteve resursa.  U \texttt{ListenAndServe} funkciji je postavljeno da se osluškuje na http portu zadate adrese servera koja je u ovom slučaju postavljena na localhost.
+Deo koda koji se odnosi na kreiranje servera u aplikaciji, nalazi se u \texttt{main} funkciji koja je prikazana u listingu \ref{lst:main}. \texttt{HandleFunc} funkcijom, registrovane su dve hendler funkcije: \texttt{DefaultHandler} koja se poziva kada se pristupa početnoj strani i \texttt{ImageHandler} koja se poziva prilikom obrade slike i prikazivanja rezultata. \texttt{Handle} funkcija se koristi za registrovanje \texttt{Handler}-a za fajl sistem i šablona koji se odnosi na zahteve resursa.  U \texttt{ListenAndServe} funkciji je postavljeno da se osluškuje na http portu zadate adrese servera koja je u ovom slučaju postavljena na \texttt{localhost}.
 
 \begin{center}
 \begin{lstlisting}[caption={Funkcija \texttt{main}, kreiranje servera},label={lst:main},  backgroundcolor=\color{background},belowskip=-0.7 \baselineskip ]
@@ -1398,7 +1547,7 @@ func main() {
 \end{lstlisting}
 \end{center}
 
-\label{fileserver}Hendler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji definišu se restrikcije nad URL zahtevima za resurse i definiše se root direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava sa \texttt{/} to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. \texttt{DefaultServeMux} funkcioniše tako što dodaje \texttt{/} na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan \cite{http}. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
+\label{fileserver}Hendler za fajl sistem je prikazan u listingu \ref{lst:fileserver}. U ovoj funkciji definišu se restrikcije nad URL zahtevima za resurse i definiše se \texttt{root} direktorijum svih resursa. URL se deli na segmente funkcijom split i zatim se ispituje poslednji segment. Ukoliko je poslednji segment prazan odnosno ako se URL završava znakom \texttt{/}, to znači da u zahtevu nije tražen određeni fajl već je u pitanju samo deo putanje. \texttt{DefaultServeMux} funkcioniše tako što dodaje znak \texttt{/} na kraju svakog URL zahteva koji postoji u podstablu root direktorijuma, što znači da ako korisnik unese putanju do nekog direktorijuma, poslednji deo URL zahteva će biti prazan \cite{http}. U tom slučaju korisniku će biti onemogućen pristup direktorijumu i neće moći da pročita njegov sadržaj.
 
 \begin{center}
 \begin{lstlisting}[caption=Hendler za fajl sistem,label={lst:fileserver},  backgroundcolor=\color{background}]
@@ -1431,7 +1580,7 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 \end{lstlisting}
 \end{center}
 
-U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih vitičarstih zagrada. Primer šablona je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog šablona se pomoću \texttt{define} definiše naziv, a kraj šablona je potrebno naznačiti sa \texttt{end}. Omogućeno je iteriranje nad prosleđenim podacima, \texttt{if-else} naredbe i izvršavanje šablona unutar šablona. U ovom slučaju, iterira se nad mapom \texttt{Filters} koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju znakom \texttt{.}, dok promenljive počinju znakom \texttt{\$} \cite{template}.
+U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih vitičastih zagrada. Primer šablona je prikazan u listingu \ref{lst:tmpl2}. Na početku svakog šablona pomoću \texttt{define} se definiše naziv, a kraj šablona je potrebno naznačiti sa \texttt{end}. Omogućeno je iteriranje nad prosleđenim podacima, \texttt{if-else} naredbe i izvršavanje šablona unutar šablona. U ovom slučaju, iterira se nad mapom \texttt{Filters} koja sadrži nazive filtera i putanje do njihovih slika. Prosleđeni podaci počinju znakom \texttt{.} , dok promenljive počinju znakom \texttt{\$} \cite{template}.
 
 \begin{center}
 \begin{lstlisting}[caption=Izvršavanje HTML šablona,label={lst:tmpl2},  backgroundcolor=\color{background}]
@@ -1458,40 +1607,32 @@ U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih 
 
 \subsection{Preuzimanje i procesiranje fajla}
 
-Funkcija \texttt{ImageHandler} se poziva kada korisnik klikne na dugme filter i bavi se preuzimanjem fajla, proverom zadovoljenosti svih uslova i primenom filtera. Struktura funkcije je prikazana u listingu \ref{lst:imghand}. U funkciji se nalazi beskonačna petlja sa \texttt{select} naredbom. Semafor se koristi za kontrolu maksimalnog broja konekcija koji server može da opsluži. Ukoliko ima slobodnih mesta, izvršiće se glavni deo funkcije nakon čega se izlazi iz petlje. U slučaju da nema slobodnih mesta, proverava se da li korisnik čeka duže od dozvoljenog vremena za čekanje - timeout.  Ako je vreme čekanja isteklo, izlazi se iz petlje i korisniku ispisuje poruka da je server trenutno zauzet, u suprotnom se ponovo proverava da li ima slobodnih mesta. 
+Funkcija \texttt{ImageHandler} se poziva kada korisnik klikne na dugme filter i bavi se preuzimanjem fajla, proverom zadovoljenosti svih uslova i primenom filtera. Struktura funkcije je prikazana u listingu \ref{lst:imghand}. Unutar funkcije, nalazi se jedna \texttt{select} naredba. Za kontrolu maksimalnog broja konekcija koji server može da opsluži, koristi se semafor. Ukoliko ima slobodnih mesta, izvršiće se glavni deo funkcije. Ukoliko nema slobodnih mesta, nakon isteka dozvoljenog vremena čekanja \texttt{timeout}, korisniku se ispisuje poruka da je server trenutno zauzet. 
  
-\begin{center}
-\begin{lstlisting}[caption=Struktura ImageHandler funkcije,label={lst:imghand},float,  backgroundcolor=\color{background}]
-func ImageHandler(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	done := false
+Deo funkcije koji se odnosi na otvaranje i proveru fajla, prikazan je u listingu \ref{lst:open}. U funkciji se koriste dve korisnički definisane strukture: \texttt{file\_info}, koja sadrži neophodne informacije o fajlu (naziv, veličina, referenca na otvoreni fajl, čitač fajla), i \texttt{processor}, tip nad kojim su definisani metodi koji koriste \texttt{ResponseWriter} i \texttt{Request} kako se ne bi prosleđivali pojedinačno svakoj funkciji koja ih koristi. Ovi metodi tokom svog rada proveravaju da li je došlo do neke greške pa kao rezultat vraćaju \texttt{bool} promenljivu kako bi funkcija \texttt{ImageHandler} prestala sa daljim radom. Generalno, validaciju fajla je prirodnije raditi na strani klijenta u javascript-u kako ne bi opterećivali server lošim zahtevima, ali u ovom slučaju demonstrirano je kako se validacija izvršava u Go-u.
 
-	for ;; {
-		select {
-		case semaphore <- struct{}{}:
-			defer func() { <-semaphore }()
-			...
-			done = true
-		default:
-			if time.Since(start) > timeout {
-				ErrorHandler(w,"Server too busy, try again later... ")
-				done = true
-			}
-		}
-		if done { break }
+\begin{center}
+\begin{lstlisting}[caption=Struktura ImageHandler funkcije,label={lst:imghand},  backgroundcolor=\color{background}]
+func ImageHandler(w http.ResponseWriter, r *http.Request) {
+	select {
+	case semaphore <- struct{}{}:
+		...
+	case <- time.After(timeout):
+		ErrorHandler(w,"Server too busy, try again later... ")
 	}
 }
 
 \end{lstlisting}
 \end{center}
 
-Deo funkcije koji se odnosi na otvaranje i proveru fajla, prikazan je u listingu \ref{lst:open}. U funkciji se koriste dve korisnički definisane strukture: \texttt{file\_info}, koja sadrži neophodne informacije o fajlu (naziv, veličina, referenca na otvoreni fajl, čitač fajla), i \texttt{processor}, tip nad kojim su definisani metodi koji koriste \texttt{ResponseWriter} i \texttt{Request} kako se ne bi prosleđivali pojedinačno svakoj funkciji koja ih koristi. Ovi metodi tokom svog rada proveravaju da li je došlo do neke greške pa kao rezultat vraćaju \texttt{bool} promenljivu kako bi funkcija \texttt{ImageHandler} prestala sa daljim radom. Generalno, validaciju fajla je prirodnije raditi na strani klijenta u javascript-u kako ne bi opterećivali server lošim zahtevima, ali u ovom slučaju demonstrirano je kako se validacija izvršava u Go-u.
-
 Metod \texttt{open\_file} otvara fajl i popunjava strukturu \texttt{file\_info} na odgovarajući način u zavisnosti da li je prosleđen URL fajla ili je on upload-ovan. Fajlu i svim ostalim elementima forme koje je korisnik uneo se pristupa pomoću \texttt{ResponseWriter}-a pozivanjem metoda \texttt{Form} ili \texttt{FormValue}. Nakon završetka sa radom svakog fajla, neophodno ga je zatvoriti. To se postiže na najbolji način korišćem \texttt{defer} naredbe odmah nakon otvaranja jer će se u tom slučaju zatvaranje sigurno izvršiti čak i ukoliko dođe do neke greške. U zavisnosti kako je prosleđen, tip fajla se razlikuje pa se u strukturi nalaze polja za obe vrste fajla. 
 
+Provera veličine fajla se izvršava u metodu \texttt{check\_file\_size}. Međutim, korisnik je i dalje u mogućnosti da upload-uje fajl nedozvoljene veličine pre nego što dođe do ove provere i time optereti server. Iz tog razloga se koristi funkcija \texttt{MaxBytesReader} koja prekida konekciju sa klijentom ukoliko je pređena dozvoljena veličina fajla \cite{http}. Ovom funkcijom je postavljena gornja bezbednosna granica za veličinu (u ovom slučaju 10 MB), kako bi funkcija \texttt{check\_file\_size} mogla da obavesti korisnika ako je slučajno prosledio fajl nešto iznad dozvoljene granice (u ovom slučaju 1 MB). 
+
+Funkcija \texttt{create\_user\_directory} kreira privremeni direktorijum u kome smešta sve korisnikove slike. Naziv direktorijuma je pseudoslučajni string dužine 20 kako bi naziv bio jedinstven i direktorijum uvek mogao da se kreira. Nakon toga se fajl kopira funcijom \texttt{create\_and\_copy\_file} koja kao rezultat vraća pokazivač na otvoreni fajl i string sa njegovom ekstenzijom. Defer naredbom se osigurava zatvaranje samog fajla. Tip fajla se provera metodom  \texttt{check\_file\_type} koji koristi \texttt{DetectContentType} funkciju iz \texttt{http} paketa radi sigurnosti jer sama ekstenzija fajla nije dovoljna.
 
 \begin{center}
-\begin{lstlisting}[caption=Otvaranje i provera fajla u funkciji ImageHandler,label={lst:open},float,  backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Otvaranje i provera fajla u funkciji ImageHandler,label={lst:open},  backgroundcolor=\color{background}]
 	var f_info file_info
 	p := processor{w,r}
 
@@ -1513,16 +1654,12 @@ Metod \texttt{open\_file} otvara fajl i popunjava strukturu \texttt{file\_info} 
 	if !p.check_file_type(dir_path, original) {return}
 \end{lstlisting}
 \end{center}
-
-Provera veličine fajla se izvršava u metodu \texttt{check\_file\_size}. Međutim, korisnik je i dalje u mogućnosti da upload-uje fajl nedozvoljene veličine pre nego što dođe do ove provere i time optereti server. Iz tog razloga se koristi funkcija \texttt{MaxBytesReader} koja prekida konekciju sa klijentom ukoliko je pređena dozvoljena veličina fajla \cite{http}. Ovom funkcijom je postavljena gornja bezbednosna granica za veličinu (u ovom slučaju 10 MB), kako bi funkcija \texttt{check\_file\_size} mogla da obavesti korisnika ako je slučajno prosledio fajl nešto iznad dozvoljene granice (u ovom slučaju 1 MB). 
-
-Funkcija \texttt{create\_user\_directory} kreira privremeni direktorijum u kome smešta sve korisnikove slike. Naziv direktorijuma je pseudoslučajni string dužine 20 kako bi naziv bio jedinstven i direktorijum uvek mogao da se kreira. Nakon toga se fajl kopira funcijom \texttt{create\_and\_copy\_file} koja kao rezultat vraća pokazivač na otvoreni fajl i string sa njegovom ekstenzijom. Defer naredbom se osigurava zatvaranje samog fajla. Tip fajla se provera metodom  \texttt{check\_file\_type} koji koristi \texttt{DetectContentType} funkciju iz http paketa zbog sigurnosti jer sama ekstenzija fajla nije dovoljna.
  
 \subsection{Primena filtera}
 
-Za rad sa slikama koristi se osnovni \texttt{image} paket a za primenu filtera je iskorišćen \texttt{gift} (Go Image Filtering Toolkit) paket\cite{gift} koji ne ulazi u originalnu Go distribuciju. Osnovni \texttt{image} paket obezbeđuje funkcije za rad sa slikama u formatima JPEG, PNG i GIF, a postoje i dodatni paketi za rad sa formatima kao što su BMP, TIFF i drugi\cite{image}. \texttt{Gift} paket sadrži skup filtera za obradu slika kao što su kontrast, blur, sepia i slični. Osim filtera, paket omogućava i transformacije slika poput promene veličine, crop-a, rotiranja i drugih \cite{gift}.
+Za rad sa slikama koristi se osnovni \texttt{image} paket a za primenu filtera je iskorišćen \texttt{gift} (Go Image Filtering Toolkit) paket \cite{gift} koji ne ulazi u originalnu Go distribuciju. Osnovni \texttt{image} paket obezbeđuje funkcije za rad sa slikama u formatima JPEG, PNG i GIF, a postoje i dodatni paketi za rad sa formatima kao što su BMP, TIFF i drugi \cite{image}. \texttt{Gift} paket sadrži skup filtera za obradu slika kao što su kontrast, blur, sepia i slični. Osim filtera, paket omogućava i transformacije slika poput promene veličine, crop-a, rotiranja i drugih \cite{gift}.
 
-Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{lst:gift}. Promenljiva filter je tipa  \texttt{GIFT} i predstavlja niz filtera Filter kojise primenjuju na slici. Funkcijom  \texttt{Decode} se dekodira JPEG fajl i kao rezultat vraća promenljiva tipa  \texttt{Image}.  \texttt{NewRGBA} funkcija kreira praznu slika iste veličine kao što je i originalna slika. U image paketu postoje funkcije za rad i sa drugim modelima boja pored RGBA. Funkcijom  \texttt{Draw} se primenjuju filteri nad orginalnom slikom, nakon čega se funkcijom  \texttt{Encode} filterovana slika kodira u  \texttt{dst\_file} \cite{gift}.
+Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{lst:gift}. Promenljiva filter je tipa  \texttt{GIFT} i predstavlja niz filtera Filter kojise primenjuju na slici. Funkcijom  \texttt{Decode} se dekodira JPEG fajl i kao rezultat vraća promenljiva tipa  \texttt{Image}.  \texttt{NewRGBA} funkcija kreira praznu slika iste veličine kao što je i originalna slika. U \texttt{image} paketu postoje funkcije za rad i sa drugim modelima boja pored RGBA. Funkcijom  \texttt{Draw} se primenjuju filteri nad orginalnom slikom, nakon čega se funkcijom  \texttt{Encode} filterovana slika kodira u  \texttt{dst\_file} \cite{gift}.
 
 \begin{center}
 \begin{lstlisting}[caption=Definisanje i primena filtera,label={lst:gift},  backgroundcolor=\color{background}]
@@ -1538,6 +1675,8 @@ Primer definisanja i primene filtera na JPEG slici je prikazan u listingu \ref{l
 \end{center}
 
 Nakon svih provera kada je sigurno da se radi sa slikom dozvoljene veličine i formata, prelazi se na obradu slike. Deo funkcije  \texttt{ImageHandler} koji se odnosi na primenu filtera, prikazan je u listingu \ref{lst:IHfilter}. Funkcija  \texttt{decode\_image} dekodira funkciju u zavsinosti od formata slike nakon čega metod  \texttt{rotate} rotira sliku ukoliko je to korisnik izabrao. 
+
+ U funkciji  \texttt{create\_custom\_filter}, koja je prikazana u listingu \ref{lst:custom}, kreira se zadati filter na osnovu korisnikovog izbora. Prvo se sakupljaju informacije o svim izabranim ponuđenim filterima koji se na osnovu imena dodaju novom filteru  \texttt{custom}. Definicije mapa sa predefinisanim filterima su prikazane u listingu \ref{lst:maps}. Nakon toga, zadatom filteru, dodaju se filteri za izabrane vrednosti karakteristika koje je korisnik uneo. Za svaku karakteristiku postoji \texttt{input} polje u formi za koje je potrebno proveriti da li je korisnik uneo vrednost. Ukoliko korisnik jeste uneo vrednost za odgovarajuće polje, na osnovu imena, poziva se njegova odgovarajuća funkcija sa zadatim parametrom. Funkcije u Go-u su validan tip tako da je moguće definisati mapu koja će na osnovu stringa vratiti funkciju, što je i prikazano u listingu \ref{lst:maps}. Funkcija kao rezultat vraća filter koji je definisan pomoću numeričkog parametra  \texttt{x} koji je korisnik uneo. U slučaju da korinsik nije izabrao ni jedan ponuđen filter i nije uneo nijedan parametar, vraća se prazan filter koji kada se primeni kao rezultat ima originalnu sliku.
 
 \begin{center}
 \begin{lstlisting}[caption=Primena filtera u funkciji ImageHandler,label={lst:IHfilter},  backgroundcolor=\color{background}]
@@ -1589,7 +1728,7 @@ func (p processor) create_custom_filter() *gift.GIFT{
 \end{lstlisting}
 \end{center}
 
- U funkciji  \texttt{create\_custom\_filter}, koja je prikazana u listingu \ref{lst:custom}, kreira se zadati filter na osnovu korisnikovog izbora. Prvo se sakupljaju informacije o svim izabranim ponuđenim filterima koji se na osnovu imena dodaju novom filteru  \texttt{custom}. Definicije mapa sa predefinisanim filterima su prikazane u listingu \ref{lst:maps}. Nakon toga, zadatom filteru, dodaju se filteri za izabrane vrednosti karakteristika koje je korisnik uneo. Za svaku karakteristiku postoji input polje u formi za koje je potrebno proveriti da li je korisnik uneo vrednost. Ukoliko korisnik jeste uneo vrednost za odgovarajuće polje, na osnovu imena, poziva se njegova odgovarajuća funkcija sa zadatim parametrom. Funkcije u Go-u su validan tip tako da je moguće definisati mapu koja će na osnovu stringa vratiti funkciju, što je i prikazano u listingu \ref{lst:maps}. Funkcija kao rezultat vraća filter koji je definisan pomoću numeričkog parametra  \texttt{x} koji je korisnik uneo. U slučaju da korinsik nije izabrao ni jedan ponuđen filter i nije uneo nijedan parametar, vraća se prazan filter koji kada se primeni kao rezultat ima originalnu sliku.
+Kada je zadati filter definisan, potrebno je primeniti filtere na slici. U listingu \ref{lst:apply} je prikazana funkcija  \texttt{apply\_filters} koja primenjuje filtere i kao rezultat vraća mapu sa putanjama do rezultujuće slike za svaki filter. Primena svakog filtera se izvršava u zasebnoj gorutini, konkurentno. U Go-u nije dozvoljeno konkurentno pisanje u mapu pa se u ovom slučaju koristi muteks za kontrolu pristupa mapi. Konkurentno čitanje mape bez pisanja je dozvoljeno i korišćeno je u svim ostalim slučajevima (mape sa predefinisanim filterima, definisane su kao globalne, a svaka konekcija se obrađuje u zasebnoj gorutini). Napomena da od verzije Go 1.9 postoje mape sa konkurentnim pristupom u okviru \texttt{sync} paketa \cite{sync}. Nakon kreiranja gorutine za svaki definisani filter, u tekućoj gorutini se primenjuje zadati filter. Tek nakon završetka svih gorutina, upisuje se putanja do slike zadatog filtera kako ne bi došlo do trke za resursima prilikom upisa u mapu. 
 
 \begin{center}
 \begin{lstlisting}[caption=Funkcija za paralelnu primenu filtera,label={lst:apply},  backgroundcolor=\color{background}]
@@ -1621,8 +1760,6 @@ func  apply_filters(img *image.Image, custom *gift.GIFT,
 \end{lstlisting}
 \end{center}
 
-Kada je zadati filter definisan, potrebno je primeniti filtere na slici. U listingu \ref{lst:apply} je prikazana funkcija  \texttt{apply\_filters} koja primenjuje filtere i kao rezultat vraća mapu sa putanjama do rezultujuće slike za svaki filter. Primena svakog filtera se izvršava u zasebnoj gorutini, konkurentno. U Go-u nije dozvoljeno konkurentno pisanje u mapu pa se u ovom slučaju koristi muteks za kontrolu pristupa mapi. Konkurentno čitanje mape bez pisanja je dozvoljeno i korišćeno je u svim ostalim slučajevima (mape sa predefinisanim filterima, definisane su kao globalne, a svaka konekcija se obrađuje u zasebnoj gorutini). Napomena da od verzije Go 1.9 postoje mape sa konkurentnim pristupom u okviru \texttt{sync} paketa \cite{sync}. Nakon kreiranja gorutine za svaki definisani filter, u tekućoj gorutini se primenjuje zadati filter. Tek nakon završetka svih gorutina, upisuje se putanja do slike zadatog filtera kako ne bi došlo do data race-a prilikom upisa u mapu. 
-
 Nakon primene filtera, izvršava se šablon za prikaz rezultata kome se prosleđuje mapa sa putanjama do rezultujuće slike svakog filtera. Pre izlaska iz beskonačne petlje i funkcije  \texttt{ImageHandler}, pokreće se gorutina za brisanje priveremnog direktorijuma koja je prikazana u listingu \ref{lst:clean}. Unutar gorutine, kreira se tajmer koji se aktivira nakon zadatog vremena. Tajmer funkcioniše tako što je izlaz njegovog kanala blokiran do trenutka isteka zadatog vremena kada se kanal oslobođa \cite{time}. Po isteku vremena, briše se privremeni direktorijum sa svim korisnikovim slikama. 
 
 \begin{center}
@@ -1644,8 +1781,13 @@ Korisnik nije u mogućnosti da preoptereti server prevelikim fajlom ali je u mog
 
 \chapter{Zaključak}
 
+Programski jezik Go je relativno nov jezik koji je za kratko vreme uspeo da se ustali u programerskoj zajednici zahvaljući svojim pogodnim karakteristikama. Jezik je u konstantnom razvoju i svakom novom verzijom značajno poboljšava svoje performanse i dobija nove karakteristike koje olakašavaju programiranje. Jednostavna sintaksa, kao i stabilnost i efikasnost koju donose statički tipizirani jezici koji se kompiliraju, čine Go idealnu alternativu dinamičkim, interpretiranim jezicima kao što su Python.
 
+Kokurentnost koja je ugrađena u sam jezik, realizovana je na takav način da omogućava intuitivno i jednostavno programiranje koje dovodi do izuzetne čitljivosti koda. Koncept gorutina jezika Go, obezbeđuje vremenski i memorijski efikasno konkurentno izvršavanje koje se može uporediti sa jezicima kao što su C i C++, što je pokazano testiranjem implementacija različitih algoritama u pomenutim jezicima.
 
+Kao jezik opšte namene, Go se upotrebljava u raznim oblastima i koristi se u velikom broju kompanija širom sveta. Paketi standardne biblioteke jezika Go u kombinaciji sa dobro realizovanom konkurentnošću, čine jezik pogodan za brz razvoj stabilnih i bezbednih serverskih aplikacija. Na primeru serverske aplikacije koja je razvijena, prikazana je jednostavnost izgradnje servera i njegovog manipulisanja, kao i mogućnosti i upotreba pojedinih paketa. 
+
+Vremenom, Go zajednica sve više raste što doprinosi razvoju samog jezika stvarnjem velikog broja paketa koji omogućavaju različite usluge. U vreme pisanja ovog rada, aktuelna verzija jezika je Go 1.9. Verzija Go 2 koja je trenutno u razvoju, trebalo bi da donese velike promene koje bi uticale na poboljšanje mnogih aspekata jezika. Činjenica je da je programski jezik Go dobar alat za razvoj softvera koji je pronašao svoju svrhu, i koji se vremenom može samo dodatno poboljšavati.
 
 
 \printbibliography 
