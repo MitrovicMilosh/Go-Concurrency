@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <time.h>
+
 //The group of arguments passed to thread
 struct thrd_data{
   long start;
@@ -72,6 +74,7 @@ int main(int argc, char *argv[])
 
   k = 1;
   Num_Threads=n_threads;
+  clock_t start = clock();
   for (i=0; i<n_threads; i++){
     t_arg[i].start = k;
     if (i < nr)
@@ -81,11 +84,14 @@ int main(int argc, char *argv[])
     t_arg[i].end = k-1;
     pthread_create(&thread_id[i], NULL, DoSieve, (void *) &t_arg[i]);
   }
-
+  
   /* Wait for all threads to complete then print all prime numbers */
   for (i=0; i<n_threads; i++) {
     pthread_join(thread_id[i], NULL);
   }
+  clock_t end = clock();
+  float diff = ((float)(end - start) / CLOCKS_PER_SEC);
+  printf("%f\n",diff);
 
   free(GlobalList);
   //pthread_attr_destroy(&attr);

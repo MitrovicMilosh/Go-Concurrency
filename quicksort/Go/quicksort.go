@@ -6,9 +6,8 @@ import (
 	"os"
 	"math/rand"
 	"strconv"
+	"fmt"
 )
-
-var semaphore chan struct{}
 
 func QuickSortSequential(a *[]int, low, hi int) {
 	if hi < low {
@@ -20,7 +19,7 @@ func QuickSortSequential(a *[]int, low, hi int) {
 	QuickSortSequential(a, p+1, hi)
 }
 
-func QuickSortConcurrent(a *[]int, low, hi int) {
+func QuickSortConcurrent(a *[]int, low, hi, depth int) {
 
 	if hi < low {
 		return
@@ -28,36 +27,22 @@ func QuickSortConcurrent(a *[]int, low, hi int) {
 
 	p := partition(a, low, hi)
 
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	select{
-	case semaphore <- struct{}{}:
+	if depth > 0 {
+		wg := sync.WaitGroup{}
+		wg.Add(2)
 		go func(){
-			QuickSortConcurrent(a, low, p-1)
-			<- semaphore
+			QuickSortConcurrent(a, low, p-1, depth-1)
 			wg.Done()
 		}()
-
-	default:
+		go func(){
+			QuickSortConcurrent(a, p+1, hi, depth-1)
+			wg.Done()
+		}()
+		wg.Wait()
+	}else{
 		QuickSortSequential(a,low, p-1)
-		wg.Done()
-	}
-
-	select{
-	case semaphore <- struct{}{}:
-		go func(){
-			QuickSortConcurrent(a, p+1, hi)
-			<- semaphore
-			wg.Done()
-		}()
-
-	default:
 		QuickSortSequential(a, p+1, hi)
-		wg.Done()
-	}
-
-	wg.Wait()
+	}	
 }
 
 func partition(a *[]int, low, hi int) int {
@@ -88,11 +73,12 @@ func main(){
 	rand.Seed(time.Now().UTC().UnixNano())
 	list := rand.Perm(n)
 	
+	start := time.Now()
 	if len(os.Args) > 2 {
-		num_routines,_ := strconv.Atoi(os.Args[2])
-		semaphore = make(chan struct{}, num_routines)
-		QuickSortConcurrent(&list,0, len(list)-1)
+		depth,_ := strconv.Atoi(os.Args[2])
+		QuickSortConcurrent(&list,0, len(list)-1, depth)
 	}else {
 		QuickSortSequential(&list,0, len(list)-1)
 	}
+	fmt.Println(time.Since(start).Seconds())
 }

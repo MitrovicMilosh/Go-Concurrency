@@ -55,6 +55,7 @@ int main(int argc, char* argv[])
 		}     
 	}
 	
+	clock_t end = clock();
 	if(isConcurrent){
 		threads = (pthread_t*)malloc(sizeof(pthread_t) * size);
 		
@@ -67,7 +68,10 @@ int main(int argc, char* argv[])
 	}else{
 		for (i = 0; i < size; i++)
 			doMyWork(i);
-	}	
+	}
+	clock_t end = clock();
+	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
+	printf("%f\n",diff);
 	
 	return 0;
 }

@@ -5,6 +5,8 @@ import (
 	"sync"
 	"os"
 	"strconv"
+	"time"
+	"fmt"
 )
 
 var num_goroutines int
@@ -69,10 +71,12 @@ func main() {
 	list := make([]bool, n+1, n+1)
 	num_goroutines = 1	
 
+	start := time.Now()
 	if len(os.Args) > 2 {
 		num_goroutines,_ = strconv.Atoi(os.Args[2])
 		Prime(&list,n,true)
 	}else {
 		Prime(&list,n,false)
 	}
+	fmt.Println(time.Since(start).Seconds())
 }

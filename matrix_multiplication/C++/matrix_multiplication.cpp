@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <chrono>
+#include <iostream>
 
 using namespace std;
 int **a, **b, **c;
@@ -46,7 +48,10 @@ int main(int argc, char* argv[]) {
 		omp_set_num_threads(1);
 		
 	generate_matrix(n);
-	matrix_mult_parallel(n);	
-
+	auto start = chrono::high_resolution_clock::now();
+	matrix_mult_parallel(n);
+	auto finish = chrono::high_resolution_clock::now();	
+	chrono::duration<double> elapsed = finish - start;
+	cout << elapsed.count() << " s\n";
 	return 0;	
 }

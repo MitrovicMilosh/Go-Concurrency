@@ -7,6 +7,7 @@ Number lastNumber;
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <chrono>
 
 // OpenMP
 #include <omp.h>
@@ -57,12 +58,16 @@ int main(Number argc, char* argv[])
   isPrime = new char[lastNumber];
   limit = (int)sqrt(lastNumber);
   
+  auto start = std::chrono::high_resolution_clock::now();
   if(argc>2){
 	sliceSize = atoi(argv[2]);
   	eratosthenesBlockwise(lastNumber, 2*sliceSize, true);
   }else{
 	eratosthenesBlockwise(lastNumber, 2*sliceSize, false);
   }
+  auto finish = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = finish - start;
+  printf("%lf\n",elapsed.count());
   
   return 0;
 }

@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 		inputArray[i] = rand()%99999;
 	}
 
+	clock_t start = clock();
 	/* Call the quickSort function to sort the list */
 	#pragma omp parallel
 	{
@@ -41,6 +42,9 @@ int main(int argc, char *argv[]) {
 			quickSort(inputArray, size);
 		}
 	}
+	clock_t end = clock();
+	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
+	printf("%f\n",diff);
 
 	free(inputArray);
 	return 0;

@@ -115,7 +115,11 @@ int main(int argc, char **argv)
     {
         values[i] = rand()%size;
     }
+	clock_t start = clock();
     parallel_quicksort(values, 0, size-1, depth);
+	clock_t end = clock();
+	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
+	printf("%f\n",diff);
 
     return 0;
 }
