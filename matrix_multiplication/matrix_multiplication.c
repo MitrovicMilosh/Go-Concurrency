@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 int size, n_threads, **InMat1, **InMat2, **ResMat;
 
@@ -55,7 +56,9 @@ int main(int argc, char* argv[])
 		}     
 	}
 	
-	clock_t end = clock();
+	struct timeval t1, t2;
+    double elapsedTime;
+    gettimeofday(&t1, NULL);
 	if(isConcurrent){
 		threads = (pthread_t*)malloc(sizeof(pthread_t) * size);
 		
@@ -69,9 +72,9 @@ int main(int argc, char* argv[])
 		for (i = 0; i < size; i++)
 			doMyWork(i);
 	}
-	clock_t end = clock();
-	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
-	printf("%f\n",diff);
+	gettimeofday(&t2, NULL);
+	elapsedTime = (t2.tv_sec - t1.tv_sec) + (t2.tv_usec - t1.tv_usec)/1000000.0;
+	printf("%f\n",elapsedTime);
 	
 	return 0;
 }

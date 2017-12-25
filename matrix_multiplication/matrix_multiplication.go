@@ -13,12 +13,6 @@ type matrix [][]int
 var n, num_routines int
 var m1, m2, res matrix
 
-func multiply_row_column(row,col int) int{
-	res:=0
-
-	return res
-}
-
 func multiply_row(row, num_rouines int) {
 	for ; row<n; row+=num_routines {
 		for i := 0; i < n; i++ {

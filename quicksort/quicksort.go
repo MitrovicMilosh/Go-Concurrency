@@ -20,7 +20,6 @@ func QuickSortSequential(a *[]int, low, hi int) {
 }
 
 func QuickSortConcurrent(a *[]int, low, hi, depth int) {
-
 	if hi < low {
 		return
 	}
@@ -68,12 +67,13 @@ func swap(a *[]int, i , j int) {
 }
 
 func main(){
+	start := time.Now()
 	n,_ := strconv.Atoi(os.Args[1])
 	
 	rand.Seed(time.Now().UTC().UnixNano())
 	list := rand.Perm(n)
-	
-	start := time.Now()
+	fmt.Println(time.Since(start).Seconds())
+	start = time.Now()
 	if len(os.Args) > 2 {
 		depth,_ := strconv.Atoi(os.Args[2])
 		QuickSortConcurrent(&list,0, len(list)-1, depth)

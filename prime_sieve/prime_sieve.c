@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <time.h>
+#include <sys/time.h>
 
 //The group of arguments passed to thread
 struct thrd_data{
@@ -74,7 +75,10 @@ int main(int argc, char *argv[])
 
   k = 1;
   Num_Threads=n_threads;
-  clock_t start = clock();
+  
+  struct timeval t1, t2;
+  double elapsedTime;
+  gettimeofday(&t1, NULL);
   for (i=0; i<n_threads; i++){
     t_arg[i].start = k;
     if (i < nr)
@@ -89,9 +93,9 @@ int main(int argc, char *argv[])
   for (i=0; i<n_threads; i++) {
     pthread_join(thread_id[i], NULL);
   }
-  clock_t end = clock();
-  float diff = ((float)(end - start) / CLOCKS_PER_SEC);
-  printf("%f\n",diff);
+  gettimeofday(&t2, NULL);
+  elapsedTime = (t2.tv_sec - t1.tv_sec) + (t2.tv_usec - t1.tv_usec)/1000000.0;
+  printf("%f\n",elapsedTime);
 
   free(GlobalList);
   //pthread_attr_destroy(&attr);

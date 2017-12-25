@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 // Macro for swapping two values.
 #define SWAP(x,y) do {\
@@ -115,11 +116,14 @@ int main(int argc, char **argv)
     {
         values[i] = rand()%size;
     }
-	clock_t start = clock();
+	
+	struct timeval t1, t2;
+    double elapsedTime;
+    gettimeofday(&t1, NULL);
     parallel_quicksort(values, 0, size-1, depth);
-	clock_t end = clock();
-	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
-	printf("%f\n",diff);
-
+	gettimeofday(&t2, NULL);
+	elapsedTime = (t2.tv_sec - t1.tv_sec) + (t2.tv_usec - t1.tv_usec)/1000000.0;
+	printf("%f\n",elapsedTime);
+	
     return 0;
 }

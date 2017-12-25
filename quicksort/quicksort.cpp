@@ -2,11 +2,12 @@
 
 #include <omp.h>
 #include <time.h>
+#include <sys/time.h>
 #include <stdlib.h>
-#define MAXSIZE 1000000 /* maximum array size */
-#define MAXWORKERS 100 /* maximum number of workers */
+#include <stdio.h>
+#include <math.h>
 
-void quickSort(int *inputArray, int size);
+void quickSort(int *inputArray, int size, int depth);
 void swap(int *inputArray, int leftIndex, int rightIndex);
 
 double start_time, end_time; /* start and end times */
@@ -14,13 +15,12 @@ long size; /* array size */
 /* ---------------------------------------------------------------------------- */
 /* read command line, initialize, and create threads */
 int main(int argc, char *argv[]) {
-	int i, numWorkers;
-	
-	/* read command line args if any */
-	size = (argc > 1)? atoi(argv[1]) : MAXSIZE;
+	int i, depth, numWorkers;
 
-	numWorkers = (argc > 2)? atoi(argv[2]) : 1;
-	if (numWorkers > MAXWORKERS) numWorkers = MAXWORKERS;
+	size = atoi(argv[1]);
+
+	depth = (argc > 2)? atoi(argv[2]) : 0;
+	numWorkers =(depth > 0)? pow(2,depth)-1 : 1;
 	omp_set_num_threads(numWorkers); /* Set number of threads */
 
 	int *inputArray; /* testDataArray */
@@ -31,7 +31,9 @@ int main(int argc, char *argv[]) {
 		inputArray[i] = rand()%99999;
 	}
 
-	clock_t start = clock();
+	struct timeval t1, t2;
+	double elapsedTime;
+    gettimeofday(&t1, NULL);
 	/* Call the quickSort function to sort the list */
 	#pragma omp parallel
 	{
@@ -39,18 +41,18 @@ int main(int argc, char *argv[]) {
 			nowait is used becuse we have no need for synchronization at the end of the region */
 		#pragma omp single nowait
 		{
-			quickSort(inputArray, size);
+			quickSort(inputArray, size, depth);
 		}
 	}
-	clock_t end = clock();
-	float diff = ((float)(end - start) / CLOCKS_PER_SEC);
-	printf("%f\n",diff);
+	gettimeofday(&t2, NULL);
+	elapsedTime = (t2.tv_sec - t1.tv_sec) + (t2.tv_usec - t1.tv_usec)/1000000.0;
+	printf("%f\n",elapsedTime);
 
 	free(inputArray);
 	return 0;
 }
 
-void quickSort(int *inputArray, int size){
+void quickSort(int *inputArray, int size, int depth){
 	int pivot, leftIndex, rightIndex;
 	/* End of reccursion */
 	if (size <= 1) { return; }
@@ -68,13 +70,19 @@ void quickSort(int *inputArray, int size){
 		}
 		swap(inputArray, leftIndex, rightIndex);    
 	}
+	if(depth == 0){
+		quickSort(inputArray, leftIndex, 0);
+		quickSort(inputArray + rightIndex + 1, size - rightIndex -1, 0);
+		return;
+	}
+	
 	#pragma omp task
 	{
-		quickSort(inputArray, leftIndex); /* Sort lower */
+		quickSort(inputArray, leftIndex, depth-1); /* Sort lower */
 	}
 	#pragma omp task
 	{
-		quickSort(inputArray + rightIndex + 1, size - rightIndex -1); /* Sort upper */
+		quickSort(inputArray + rightIndex + 1, size - rightIndex -1, depth-1); /* Sort upper */
 	}
 }
 /* ---------------------------------------------------------------------------- */
