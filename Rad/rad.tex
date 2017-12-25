@@ -893,7 +893,7 @@ Python	&4.19			&38.61		& 106.06 		&201.44		&11.41	& 161.23		& 617.23		& - 			\\
 \end{table}
 
 
-U tabeli \ref{tab:qs5} je prikazano prosečno vreme konkurentnog izvršavanja do zadate dubine rekurzije. Implementacije najefikasnije rade kada je dubina rekurzije 7. Izuzetak je Python, kome je najmanje vremena potrebno za dubinu 5. Previlka dubina, najlošije utiče na C. Prilikom ostalih testiranja, korišćena je ona dubina rekurzije za koju implementacija pokazuje najbolje rezultate.
+U tabeli \ref{tab:qs5} je prikazano prosečno vreme konkurentnog izvršavanja do zadate dubine rekurzije. Implementacije najefikasnije rade kada je dubina rekurzije 7. Izuzetak je Python, kome je najmanje vremena potrebno za dubinu 5. Prevelika dubina, najlošije utiče na C. Prilikom ostalih testiranja, korišćena je ona dubina rekurzije za koju implementacija pokazuje najbolje rezultate.
 
 \begin{table}
 \begin{center}
@@ -911,7 +911,7 @@ Python 	&5.07		&\textbf{4.19}	&7.13				&-		&- 	\\
 \end{center}
 \end{table}
 
-Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi pri konkurentnom izvršavanju za niz od 50 miliona brojeva, prikazana je grafikom na slici \ref{fig:qs1}. Kao posledice samog algoritma i rekurzije, postoje granice do kojih paralelizacija i povećanje broja jezgara donosi ubrzanje. Sam izbor pivota, takođe može uticati na ubrzanje, jer može izazvati neuravnotežene rekurzivne pozive (složenost algoritma u najgorem slučaju je kvadratna). Implementacije dobijaju veliko ubrzanje do 16 jezgara, kada dodatno povećanje jezgara ne donosi značajno ubrzanje. Rezultati Python-a, prikazani se za niz od milion brojeva, kako bi sve implementacije mogle da se predstave na istom grafiku.
+Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi pri konkurentnom izvršavanju za niz od 50 miliona brojeva, prikazana je grafikom na slici \ref{fig:qs1}. Kao posledice samog algoritma i rekurzije, postoje granice do kojih paralelizacija i povećanje broja jezgara donosi ubrzanje. Sam izbor pivota, takođe može uticati na ubrzanje, jer može izazvati neuravnotežene rekurzivne pozive (složenost algoritma u najgorem slučaju je kvadratna) \cite{qsp}. Implementacije dobijaju veliko ubrzanje do 16 jezgara, kada dodatno povećanje jezgara ne donosi značajno ubrzanje. Rezultati Python-a, prikazani se za niz od milion brojeva, kako bi sve implementacije mogle da se predstave na istom grafiku.
 
 \begin{figure}
 \begin{center}
@@ -1069,7 +1069,7 @@ Grafik brzine sekvencijalnog izvršavanja u zavisnosti od veličine matrice, pri
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik brzine sekvencijalnog izvršavanja različitih implementacija algoritma \textit{množenja matrica} u zavisnosti od veličine matrice, testirano na 48 jezgara}
+\caption{Grafik brzine sekvencijalnog izvršavanja različitih implementacija algoritma \textit{množenja matrica} u zavisnosti od veličine matrice}
 \label{fig:matrix11}
 \end{center}
 \end{figure}
@@ -1090,7 +1090,7 @@ Go		&21.73	&8.93		&4.98		&2.47		&\textbf{1.75} \\ \hline
 \end{center}
 \end{table}
 
-Rezultati testiranja implementacija na različitom broju jezgara, prikazani su grafikom na slici \ref{fig:matrix3}. Implementacije dobijaju veliko ubrzanje povećanjem broja korišćenih jezgara. Ipak, ne postoji značajna razlika u brzini pri upotrebi 32 i 48 jezgara, što je posledica samog algoritma koji ne koristi dodatne optimizacije koje omogućavaju maksimalnu iskorišćenost procesora.
+Rezultati testiranja implementacija na različitom broju jezgara, prikazani su grafikom na slici \ref{fig:matrix3}. Implementacije dobijaju veliko ubrzanje povećanjem broja korišćenih jezgara. Ipak, ne postoji značajna razlika u brzini pri upotrebi 32 i 48 jezgara, što je posledica samog algoritma koji ne koristi dodatne optimizacije koje omogućavaju maksimalnu iskorišćenost procesora \cite{matp}.
 
 \begin{figure}
 \begin{center}
@@ -1153,13 +1153,15 @@ Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrice, prikazan 
 \end{center}
 \end{figure}
 
-Rezultati Python implementacije, prikazani su u tabeli \ref{tab:matrix1}. Python radi višestruko sporije od ostalih implementacija. Za matricu veličine 800, potrebno mu je više od 3 minuta, dok ostale implementacije rade ispod jedne sekunde. U odnosu na sekvencijalno izvršavanje, Python se izvršava oko tri puta brže. Kada je reč o memoriskim zahtrevima, Python-u je potrebna pet puta veća količina memorije nego ostalim implementacijama, što je posledica upotrebe procesa umesto niti.
+Rezultati Python implementacije, prikazani su u tabeli \ref{tab:matrix1}. Python radi višestruko sporije od ostalih implementacija. Za matricu veličine 800, potrebno mu je više od 3 minuta, dok ostale implementacije rade ispod jedne sekunde. U odnosu na sekvencijalno izvršavanje, Python se izvršava oko tri puta brže. Kada je reč o memoriskim zahtrevima pri konkurentnom izvršavanju, Python-u je potrebna pet puta veća količina memorije nego ostalim implementacijama, što je posledica upotrebe procesa umesto niti.
 
-U  tabeli \ref{tab:matrix11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara i vreme izvršavanja sa različitim brojem niti Python implementacije, za matricu veličine 300. Sa povećanjem broja jezgara, ne dobija se značajno ubrzanje za razliku od drugih jezika. Broj niti, takođe nema značajan uticaj na brzinu izvršavanja kod Python-a.
+U  tabeli \ref{tab:matrix11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara Python implementacije, za matricu veličine 300. Kod Python-a, sa povećanjem broja jezgara, ne dobija se značajno ubrzanje za razliku od drugih jezika. 
+
+U  tabeli \ref{tab:matrix111}, prikazano je vreme izvršavanja sa različitim brojem niti u zavisnosti od broja jezgara Python implementacije, za matricu veličine 300. Broj niti, kao i broj jezgara  nema značajan uticaj na brzinu izvršavanja kod Python-a.
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije za različito n,  implementacije  algoritma \textit{množenja matrica}  u jeziku Python}
+\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije pri konkurentnom izvršavanju za različito n,  implementacije  algoritma \textit{množenja matrica}  u jeziku Python}
 \begin{tabular}{||c||c|c|c||}
 \hline
 n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
@@ -1175,17 +1177,25 @@ n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara i prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 300,  implementacije algoritma \textit{množenja matrica} u jeziku Python}
+\caption{Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 300, implementacije algoritma \textit{množenja matrica} u jeziku Python}
 \begin{tabular}{||c||c|c|c|c|c|c||}
 \hline
 Br. jezgara &4  &8 &16 &24 & 32 &48 \\ \hline
 Vreme [s]	&14.70	&12.84	&11.66 	& 10.91	&10.85	&10.78\\ \hline  
-\multicolumn{7}{c}{}\\
+\end{tabular}
+\label{tab:matrix11}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara za matricu veličine 300  implementacije algoritma \textit{množenja matrica} u jeziku Python}
+\begin{tabular}{||c||c|c|c|c|c|c||}
 \hline
 Br. niti &4 &10 &30 &50 &100 & 300  \\ \hline
 Vreme [s]	&12.57	&11.60	&10.91	 & 10.82	&10.85	&10.78\\ \hline
 \end{tabular}
-\label{tab:matrix11}
+\label{tab:matrix111}
 \end{center}
 \end{table}
 
@@ -1398,7 +1408,7 @@ Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara, prikaza
 
 Maksimalna upotreba memorije u zavisnosti od n, prikazana je grafikom na slici \ref{fig:prime2}. Sve tri implementacije imaju slične memorijske zahteve. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebna količina memorije koja je direktno proporcijalna vrednosti n.
 
-Prosečno vreme izvršavanja i upotreba memorije Python implementacije, prikazani su u tabeli \ref{tab:prime1}. Python radi najsporije od svih implementacija i potrebno mu je više od 20 sekundi za ulaz veličine 10 miliona, dok ostale implementacije rade oko jedne sekunde za ulaz 500 miliona. U odnosu na sekvencijalno izvršavanje, Python dobija ubrzanje koje je neuporedivo manje u odnosu na druge jezike. Memorijski zahtevi su takođe znatno veći u odnosu na druge implementacije usled upotrebe procesa umesto niti.
+Prosečno vreme izvršavanja i upotreba memorije Python implementacije pri konkurentnom izvršavanju, prikazani su u tabeli \ref{tab:prime1}. Python radi najsporije od svih implementacija i potrebno mu je više od 20 sekundi za ulaz veličine 10 miliona, dok ostale implementacije rade oko jedne sekunde za ulaz 500 miliona. U odnosu na sekvencijalno izvršavanje, Python dobija ubrzanje koje je neuporedivo manje u odnosu na druge jezike. Memorijski zahtevi su takođe znatno veći u odnosu na druge implementacije usled upotrebe procesa umesto niti.
 
 \begin{figure}[H]
 \begin{center}
@@ -1431,7 +1441,7 @@ Prosečno vreme izvršavanja i upotreba memorije Python implementacije, prikazan
 
 \begin{table}[H]
 \begin{center}
-\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije za različito n, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
+\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije pri konkurentnom izvršavanju za različito n, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
 \begin{tabular}{||c||c|c|c||}
 \hline
 n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
@@ -1446,21 +1456,29 @@ n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
 
 \begin{table}[H]
 \begin{center}
-\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara i prosečno vreme izvršavanja sa različitim brojem niti za n = 1 milion, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
+\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara za n = 1 milion, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
 \begin{tabular}{||c||c|c|c|c|c|c||}
 \hline
 Br. jezgara &4  &8 &16 &24 & 32 &48 \\ \hline
 Vreme [s]	&2.93		&2.42		&2.13 	& 2.01	&1.96 	&1.95\\ \hline  
-\multicolumn{7}{c}{}\\
-\hline
-Br. niti &4 &10 &30 &50 &100 & 500  \\ \hline
-Vreme [s]	&2.38		&2.03		&2.05	 	& 1.98	&1.95		&2.07\\ \hline
 \end{tabular}
 \label{tab:prime11}
 \end{center}
 \end{table}
 
-U  tabeli \ref{tab:prime11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara i vreme izvršavanja sa različitim brojem niti kada n iznosi 1 milion. Povećanje broja jezgara nema značajan uticaj na vremensku efikasnost Pythona, kao ni različit broj niti koji se koristi.
+\begin{table}[H]
+\begin{center}
+\caption{Prosečno vreme izvršavanja  sa različitim brojem niti za n = 1 milion, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
+\begin{tabular}{||c||c|c|c|c|c|c||}
+\hline
+Br. niti &4 &10 &30 &50 &100 & 500  \\ \hline
+Vreme [s]	&2.38		&2.03		&2.05	 	& 1.98	&1.95		&2.07\\ \hline
+\end{tabular}
+\label{tab:prime111}
+\end{center}
+\end{table}
+
+U  tabeli \ref{tab:prime11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara, a u tabeli \ref{tab:prime111}, vreme izvršavanja sa različitim brojem niti, za Python implementaciju kada n iznosi 1 milion. Povećanje broja jezgara nema značajan uticaj na vremensku efikasnost Pythona, kao ni različit broj niti koji se koristi.
 
 Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. Najkraća implementacija algoritma je u Python-u, dok je u C-u najduža. Go se nalazi između C-a i C++-a po broju linija koda.
 
