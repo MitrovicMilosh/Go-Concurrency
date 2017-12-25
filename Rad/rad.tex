@@ -10,7 +10,7 @@
 \usepackage{diagbox}
 \usepackage{array}
 \usepackage{fancyvrb}
-
+\usepackage{float}
 \definecolor{background}{RGB}{255, 248, 220}
 
 
@@ -173,7 +173,7 @@ U složene tipove podatka u programskom jeziku Go spadaju \textbf{nizovi} i \tex
 Go dozvoljava poređenje nizova iste dužine definisanih nad istim tipom podataka, relacionim operatorima \texttt{==} i \texttt{!=} . Dva niza su jednaka ako imaju jednake vrednosti na istim pozicijama. U listingu \ref{lst:arr_str} je prikazan primer definisanja i upotrebe niza.
 \\
 
-\textbf{Strukture} su složeni podaci koji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture, definiše se novi tip podataka korišćenjem ključne reči \texttt{type} ispred same definicije strukture. Poljima strukture, pristupa se pomoću znaka \texttt{.} i naziva polja. Prazne strukture \texttt{struct\{\}}, mogu se koristiti za komunikaciju preko kanala u slučajevima kada nije bitan sadržaj poruke već samo davanje signala. U implementaciji \textit{quicksort} algoritma u potpoglavlju \ref{qs:go}, prikazan je primer upotrebe praznih struktura za realizaciju semafora. 
+\textbf{Strukture} su složeni podaci koji grupišu nula ili više elemenata proizvoljnog tipa. Svaki element mora biti jedinstveno imenovan i predstavlja jedno polje strukture. Definisanjem strukture, definiše se novi tip podataka korišćenjem ključne reči \texttt{type} ispred same definicije strukture. Poljima strukture, pristupa se pomoću znaka \texttt{.} i naziva polja. Prazne strukture \texttt{struct\{\}}, mogu se koristiti za komunikaciju preko kanala u slučajevima kada nije bitan sadržaj poruke već samo davanje signala. U implementaciji serverske aplikacije u glavi \ref{app} u potpoglavlju \ref{appFile}, prikazan je primer upotrebe praznih struktura za realizaciju semafora. 
 
 Ugnježdavanje struktura je dozvoljeno, odnosno definisanje struktura koje sadrže druge strukture kao polja. Strukture istog tipa, mogu se porediti relacionim operatorima   \texttt{==} i \texttt{!=} . Dve strukture su jednake ako imaju jednake vrednosti na istim poljima. Nad strukturama se mogu definisati metodi koji su opisani u poglavlju \ref{metod}. Primer koji demonstrira rad sa strukturama, prikazan je u listingu  \ref{lst:arr_str}.
 
@@ -654,7 +654,7 @@ Pošiljalac može zatvoriti kanal upotrebom funkcije \texttt{close}. Za razliku 
 
 Moguće je definisati kanale sa baferom kroz koji se mogu poslati više od jedne vrednosti bez blokiranja prilikom slanja. Veličina bafera, definiše se prilikom kreiranja kanala u funkciji \texttt{make}. Podrazumevana vrednost bafera je 1. Funkcija \texttt{cap}, koristi se za dobijanje veličine bafera kanala. Osim dvosmernih, mogu se definisati i jednosmerni kanali upotrebom operatora strelice. Smer kanala označen je pozicijom opratora strelice u odnosu na ključnu reč \texttt{chan}. Konverzija dvosmernog kanala u jednosmerni je dozvoljena, dok suprotna situacija nije. 
 
-Primer upotrebe jednosmernih kanala i kanala sa baferom, prikazan je u listingu \ref{lst:chan2}. U funkciji \texttt{main}, kreira se dvosmerni kanal \texttt{c} sa baferom veličine 10, a zatim se funkcija \texttt{fibonacci} poziva u novoj gorutini. U petlji \texttt{for}, ispisuju se vrednosti koje su poslate kroz kanal do njegovog zatvaranja. Funkcija \texttt{fibonacci} kao argumente ima  broj Fibonačijevih brojeva koji je potrebno da generiše \texttt{n} i usmereni kanal \texttt{c}. Prilikom poziva ove funkcije dolazi do konverzije dvosmernog kanala u jednosmerni kanal za slanje. U petlji se kroz kanal šalju vrednosti nakon čega se kanal zatvara.
+Primer upotrebe jednosmernih kanala i kanala sa baferom, prikazan je u listingu \ref{lst:chan2}. U funkciji \texttt{main}, kreira se dvosmerni kanal \texttt{c} sa baferom veličine 10, a zatim se funkcija \texttt{fibonacci} poziva u novoj gorutini. U \texttt{for} petlji, ispisuju se vrednosti koje su poslate kroz kanal do njegovog zatvaranja. Funkcija \texttt{fibonacci} kao argumente ima  broj Fibonačijevih brojeva koji je potrebno da generiše \texttt{n} i usmereni kanal \texttt{c}. Prilikom poziva ove funkcije dolazi do konverzije dvosmernog kanala u jednosmerni kanal za slanje. U petlji se kroz kanal šalju vrednosti nakon čega se kanal zatvara.
 
 \begin{center}
 \begin{lstlisting}[caption=Primer upotrebe jednosmernog kanala i kanala sa baferom, label={lst:chan2},  backgroundcolor=\color{background}]
@@ -773,39 +773,31 @@ Goroutine 83 (running) created at:
 %PRIMERI ==============================================================================
 
 \chapter {Poređenje sa drugim programskim jezicima}
-U ovoj glavi, izložene su konkurentne implementacija tri jednostavna algoritma u jezicima Go, C, C++ i Python.  Implementacije demonstriraju upotrebu konkurentnosti u jeziku Go, kao i kakvi su njegovi vremenski i memorijski zahtevi u odnosu na druge pomenute jezike. Prvo sledi kratak pregled programskih jezika C, C++ i Python, a zatim poređenje i rezultati testiranja implementacija algoritama \textit{quicksort}, \textit{množenje matrica} i \textit{Eratostenovo sito}.
+U ovoj glavi, izložene su konkurentne implementacije tri jednostavna algoritma u jezicima Go, C, C++ i Python.  Implementacije demonstriraju upotrebu konkurentnosti u jeziku Go, kao i kakvi su njegovi vremenski i memorijski zahtevi u odnosu na druge pomenute jezike. Prvo sledi kratak pregled programskih jezika C, C++ i Python, a zatim poređenje i rezultati testiranja implementacija algoritama \textit{quicksort}, \textit{množenje matrica} i \textit{Eratostenovo sito}.
 
 \section{C}
 
-Programski jezik C je statički tipizirani, imperativni jezik opšte namene. Kreiran je sa svrhom ponovnog implementiranja Unix operativnog sistema početkom 70-ih godina prošlog veka. Naredbe u jeziku C, efikasno se mapiraju u standardne mašinske instrukcije što ga čini idealnog za implementaciju sistemskih aplikacija. C predstavlja jedan od najkorišćenijih programskih jezika i uticao je na razvoj mnogih drugih jezika, uključujući i jezik Go. 
+Programski jezik C je statički tipizirani, imperativni jezik opšte namene. Kreiran je sa svrhom ponovnog implementiranja Unix operativnog sistema početkom 70-ih godina prošlog veka. Naredbe u jeziku C, efikasno se mapiraju u standardne mašinske instrukcije što ga čini idealnog za implementaciju sistemskih aplikacija. C predstavlja jedan od najkorišćenijih programskih jezika i uticao je na razvoj mnogih drugih jezika, uključujući i jezika Go. 
 
 Konkurentno izvršavanje, omogućeno je upotrebom biblioteka. Postoji veliki izbor biblioteka koje obezbeđuju podršku za konkurentno izvršavanje, a za potrebe ovog rada izabrana je biblioteka \texttt{pthreads} \cite{pthr} iz standardne biblioteke. Biblioteka obezbeđuje sredstva za kreiranje i izvršavanje niti, kao i za njihovu sinhronizaciju. Za sinhronizaciju niti u okviru biblioteke definisani su muteksi i uslovne promenljive (promenljive koje dozvoljavaju pristup kada je uslov zadovoljen). 
 
 \section{C++}
 
-C++ je imperativni, objektno-orijentisani jezik opšte namene. Nastao je kao nadogradnja jezika C sa svrhom kreiranja efikasnog jezika sa visokim stepenom apstrakcije podataka koji ima mogućnost upravljanja memorijom na niskom nivou. Kompatibilan je sa C-om tako da se biblioteke i k\^{o}d koji su implementirani za C, mogu koristiti i u C++-u.
+C++ je imperativni, objektno-orijentisani jezik opšte namene. Nastao je kao nadogradnja jezika C sa svrhom kreiranja efikasnog jezika sa visokim stepenom apstrakcije podataka koji ima mogućnost upravljanja memorijom na niskom nivou. Kompatibilan je sa C-om tako da se biblioteke i kodovi koji su implementirani za C uglavnom mogu koristiti i u C++-u, osim nekoliko izuzetaka.
 
-Postoji širok izbor biblioteka koje obezbeđuju konkurentnost u jeziku C++, a u ovom radu upotrebljene su standardna i biblioteka \texttt{OpenMP}. Standardna biblioteka \cite{std} nudi više mogućnosti od biblioteke \texttt{pthreads}, kao što su, na primer, šabloni \texttt{future} i \texttt{promise}. Šablon \texttt{future} omogućava mehanizam za čekanje rezultata asinhronih operacija, a šablon \texttt{promise} omogućava čuvanje vrednosti kojoj se kasnije može asinhrono pristupiti. 
-
-Biblioteka \texttt{OpenMP} \cite{omp} na efikasan način obezbeđuje jednostavno programiranje konkurentnih programa upotrebom paralelnih blokova. U okviru direktive paralelnog bloka, navode se podešavanja, kao i podaci koji mogu biti deljeni između niti i podaci koji su specifični za svaku nit pojedinačno. Takođe postoje strukture kao što su paralelna petlja \texttt{for}, muteksi i barijere. 
+Postoji širok izbor biblioteka koje obezbeđuju konkurentnost u jeziku C++, a za potrebe ovog rada, upotrebljena je biblioteka \texttt{OpenMP} \cite{omp}. Biblioteka na efikasan način obezbeđuje jednostavno programiranje konkurentnih programa upotrebom paralelnih blokova. U okviru direktive paralelnog bloka, navode se podešavanja, kao i podaci koji mogu biti deljeni između niti, i podaci koji su specifični za svaku nit pojedinačno. Takođe postoje strukture kao što su paralelna \texttt{for} petlja, muteksi i barijere. 
 
 \section{Python}
 
 Python je dinamički tipizirani, interpretirani jezik opšte namene. Jedan od osnovnih ciljeva jezika je jednostavno pisanje čitljivog koda u što manje linija. Python podržava više programskih paradigmi, uključujući funkcionalnu i objektno-orijentisanu i ima široku upotrebu od razvoja za veb do naučnog izračunavanja. 
 
 \label{gil}
-U Python-u je omogućeno konkurentno programiranje, međutim nije realizovano na najefikasniji način. Probleme prilikom konkurentnog izvršavanja proizvodi GIL (eng. "Global Interpreter Lock", katanac globalnog interpretera). GIL predstavlja mehanizam koji se koristi za sinhronizovano izvršavanje niti tako da se samo jedna nit istog procesa može izvršavati u jednom trenutku. Na ovaj način je onemogućeno paralelno izvršavanje dve ili više niti istog procesa. Ipak, neki zadaci kao što su ulazno/izlazne operacije, mogu se izvršavati nezavisno od GIL-a, kao i pojedine biblioteke (npr. biblioteka \texttt{numpy}).
+U Python-u je omogućeno konkurentno programiranje, međutim ono nije realizovano na najefikasniji način. Probleme prilikom konkurentnog izvršavanja proizvodi GIL (eng. "Global Interpreter Lock", katanac globalnog interpretera). GIL predstavlja mehanizam koji se koristi za sinhronizovano izvršavanje niti tako da se samo jedna nit istog procesa može izvršavati u jednom trenutku. Na ovaj način je onemogućeno paralelno izvršavanje dve ili više niti istog procesa. Ipak, neki zadaci kao što su ulazno/izlazne operacije, mogu se izvršavati nezavisno od GIL-a, kao i pojedine biblioteke (npr. biblioteka \texttt{numpy}).
 
-U ovom radu za konkurentno programiranje korišćena je biblioteka \texttt{threading} \cite{thr}, koja omogućava standardna sredstva za manipulaciju nitima i njihovu sinhronizaciju. Kako bi se izbegao problem koji proizvodi GIL, biblioteka \texttt{multiprocessing} omogućava konkurentno izvršavanje procesa, međutim u ovom radu je razmatrano samo konkurentno izvršavanje niti. Paralelno izvršavanje niti se može postići instalacijom dodatnih modula kao što je \texttt{Parallel Python PP} \cite{pp}, koji je upotrebljen za jednu od implementacija algoritma \textit{quicksort}.
+Za realizaciju konkurentnog programiranja, korišćena je biblioteka \texttt{Parallel Python} \cite{pp}. Biblioteka funkcioniše tako što kreira paralelni server poslova (eng. "parallel job server") na kome se može izvršavati zadati broj radnika (eng. "worker"). Svaki radnik zapravo predstavlja poseban proces koji obavlja jedan od zadatih poslova. Kako su u pitanju procesi, a ne niti, nije omogućeno deljenje memorije. Procesi zahtevaju više memorijskog prostora, a i neophodno prosleđivanje potrebnih podataka dodatno utiče na memorijske zahteve. U nastavku, radi jednostavnosti prilikom poređenja, procesi su oslovljavani kao niti. Efikasna paralelizacija nije krakteristika Python-a, ali ovde se koristi prilikom poređenja jer se jezici često upotrebljavaju u slične svrhe.
 
 \section{Poređenje konkurentnih implementacija}
-Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija k\^{o}da. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. Verzija jezika korišćena za Go implementacije je 1.8.
-
-% Quicksort==============================================================================
-\section{Quicksort}
-\textit{Quicksort} je algoritam za sortiranje brojeva u mestu koji spada u grupu algoritama podeli i vladaj. U svakom koraku, jedan element - pivot, postavlja se na svoju poziciju u sortiranom nizu i deli se na dva podniza particionisanjem, jedan u kome su svi brojevi veći od pivota i drugi u kome su svi brojevi manji od pivota, koji se zatim sortiraju rekurzivno.  Pseudo kod algoritma je prikazan na slici \ref{fig:qs_pseudo}. 
-
-Paralelizacija algoritma je izvršena tako što se za svaki rekurzivni poziv pokreće po jedna nit/gorutina do određene granice kada se prelazi u sekvencijalni režim rada. Za testiranje su korišćeni pseudoslučajno generisani nizovi različitih dužina. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/quicksort}}.
+Kao kriterijumi poređenja koriste se prosečna brzina izvršavanja, maksimalna upotreba memorije i broj linija koda. Primeri su testirani na hardveru sa 48 jezgara pod Linux-om Ubuntu 16.04 ukoliko nije naglašeno suprotno. Informacije o prosečnom vremenu izvršavanja, odnose se samo na realizaciju algoritma, ne na kompletno trajanje programa. Verzija jezika korišćena za implementacije u jeziku Go je 1.8.
 
 \begin{figure}
 \begin{center}
@@ -829,123 +821,97 @@ algorithm partition(A, lo, hi) :
     return i + 1
 \end{Verbatim}
 
-\caption{Pseudokod algoritma quicksort}
+\caption{Pseudokod algoritma \textit{quicksort}}
 \label{fig:qs_pseudo}
 \end{center}
 \end{figure}
 
+% Quicksort==============================================================================
+\section{Quicksort}
+\textit{Quicksort} je algoritam za sortiranje brojeva u mestu koji spada u grupu algoritama podeli i vladaj. U svakom koraku, jedan element - pivot, postavlja se na svoju poziciju u sortiranom nizu i deli se na dva podniza particionisanjem, jedan u kome su svi brojevi veći od pivota i drugi u kome su svi brojevi manji od pivota, koji se zatim sortiraju rekurzivno.  Pseudokod algoritma, prikazan je na slici \ref{fig:qs_pseudo}. 
 
-\subsection{Go}
-\label{qs:go}
-Implementacija prikazana u listingu \ref{lst:qs}, koristi koncept višestrukog semafora za ograničavanje broja aktivnih go-rutina. Semafor je realizovan pomoću kanala sa baferom i naredbe \texttt{select} gde kapacitet kanala označava maksimalan broj aktivnih gorutina. U naredbi \texttt{select}, pokušava se "dobijanje tokena", odnosno slanje poruke kroz kanal sa baferom. Kanal je definisan nad tipom prazne strukture jer nije bitna sama poruka već samo trenutno zauzeće kanala. U slučaju da je moguće dobiti token, odnosno uspešno poslati praznu strukturu kroz kanal, pokreće se gorutina za rekurzivni poziv, u suprotnom, ukoliko nema slodbnog mesta u baferu, rekurzivni poziv se izvršava sekvencijalno. Na kraju svake gorutine je potrebno pročitati poruku iz kanala odnosno osloboditi jedno mesto.
+Paralelizacija algoritma je izvršena tako što se za svaki rekurzivni poziv pokreće po jedna nit/gorutina do određene dubine rekurzije kada se prelazi u sekvencijalni režim rada. Za testiranje su korišćeni pseudoslučajno generisani nizovi različitih dužina. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/quicksort}}.
 
- Kako bi se sačekalo da sve gorutine završe sa svojim radom, za sinhronizaciju se koriste grupe za čekanje \texttt{WaitGroup}. Svaki konkurentni poziv funkcije kreira svoju grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. S obzirom da unapred nije poznato kada će moći da se izvrši konkurentni a kada sekvencijalni poziv funkcije, potrebno je u oba slučaja signalizirati grupi za čekanje da je završeno sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
-
-\subsection{C}
-Za razliku od Go implementacije, ovde je upotrebljena dubina rekurzije za ograničavanje broja niti koje program kreira. Kada se dostigne zadata dubina rekurzije program više ne kreira nove niti već prelazi u sekvencijalni režim rada. Svaki konkurentni poziv funkcije kreira po dve nove niti ukoliko maksimalna dubina nije dostignuta, nakon čega se čeka na njihov završetak rada.
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne quicksort funkcije,label={lst:qs},  backgroundcolor=\color{background}]
-var semaphore = make(chan struct{}, 100)
-
-func QuickSortConcurrent(a *[]int, low, hi int) {
+\begin{lstlisting}[caption=Implementacija konkurentne funkcije \textit{quicksort} u jeziku Go,label={lst:qs},  backgroundcolor=\color{background}]
+func QuickSortConcurrent(a *[]int, low, hi, depth int) {
 	if hi < low {
 		return
 	}
 
 	p := partition(a, low, hi)
 
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	select{
-	case semaphore <- struct{}{}:
+	if depth > 0 {
+		wg := sync.WaitGroup{}
+		wg.Add(2)
 		go func(){
-			QuickSortConcurrent(a, low, p-1)
-			<- semaphore
+			QuickSortConcurrent(a, low, p-1, depth-1)
 			wg.Done()
 		}()
-	default:
+		go func(){
+			QuickSortConcurrent(a, p+1, hi, depth-1)
+			wg.Done()
+		}()
+		wg.Wait()
+	}else{
 		QuickSortSequential(a,low, p-1)
-		wg.Done()
-	}
-
-	select{
-	case semaphore <- struct{}{}:
-		go func(){
-			QuickSortConcurrent(a, p+1, hi)
-			<- semaphore
-			wg.Done()
-		}()
-	default:
 		QuickSortSequential(a, p+1, hi)
-		wg.Done()
-	}
-
-	wg.Wait()
+	}	
 }
 \end{lstlisting}
 \end{center}
 
-\subsection{C++}
-Za C++ su razmatrane dve implementacije: prva, u kojoj je niz reprezentovan strukturom vektor i koristi standardnu biblioteku, i druga, koja koristi običan niz \texttt{int}-ova i biblioteku \texttt{omp}. Prva implementacija ima koncept dubine rekurzije za restrikciju broja niti na isti način kao što je realizovano u C-u. Druga, u kojoj je upotrebljena biblioteka \texttt{omp}, ima mogućnost da postavi maksimalni broj aktivnih niti u jednom trenutku.
+\subsection{Go}
+\label{qs:go}
+U listingu \ref{lst:qs}, prikazana je implementacija  konkurentne \textit{quicksort} funkcije. Funkciji se prosleđuje promenljiva \texttt{depth} sa informacijom o dubini rekurzije, koja se dekrementira svakim novim pozivom. Ukoliko zadata dubina rekurzije nije dostignuta, odnosno promenljiva \texttt{depth} je veća od nule, kreira se po jedna gorutina za svaki rekurzivni poziv, u suprotnom, rekurzivni pozivi se izvršavaju sekvencijalno. Kako bi se sačekalo da obe gorutine završe sa svojim radom, za sinhronizaciju se koriste grupe za čekanje. Svaki konkurentni poziv funkcije kreira svoju grupu kojoj postavlja brojač na dva, a zatim, na kraju, čeka da oba rekurzivna poziva završe sa radom. Niz se prenosi preko reference i nije potrebno nikakvo zaključavanje jer svaki poziv fununkcije menja samo svoj deo niza.
 
-
-\subsection{Python}
-Ovde se takođe razmatraju dve implementacije koje koriste različite pakete za realizaciju konkurentnosti. Kod prve implementacije koristi se biblioteka \texttt{threading} i postavlja se maksimalni broj aktivnih niti. U drugoj verziji je iskorišćen modul \texttt{Parallel Python} sa već pomenutim konceptom dubine rekurzije za kontrolu broja niti. 
+\subsection{Implementacije u drugim jezicima}
+Implementacija u Python-u, razlikuje se od ostalih implementacija jer nije moguće proslediti podatke preko reference i globalne promenljive nisu deljene, tako da svaki rekurzivni poziv kreira novi niz koji vraća kao rezultat, što dodatno utiče na memorijske zahteve. Paralelizacija implementacija u drugim jezicima, realizovana je na isti način. 
 
 \subsection{Rezultati}\label{qs:rez}
 
-Vremenska efikasnost implementacija u zavisnosti od veličine niza je prikazana u tabeli \ref{tab:qs1}.  C i C++ \texttt{omp} implementacije su se pokazale kao najefikasnije. Vreme izvršavanja Go implementacije je uporedivo za nizove od milion i 10 miliona dok je za niz od 100 miliona brojeva potrebno dva puta više vremena u odnosu na C i C++ \texttt{omp} implementacije. C++ verzija sa standardnom bibliotekom je značajno sporija od pomenutih implementacija. Python-u je potrebno najviše vremena i nije bilo mogućnosti testirati ga za niz od 100 miliona brojeva.
-\\
+Vremenska efikasnost implementacija u zavisnosti od veličine niza, prikazana je u tabeli \ref{tab:qs1}. Za nizove manje dužine, Go, C i C++ rade približno istom brzinom. Za nizove veće dužine, Go i C++ rade najbrže, dok je C-u potrebno dva puta više vremena. Python radi najsporije i zahteva oko dvadeset puta više vremena od C-a. 
 
-U odnosu na sekvencijalno izvršavanje, najveće ubrzanje ima C. Sekvencijalno se najbrže izvršava Go i za niz od milion brojeva, potrebno mu je isto vremena kao i pri konkurentnom izvršavanju.  Ubrzanje postoji za nizove veće dužine međutim ono je manje u odnosu na C i C++ \texttt{omp} verziju. 
-\\
-
-Kod Python \texttt{threading} implementacije, konkurentno izvršavanje je sporije u odnosu na sekvencijalno kao direktna posledica GIL-a, što je objašnjeno u segmentu \ref{gil}. Verzija koja koristi modul \texttt{Parallel Python} pokazuje da je moguće napraviti konkurentan program sa nitima u Pythonu, koji je efikasniji u odnosu na sekvencijalno izvršavanje. Međutim, i ova Python verzija je višestruko sporija u odnosu na implementacije u drugim jezicima. Napomena da rezultati dobijeni testiranjem na drugom računaru služe samo kao relativan odnos sekvencijalnog i konkurentog izvršavanja, a ne za poređenje sa drugim implementacijama, usled različite brzine izvršavanja.
-\\
+U odnosu na sekvencijalno izvršavanje, najveće ubrzanje imaju Go i C++. Python takođe dobija veliko ubrzanje konkurentnim izvršavanjem, ali kao što je već pomenuto, radi značajno sporije od ostalih jezika. 
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja [s] quicksort implementacija za različito n, testirano sa 48 jezgara}
-\begin{tabular}{||c||c|c|c||c|c|c||}
+\caption{Prosečno vreme izvršavanja [s] za različito n, implementacija algoritma \textit{quicksort}, testirano sa 48 jezgara}
+\begin{tabular}{||c||c|c|c|c||c|c|c|c||}
 \hline
-&\multicolumn{3}{c||}{Konkurentno izvršavanje}&\multicolumn{3}{c||}{Sekvencijalno izvršavanje} \\ \hline
-\diagbox[width=2.7cm, height=1cm]{Verzija}{\vspace*{-0.8cm}n [$10^{6}$]} &1 &10 &100 &1 &10 &100 \\ \hline
-C 		&\textbf{ 0.33}	&2.68			&\textbf{14.29}	& 0.63 		&  2.90		&58.86		\\ 
-C++ omp	& 0.87		&\textbf{2.58}	&15.22		& 0.68		&\textbf{2.64} 	&50.66  		\\ 	
-Go		& 0.49  		&2.71			&29.36		& \textbf{0.48}	&  4.22 		& \textbf{43.70}	\\ 
-C++ std	& 1.58		&3.67			&31.68		& 1.72 		& 17.02		&194.13		\\ 
-Python thr	& 28.98		&340.82		& - 			& 9.71		& 135.32		& - 			\\
-Python pp\textsuperscript{*}	& 4.35		&58.87		& - 			& 8.46		& 118.33		& - 			\\ \hline
-\multicolumn{7}{l}{\textsuperscript{*}\footnotesize{Testirano sa dva jezgra/četiri niti pod Linux-om Ubuntu 17.04}}
+&\multicolumn{4}{c||}{Konkurentno izvršavanje}&\multicolumn{4}{c||}{Sekvencijalno izvršavanje} \\ \hline
+\diagbox[width=2.7cm, height=1cm]{Verzija}{\vspace*{-0.8cm}n [$10^{6}$]} &1 &10 &30 &50 &1 &10 &30 &50 \\ \hline
+Go		& 0.17		&0.84			&2.92			&4.83			&0.27		& 3.13		&  10.02		&17.04		\\ 
+C++ 		& 0.24		&1.23			&3.25			&5.12			&0.54		& 3.81		& 11.98	 	&20.78  		\\ 	
+C 		&0.22			&2.08			&4.42			&10.32		&0.55		& 4.86 		&  15.13		&26.79		\\ 
+Python	&4.19			&38.61		& 106.06 		&201.44		&11.41	& 161.23		& 617.23		& - 			\\
+\hline
 \end{tabular}
 \label{tab:qs1}
 \end{center}
 \end{table}
 
 
-U tabeli \ref{tab:qs5} je prikazano prosečno vreme izvršavanja implementacija sa različitim brojem niti/rutina. Python implementacija nije testirana iz razloga što se sa većim brojem niti, vreme izvršavanja samo povećava. Najbolje vreme se postiže sa 100 niti/gorutina za Go i C++ \texttt{omp} verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom.  Prilikom ostalih testiranja je korišćen onaj broj niti/gorutina za koji implementacija pokazuje najbolje rezultate. Svi prikazani rezultati Python implementacije, testirani su sa 30 niti. 
-\\
+U tabeli \ref{tab:qs5} je prikazano prosečno vreme konkurentnog izvršavanja do zadate dubine rekurzije. Implementacije najefikasnije rade kada je dubina rekurzije 7. Izuzetak je Python, kome je najmanje vremena potrebno za dubinu 5. Previlka dubina, najlošije utiče na C. Prilikom ostalih testiranja, korišćena je ona dubina rekurzije za koju implementacija pokazuje najbolje rezultate.
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja [s] quicksort implementacija sa različitim brojem niti, testirano sa 48 jezgara za niz dužine 10 miliona}
+\caption{Prosečno vreme izvršavanja [s] sa različitom dubinom rekurzije, implementacija algoritma \textit{quicksort}, testirano sa 48 jezgara za niz dužine 10 miliona}
 \begin{tabular}{||c||c c c c c||}
 \hline
-Br. niti/dubina rek.&10/3 &30/5 &100/7 &1000/10 &4000/12 \\ \hline
-Go		&3.27	&3.10	&\textbf{2.71}	&3.41			&3.46\\ \hline
-C		&3.82	&3.53	&2.97			&\textbf{2.40}	&4.12\\ \hline
-C++ omp 	&3.85	&3.36	&\textbf{2.58}	&2.61			&2.68\\ \hline
-C++ std 	&6.44	&5.39	&4.37			&\textbf{3.77}	&4.82\\ 
+Dubina rek.&3 &5 &7 &10 &14 \\ \hline
+Go		&1.69		&1.21			&\textbf{0.84}		&1.17		&1.26\\ \hline
+C++ 	 	&2.31 	&1.73			&\textbf{1.23}		&2.20		&2.68\\ \hline
+C		&3.27		&2.93			&\textbf{2.08}		&2.41		&9.69\\ \hline
+Python 	&5.07		&\textbf{4.19}	&7.13				&-		&- 	\\
 \hline
 \end{tabular}
 \label{tab:qs5}
 \end{center}
 \end{table}
 
-Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi za izvršavanje, za niz od 10 miliona brojeva je prikazana na slici \ref{fig:qs1}. Python nije testiran jer broj jezgara ne utiče na njegovu brzinu izvršavanja. Ubrzanje sa povećanjem broja jezgara je najzastupljenije kod C++ \texttt{omp} verzije. Kod ostalih implementacija, najveća razlika u brzini se vidi između izvršavanja sa 4 i 8 jezgara dok je razlika između 24 i 48 jezgara minimalna. 
-\\
+Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se koristi pri konkurentnom izvršavanju za niz od 50 miliona brojeva, prikazana je grafikom na slici \ref{fig:qs1}. Kao posledice samog algoritma i rekurzije, postoje granice do kojih paralelizacija i povećanje broja jezgara donosi ubrzanje. Sam izbor pivota, takođe može uticati na ubrzanje, jer može izazvati neuravnotežene rekurzivne pozive (složenost algoritma u najgorem slučaju je kvadratna). Implementacije dobijaju veliko ubrzanje do 16 jezgara, kada dodatno povećanje jezgara ne donosi značajno ubrzanje. Rezultati Python-a, prikazani se za niz od milion brojeva, kako bi sve implementacije mogle da se predstave na istom grafiku.
 
 \begin{figure}
 \begin{center}
@@ -955,9 +921,9 @@ Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se korist
     xlabel={Broj jezgara},
     ylabel={Vreme [s]},
     xmin=2, xmax=50,
-    ymin=0, ymax=8,
+    ymin=0, ymax=18,
     xtick={4,8,12,16,20,24,28,32,36,40,44,48},
-    ytick={0,2,4,6,8},
+    ytick={0,3,6,9,12,15,18},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
@@ -965,49 +931,45 @@ Vremenska efikasnost implementacija u zavisnosti od broja jezgara koji se korist
     height=8cm,
 ]
 
-\addplot[black,mark=star] coordinates {(4,5.82)(8,4.37)(16,4.09 )(24,3.87)(48,3.67)};  
-\addplot[red,mark=square* ]  coordinates {(4,3.78)(8,3.45)(16,3.27 )(24,2.97)(48,2.71)}; 
-\addplot[blue,mark=*]  coordinates {(4,6.74)(8,4.91)(16,3.85 )(24,3.25 )(48,2.58)}; 
-\addplot[green,mark=triangle*] coordinates {(4,2.92)(8,2.73)(16,2.64 )(24,2.56)(48,2.40)};
-
-\legend{ C++ std, Go,C++ omp,C}
+\addplot[red,mark=square* ]  coordinates {(4,17.15)(8,12.98)(16,11.12 )(24,10.89)(32,10.5)(48,10.32)}; 
+\addplot[blue,mark=*]  coordinates {(4,14.2)(8,8.36)(16,6.5 )(24,6.0 )(32,5.65)(48,5.12)}; 
+\addplot[green,mark=triangle*] coordinates {(4,10.05)(8,6.86)(16,5.49 )(24,5.12)(32,4.89)(48,4.83)};
+\addplot[dashed,mark=star] coordinates {(4,6.43)(8,5.24)(16,4.78 )(24,4.67)(32,4.43)(48,4.19)};    
+\legend{C,C++,Go,Python}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik brzine izvršavanja različitih quicksort implementacija u zavisnosti od broja jezgara, testirano za niz od 10 miliona brojeva}
+\caption{Grafik brzine izvršavanja različitih implementacija algoritma \textit{quicksort} u zavisnosti od broja jezgara, testirano za niz od 50 miliona brojeva (osim Python-a koji je testiran za niz od milion brojeva)}
 \label{fig:qs1}
 \end{center}
 \end{figure}
 
-Maksimalna upotreba memorije za nizove različitih dužina je prikazana u tabeli \ref{tab:qs3}. Obe verzije u C++-u su podjednako efikasne i potrebno im je manje memorije u odnosu na druge implementacije. C je približno efikasan kao i C++ osim što i za nizove manjih dužina zahteva veliku količinu memorije. Go koristi dva puta više memorije nego ostale implementacije dok je Python-u potrebna višestruko veća količina memorije.
-\\
+Maksimalna upotreba memorije za nizove različitih dužina, prikazana je u tabeli \ref{tab:qs3}. Memorijski najefikasniji su C++ i C, osim što C zahteva veliku količinu memorije za nizove manje dužine. Go koristi dva puta više memorije nego C++, ali Python zahteva najviše memorije što je posledica upotrebljavanja procesa umesto niti. 
 
 \begin{table}
 \begin{center}
-\caption{Maksimalna upotreba memorije [MB] quicksort implementacija za različite dužine niza}
-\begin{tabular}{||c||c|c|c||}
+\caption{Maksimalna upotreba memorije [MB]  implementacija algoritma \textit{quicksort} za različite dužine niza}
+\begin{tabular}{||c||c|c|c|c||}
 \hline
-\diagbox[width=2.7cm, height=1cm]{Verzija}{\vspace*{-0.8cm}n [$10^{6}$]} &1 &10 &100 0 \\ \hline
-C++ omp	& \textbf{6.3}	&\textbf{42.3}	&\textbf{393.1}	\\ 
-C++ std	& 25.2		&55.0			&393.5		\\ 	
-C 		& 58.1		&68.8			&408.5		\\ 
-Go		& 13.4 		&87.5			&816.3		\\ 
-Python thr	& 40.4		&396.3		& -			\\
-Python pp	& 49.6		&411.8		& - 			\\ \hline
+\diagbox[width=2.7cm, height=1cm]{Verzija}{\vspace*{-0.8cm}n [$10^{6}$]} &1 &10 &30 &50 \\ \hline
+C++ 		& 9.2			&42.7			&121.5		&199.1	\\ 
+C		& 32.2		&76.9			&128.8		&229.3	\\ 
+Go		& 11.3		&84.7			&245.5		&406.7	\\ 
+Python	& 91.4		&827.9		& 2324.5		&3872.4	\\ \hline
 \end{tabular}
 \label{tab:qs3}
 \end{center}
 \end{table}
 
-Dužine implementacija, prikazane su u tabeli \ref{tab:qs4}.  Za implementaciju algoritma u C-u, potreban je najveći broj linija koda, dok je u Python-u potreban najmanji broj linija.
+Dužine implementacija, prikazane su u tabeli \ref{tab:qs4}.  Za implementaciju algoritma u C-u, potreban je najveći broj linija koda, dok je u Python-u potreban najmanji.
 
 \begin{table}
 \begin{center}
-\caption{Dužine k\^{o}da quicksort implementacija}
+\caption{Dužine kodova implementacija algoritma \textit{quicksort} }
 \begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-		&  C 	& Go	& C++ std	& C++ omp	& Python pp & Python thr \\ \hline
-Br. linija koda& 119	& 98	&84		&79		&55		&43	 \\ \hline
+		&  C 	& C++& Go	& Python \\ \hline
+Br. linija koda& 129	& 92	&84	&38	 \\ \hline
 \end{tabular}
 \label{tab:qs4}
 \end{center}
@@ -1015,7 +977,7 @@ Br. linija koda& 119	& 98	&84		&79		&55		&43	 \\ \hline
 
 \subsection{Rezime}
 
-Za konkurentnu implementaciju \textit{quicksort} algoritma, Go se pokazao vremenski efikasan isto koliko C i C++ za nizove dužine do 10 miliona, dok mu je potrebno dva puta više vremena za nizove dužine od 100 miliona brojeva, ali prilkom sekvencijalnog izvršavanja ispostavio se kao najefikasniji. Što se tiče memorijskih zahteva, Go koristi dva puta više memorije nego C i C++, ali je i memorijski i vremenski višestruko efikasniji od Pythona. Dužina koda Go implementacije, uporediva je sa C-om i C++-om.
+Za konkurentnu implementaciju algoritma \textit{quicksort}, Go se pokazao vremenski najefiksniji. Što se tiče memorijskih zahteva, Go koristi dva puta više memorije nego C i C++, ali je memorijski i vremenski višestruko efikasniji od Python-a. Dužina koda Go implementacije je manja od C-a i C++, ali znatno veća od Python-a. 
 
 % Matrix==============================================================================
 
@@ -1025,40 +987,32 @@ Za izradu implementacija, upotrebljen je standardni algoritam za \textit{množen
 Algoritam je paralelizovan tako što svaka nit/gorutina računa po jedan red matrice, odnosno, jedan red prve matrice množi sa svim kolonama druge matrice. Za testiranje, korišćene su pseudoslučajno generisane kvadratne matrice različitih dimenzija. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/matrix_multiplication}}.
 
 \subsection{Go}
-Restrikcija broja gorutina, ostvaruje se pomoću semafora na isti način kao što je urađeno u prethodnoj implementaciji u poglavlju \ref{qs:go}. U implementaciji prikazanoj u listingu\ref{lst:matrix}, može se primetiti da je neophodno gorutinama proselditi \texttt{i} kao argument anonimne funkcije kako bi svaka gorutina imala svoju kopiju. U suprotnom, u svakoj sledećoj iteraciji \texttt{for} petlje, vrednost \texttt{i} bi bila ažurirana u svim gorutinama. Za razliku od prethodne implementacije gde se niz koji se sortira prenosi pomoću reference, ovde su matrice definisane kao globalne. Nije potrebno nikakvo zaključavanje jer se početne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka gorutina popunjava samo svoj red. 
+Implementacija konkurentne funkcije za \textit{množenje matrica}, prikazana je u listingu \ref{lst:matrix}. Broj gorutina koji se koristi prilikom izvršavanja algoritma, zadaje se kao parametar funkcije. Gorutinama koje se kreiraju untar \texttt{for} petlje, neophodno je proselditi vrednost \texttt{i} kao parametar anonimne funkcije, kako bi svaka gorutina imala svoju kopiju. U suprotnom, u svakoj sledećoj iteraciji \texttt{for} petlje, vrednost \texttt{i} bi bila ažurirana u svim gorutinama. Za razliku od  implementacije \ref{lst:qs}, gde se niz koji se sortira prenosi pomoću reference, ovde su matrice definisane kao globalne. Nije potrebno nikakvo zaključavanje jer se ulazne matrice koriste samo za čitanje, a kod rezultujuće matrice svaka gorutina popunjava samo svoj red. 
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za množenje matrica,label={lst:matrix}, backgroundcolor=\color{background}]
-func multiply(){
+\begin{lstlisting}[caption=Implementacija konkurentne funkcije za \textit{množenje matrica} u jeziku Go,label={lst:matrix}, backgroundcolor=\color{background}]
+func multiply_conc(num_routines int) {
 	wg := sync.WaitGroup{}
 	wg.Add(n)
-
 	for i := 0; i < n; i++ {
-		select{
-		case semaphore <- struct{}{}:
-			go func(row int){
-				multiply_row(row)
-				<- semaphore
-				wg.Done()
-			}(i)
-		default:
-			multiply_row(i)
+		go func(row int){
+			multiply_row(row, num_routines)
 			wg.Done()
-		}
+		}(i)
 	}
-
 	wg.Wait()
 }
 \end{lstlisting}
 \end{center}
 
-\subsection{Ostale implementacije}
-Implementacije u ostalim jezicima su realizovane na sličan način. Maksimalan broj niti koji se kreira u toku izvršavanja programa zadaje se unapred. Za C++ razmatrane su dve implementacije. Jedna implementacija je ostvarena pomoću biblioteke \texttt{omp} i koristi običan niz za reprezntaciju matrice, dok druga koristi strukturu vektor i standardnu biblioteku.
-
+\subsection{Implementacije u drugim jezicima}
+Implementacija u Python-u, razlikuje se zbog nemogućnosti deljenja globalnih promenljivih, pa je matrice potrebno proslediti kao parametar funkcije, što ima negativan uticaj na memorijske zahteve. Paralelizacija implementacija u drugim jezicima, realizovana je na isti način. 
 
 \subsection{Rezultati}
 
-Grafik brzine izvršavanja u zavisnosti od veličine matrice, prikazan je na slici \ref{fig:matrix1}. Python se izvršava znatno sporije od ostalih implementacija tako da nije bilo mogućnosti testirati ga na ulazima iste veličine, a rezultati testiranja Python implementacije, prikazani su u posebnoj tabeli. Na osnovu grafika se zaključuje da je C implementacija najefikasnija, a zatim C++ verzija sa bibliotekom \texttt{omp}, dok C++ verzija sa standardnom bibliotekom radi najsporije. Za matrice manje veličine, Go radi podjednako efikasno kao i C++ \texttt{omp} verzija, ali za matricu veličine 1500, Go zahteva dva puta više vremena nego C++, što je približno četiri puta više nego C. 
+Grafik brzine konkurentnog izvršavanja u zavisnosti od veličine matrice, prikazan je na slici \ref{fig:matrix1}. Python se izvršava znatno sporije od ostalih implementacija, tako da nije bilo mogućnosti testirati ga za matrice iste veličine. Rezultati testiranja Python implementacije, prikazani su u posebnim tabelama. Od prikazanih implementacija, C je vremenski najefikasniji. C++ i Go, izvršavaju se istom brzinom za manje ulaze, ali za ulaze veće dimenzije, Go radi dosta sporije. 
+
+Grafik brzine sekvencijalnog izvršavanja u zavisnosti od veličine matrice, prikazan je na slici \ref{fig:matrix11}. Sve implementacije dobijaju veliko ubrzanje konkurentnim izvršavanjem. Za matricu veličine 1500, implementacije rade duže od jednog minuta, dok im je pri konkurentnom izvršavanju potrebno od 3 do 10 sekundi.
 
 \begin{figure}
 \begin{center}
@@ -1067,10 +1021,10 @@ Grafik brzine izvršavanja u zavisnosti od veličine matrice, prikazan je na sli
 \begin{axis}[
     xlabel={Dimenzija matrice},
     ylabel={Vreme [s]},
-    xmin=650, xmax=1550,
-    ymin=0, ymax=14,
-    xtick={700,800,900,1000,1100,1200,1300,1400,1500},
-    ytick={0,2,4,6,8,10,12,14,16,18,20,22},
+    xmin=750, xmax=1550,
+    ymin=0, ymax=12,
+    xtick={800,900,1000,1100,1200,1300,1400,1500,1600},
+    ytick={0,2,4,6,8,10,12},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
@@ -1078,40 +1032,65 @@ Grafik brzine izvršavanja u zavisnosti od veličine matrice, prikazan je na sli
     height=8.5cm,
 ]
 
-\addplot[blue,mark=*] coordinates {(700,1.61 )(800,2.07 )(1000,3.06 )(1500,13.4 )}; 
-\addplot[red,,mark=square*] coordinates {(700,0.71 )(800,0.93 )(1000,1.78)(1500,7.61 )}; 
-\addplot[green,mark=triangle*] coordinates {(700,0.70 )(800,0.84 )(1000,1.70 )(1500,4.40 )}; 
-\addplot[black,mark=star] coordinates {(700, 0.31)(800, 0.36)(1000, 0.66)(1500,2.48 )}; 
-\legend{C++ std,Go, C++ omp,C}
+\addplot[blue,mark=*] coordinates {(800,0.62)(1000,1.75 )(1200,2.92)(1500, 10.7)}; 
+\addplot[green,mark=triangle*] coordinates {(800,0.95 )(1000,1.67 )(1200,2.35)(1500,7.45 )}; 
+\addplot[red,mark=square*] coordinates {(800,0.29)(1000,0.65)(1200,1.2)(1500,2.94 )}; 
+\legend{Go, C++,C}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik brzine izvršavanja različitih implementacija množenja matrica u zavisnosti od veličine matrice, testirano na 48 jezgara}
+\caption{Grafik brzine konkurentnog izvršavanja različitih implementacija algoritma \textit{množenja matrica} u zavisnosti od veličine matrice, testirano na 48 jezgara}
 \label{fig:matrix1}
 \end{center}
 \end{figure}
 
+\begin{figure}
+\begin{center}
 
-Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 1000, prikazano je u tabeli \ref{tab:matrix5}. Najbolje vreme se postiže sa 100 niti/gorutina za Go i C++ \texttt{omp} verziju i sa 1000 niti za C i C++ verziju sa standardnom bibliotekom. Kod ostalih testiranja, korišćen je onaj broj niti/gorutina za koji implementacija pokazuje najbolje rezultate. 
-\\
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel={Dimenzija matrice},
+    ylabel={Vreme [s]},
+    xmin=750, xmax=1550,
+    ymin=8, ymax=100,
+    xtick={800,900,1000,1100,1200,1300,1400,1500,1600},
+    ytick={10,30,50,70,90},
+    legend pos=outer north east,
+    ymajorgrids=true,
+    grid=none,
+    width=11.5cm,
+    height=8.5cm,
+]
+
+\addplot[blue,mark=*] coordinates {(800,16)(1000,34 )(1200,71)(1500,235)}; 
+\addplot[red,mark=square*] coordinates {(800,12 )(1000,24)(1200,44)(1500,91 )}; 
+\addplot[green,mark=triangle*] coordinates {(800,11)(1000,23)(1200,43)(1500,90 )}; 
+\legend{Go, C++,C}
+\end{axis}
+\end{tikzpicture}
+
+\caption{Grafik brzine sekvencijalnog izvršavanja različitih implementacija algoritma \textit{množenja matrica} u zavisnosti od veličine matrice, testirano na 48 jezgara}
+\label{fig:matrix11}
+\end{center}
+\end{figure}
+
+Prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 1000, prikazano je u tabeli \ref{tab:matrix5}. Implementacije postižu najbolje vreme sa 1000 niti/gorutina. Go pokazuje veoma loše rezultate ukoliko se koristi nedovoljan broj niti, što kod drugih jezika nije toliko izraženo. Prilikom ostalih testiranja, korišćen je onaj broj niti/gorutina za koji implementacija pokazuje najbolje rezultate. 
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja [s] implementacija množenja matrica sa različitim brojem niti, testirano sa 48 jezgara za matrice veličine 1000}
-\begin{tabular}{||c||c c c c||}
+\caption{Prosečno vreme izvršavanja [s] implementacija algoritma \textit{množenja matrica} sa različitim brojem niti, testirano sa 48 jezgara za matrice veličine 1000}
+\begin{tabular}{||c||c c c c c||}
 \hline
-Br. niti		&10&30 &100 &1000\\ \hline
-Go		&6.39	&3.01&\textbf{1.78}&1.82	 \\ \hline
-C		&2.74	&1.39&0.92&\textbf{0.81} \\ \hline
-C++ omp	&3.03	&1.95&\textbf{1.70}&1.97 \\ \hline
-C++ std	&15.31&8.71&3.21&\textbf{3.06} \\ \hline
+Br. niti		&40&100 &200 &500 &1000\\ \hline
+C		&1.48		&0.95		&0.85		&0.70		&\textbf{0.65} \\ \hline
+C++ 		&1.98		&1.81		&1.78		&1.71		&\textbf{1.67} \\ \hline
+Go		&21.73	&8.93		&4.98		&2.47		&\textbf{1.75} \\ \hline
 \end{tabular}
 \label{tab:matrix5}
 \end{center}
 \end{table}
 
-Rezultati testiranja implementacija na različitom broju jezgara, prikazani su na slici \ref{fig:matrix3}. Na grafiku se može videti velika razlika u brzini između sekvencijalnog (na jednom jezgru) i konkurentnog izvršavanja. Brzina izvršavanja raste do 16 i 24 jezgara, dok povećanje na 48 jezgara, ne donosi značajno ubrzanje. 
-\\
+Rezultati testiranja implementacija na različitom broju jezgara, prikazani su grafikom na slici \ref{fig:matrix3}. Implementacije dobijaju veliko ubrzanje povećanjem broja korišćenih jezgara. Ipak, ne postoji značajna razlika u brzini pri upotrebi 32 i 48 jezgara, što je posledica samog algoritma koji ne koristi dodatne optimizacije koje omogućavaju maksimalnu iskorišćenost procesora.
 
 \begin{figure}
 \begin{center}
@@ -1120,51 +1099,30 @@ Rezultati testiranja implementacija na različitom broju jezgara, prikazani su n
 \begin{axis}[
     xlabel={Broj jezgara},
     ylabel={Vreme [s]},
-    xmin=-1, xmax=50,
-    ymin=0, ymax=110,
-    xtick={1,8,16,24,32,40,48},
-    ytick={10,30,50,70,90,110},
+    xmin=2, xmax=50,
+    ymin=0, ymax=12,
+    xtick={4,8,12,16,20,24,28,32,36,40,44,48},
+    ytick={0,2,4,6,8,10,12},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
     width=11cm,
     height=8cm,
 ]
-\addplot coordinates {(1, 229)(4,94.1)(8,41.1)(16,27.1 )(24,21.3 )(48,13.4)}; 
-\addplot coordinates {(1,108.4 )(4,51.14)(8,25.12)(16,15.23 )(24,14.1 )(48,7.61)}; 
-\addplot[green,mark=triangle*]  coordinates {(1,94.7 )(4,24)(8,12.8)(16,6.6 )(24,3.3 )(48,4.15)}; 
-\addplot coordinates {(1,99.5 )(4,22.4)(8,11.3)(16,6.1 )(24,4.2 )(48,2.48)}; 
+\addplot coordinates {(4,21.6)(8,10)(16,5.3)(24,3.2)(32,2.6)(48,1.75)}; 
+\addplot[green,mark=triangle*]  coordinates {(4,11.7)(8,6)(16,2.8 )(24,2.3)(32,2.0)(48,1.67)}; 
+\addplot[red,mark=square*] coordinates {(4,11.5)(8,4)(16,2.2 )(24,1.5 )(32,0.9)(48,0.65)}; 
 
-
-\legend{C++ std, Go, C++ omp, C}
+\legend{Go, C++, C}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik brzine izvršavanja različitih implementacija množenja matrica u zavisnosti od broja jezgara za matricu veličine 1500}
+\caption{Grafik brzine izvršavanja različitih implementacija  algoritma \textit{množenja matrica} u zavisnosti od broja jezgara za matricu veličine 1000}
 \label{fig:matrix3}
 \end{center}
 \end{figure}
 
-Rezultati python implementacije, prikazani su u tabeli \ref{tab:matrix1}. Python se izvršava višestruko sporije i potrebno mu je više od 90 sekundi za matricu veličine 500, dok je ostalim implementacijama potrebno manje od jedne sekunde. Konkurentno izvršavanje je ponovo sporije od sekvencijalnog zbog već pomenutog problema sa GIL-om u poglavlju \ref{gil}.
-\\
-
-\begin{table}
-\begin{center}
-\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije Python implementacije množenja matrica za različito n}
-\begin{tabular}{||c||c|c|c||}
-\hline
-n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
-100	&0.78	&0.32&7.5\\
-300	&21.11&7.59&10.0\\
-500	&97.73&38.27&17.4\\
-\hline
-\end{tabular}
-\label{tab:matrix1}
-\end{center}
-\end{table}
-
-Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica, prikazan je na slici \ref{fig:matrix2}. Memorijska efikasnost implementacija se poklapa sa vremenskom. C i C++ \texttt{omp} vezija su najefikasnije dok Go koristi dva puta više memorije. C++ verzija sa standardnom bibliotekom zahteva najveću količinu memorije. 
-\\
+Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrice, prikazan je na slici \ref{fig:matrix2}. Implementacije imaju slične memorijske zahteve, osim što za veće ulaze, Go zahteva nešto više memorije od ostalih.
 
 \begin{figure}
 \begin{center}
@@ -1173,39 +1131,73 @@ Grafik maksimalne upotrebe memorije u zavisnosti od dimenzije matrica, prikazan 
 \begin{axis}[
     xlabel={Dimenzija matrice},
     ylabel={Upotreba memorije [MB]},
-    xmin=650, xmax=1550,
-    ymin=5, ymax=75,
-    xtick={700,900,1100,1300,1500},
-    ytick={5,15,25,35,45,55,65,75},
+    xmin=750, xmax=1550,
+    ymin=15, ymax=65,
+    xtick={800,900,1000,1100,1200,1300,1400,1500},
+    ytick={15,25,35,45,55,65},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
     width=11cm,
     height=8cm,
 ]
-\addplot coordinates {(700, 19.2)(800, 24.4)(1000, 34.7)(1500,73.8 )}; 
-\addplot coordinates {(700,17.3 )(800,20.5 )(1000,30.3 )(1500,62.2)}; 
-\addplot[green,mark=triangle*] coordinates {(700,9.4 )(800,12.2 )(1000,19.3 )(1500,30 )}; 
-\addplot[black,mark=star] coordinates {(700,7.9 )(800,10.6 )(1000,13.9)(1500,28.5)}; 
-\legend{ C++ std,Go, C++ omp,C}
+\addplot[blue,mark=*] coordinates {(800,21)(1000,31 )(1200,42)(1500,63.5)}; 
+\addplot[green,mark=triangle*] coordinates {(800,23)(1000,32)(1200,40)(1500,55 )}; 
+\addplot[red,mark=square*] coordinates {(800,19 )(1000,29)(1200,38)(1500,52.3)}; 
+\legend{Go, C++,C}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik maksimalne upotrebe memorije različitih implementacija množenja matrica u zavisnosti od dimenzije matrica}
+\caption{Grafik maksimalne upotrebe memorije  u zavisnosti od dimenzije matrica, različitih implementacija algortima \textit{množenja matrica}}
 \label{fig:matrix2}
 \end{center}
 \end{figure}
 
+Rezultati Python implementacije, prikazani su u tabeli \ref{tab:matrix1}. Python radi višestruko sporije od ostalih implementacija. Za matricu veličine 800, potrebno mu je više od 3 minuta, dok ostale implementacije rade ispod jedne sekunde. U odnosu na sekvencijalno izvršavanje, Python se izvršava oko tri puta brže. Kada je reč o memoriskim zahtrevima, Python-u je potrebna pet puta veća količina memorije nego ostalim implementacijama, što je posledica upotrebe procesa umesto niti.
 
-Broj linija koda svih  implementacija, prikazan je u tabeli \ref{tab:matrix2}. Python ima najkraću implementaciju sa samo 28 linija koda. Najduža implementacija je C++ verzija sa standardnom bibliotekom usled razdvajanja na klase i nekoliko fajlova radi jednostavnijeg korišćenja.  
+U  tabeli \ref{tab:matrix11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara i vreme izvršavanja sa različitim brojem niti Python implementacije, za matricu veličine 300. Sa povećanjem broja jezgara, ne dobija se značajno ubrzanje za razliku od drugih jezika. Broj niti, takođe nema značajan uticaj na brzinu izvršavanja kod Python-a.
 
 \begin{table}
 \begin{center}
-\caption{Dužine k\^{o}da implementacija množenja matrica}
+\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije za različito n,  implementacije  algoritma \textit{množenja matrica}  u jeziku Python}
+\begin{tabular}{||c||c|c|c||}
+\hline
+n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
+100	&0.55		&1.41		&15.5\\
+300	&10.78	&25.54	&22.7\\
+500	&51.19	&144.52	&47.8\\
+800	&195.293	&- 		&115.3\\
+\hline
+\end{tabular}
+\label{tab:matrix1}
+\end{center}
+\end{table}
+
+\begin{table}
+\begin{center}
+\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara i prosečno vreme izvršavanja sa različitim brojem niti za matricu veličine 300,  implementacije algoritma \textit{množenja matrica} u jeziku Python}
+\begin{tabular}{||c||c|c|c|c|c|c||}
+\hline
+Br. jezgara &4  &8 &16 &24 & 32 &48 \\ \hline
+Vreme [s]	&14.70	&12.84	&11.66 	& 10.91	&10.85	&10.78\\ \hline  
+\multicolumn{7}{c}{}\\
+\hline
+Br. niti &4 &10 &30 &50 &100 & 300  \\ \hline
+Vreme [s]	&12.57	&11.60	&10.91	 & 10.82	&10.85	&10.78\\ \hline
+\end{tabular}
+\label{tab:matrix11}
+\end{center}
+\end{table}
+
+
+Broj linija koda svih  implementacija, prikazan je u tabeli \ref{tab:matrix2}. Najduža implementacija algoritma je u C-u, dok je najkraća u Python-u.
+\begin{table}
+\begin{center}
+\caption{Dužine kodova implementacija množenja matrica}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
-		& C++ std	&  Go 	& C	& C++ omp	& Python	\\ \hline
-Br. linija koda&170		& 75	& 70	&50		&28		\\ \hline
+		&  C 	& Go	& C++	& Python	\\ \hline
+Br. linija koda& 78	& 71	&55		&28		\\ \hline
 \end{tabular}
 \label{tab:matrix2}
 \end{center}
@@ -1213,7 +1205,7 @@ Br. linija koda&170		& 75	& 70	&50		&28		\\ \hline
 
 \subsection{Rezime}
 
-Za konkurentnu implementaciju algoritma \textit{množenja matrica}, Go se pokazao vremenski efikasan koliko C i C++ za ulaze manjih dimenzija, dok za velike ulaze zahteva dva puta više vremena. Takođe, potrebna mu je dva puta veća količina memorije ali je neuporedivo vremenski i memorijski efikasniji od Python-a. Potreban je približno isti broj linija k\^{o}da za implementaciju algoritma koliko i u C-u.
+Za konkurentnu implementaciju algoritma \textit{množenja matrica}, Go se pokazao vremenski efikasan koliko C i C++ za ulaze manjih dimenzija, dok za ulaze većih dimenzija zahteva više vremena. Go upotrebljava nešto više memorije nego C i C++ za matrice većih dimenzija, ali je neuporedivo vremenski i memorijski efikasniji od Python-a. Potreban je približno isti broj linija koda za implementaciju algoritma u Go-u koliko je i u C-u.
 
 % Prime==============================================================================
 
@@ -1236,15 +1228,15 @@ ErathostenesSieve(n):
                  j := j + i
 \end{Verbatim}
 
-\caption{Pseudokod algoritma Eratostenovo sito}
+\caption{Pseudokod algoritma \textit{Eratostenovo sito}}
 \label{fig:prime_pseudo}
 \end{center}
 \end{figure}
 
-Paralelizacija algoritma se postiže deljenjem opsega od 2 do \texttt{n} na jednake delove. Svaka nit/gorutina dobija svoj deo opsega u okviru kojeg eliminiše brojeve koji nisu prosti. Za svaki prost broj je prvo potrebno odrediti njegov prvi umnožak unutar opsega. Iako svaka nit/gorutina ima svoj opseg, ona mora da pristupa članovima niza drugih niti/gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do mogućnosti da se u nekim slučajevima bespotrebno eliminišu umnošci brojeva koji nisu prosti ukoliko ih druga nit/gorutina još uvek nije eliminisala. Problem je rešen tako što se proverava dodatni uslov prilikom eliminacije: da li je neka druga nit/gorutina u međuvremenu označila da taj broj nije prost. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/prime_sieve}}.
+Paralelizacija algoritma se postiže deljenjem opsega od 2 do \texttt{n} na jednake delove. Svaka nit/gorutina dobija svoj deo opsega u okviru kojeg eliminiše brojeve koji nisu prosti. Za svaki prost broj, prvo je potrebno odrediti njegov prvi umnožak unutar opsega. Iako svaka nit/gorutina ima svoj opseg, ona mora da pristupa članovima niza drugih niti/gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do mogućnosti da se u nekim slučajevima bespotrebno eliminišu umnošci brojeva koji nisu prosti ukoliko ih druga nit/gorutina još uvek nije eliminisala. Problem je rešen tako što se proverava dodatni uslov prilikom eliminacije: da li je neka druga nit/gorutina u međuvremenu označila da taj broj nije prost. Kodovi svih implementacija, dostupni su na repozitorijumu\footnote{\url{https://github.com/MitrovicMilosh/Go-Concurrency/tree/master/prime_sieve}}.
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za određivanje prostih brojeva manjih od n,label={lst:prime1},backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Implementacija konkurentne funkcije za određivanje prostih brojeva manjih od n u jeziku Go,label={lst:prime1},backgroundcolor=\color{background}]
 func Prime(list *[]bool, n int, is_concurrent bool){
 	sqrt := int(math.Sqrt(float64(n)))
 	first := 0
@@ -1266,11 +1258,10 @@ func Prime(list *[]bool, n int, is_concurrent bool){
 \end{center}
 
 \subsection{Go}
-
-Koristi se globalni niz od \texttt{n} bulovskih promenljivih postavljenih na podrzumevanu vrednost \texttt{false} umesto na \texttt{true} radi jednostavnosti.  Funkcija koja kreira gorutine, prikazana je u listingu \ref{lst:prime1}. Za svaki broj koji je trenutno označen kao prost, najpre je potrebno je odrediti njegov prvi umnožak, a zatim, označiti sve njegove umnoške unutar opsega, što je i prikazano u listingu \ref{lst:prime2}. Kao što je već pomenuto, ako svaka gorutina ima svoj opseg, ona mora da pristupa i članovima niza drugih gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do pojave trke za resursima, međutim, u ovom slučaju je to dopustivo i nisu potrebni muteksi, upravo zato što se proverava dodatni uslov da li je pročitana vrednost u međuvremenu bila menjana. Ako se detektor trke za resursima pozove, dobija se izveštaj koji upozorava da je ona prisutna. Primer izveštaja se može videti u poglavlju \ref{datarace} na slici \ref{fig:datarace}. 
+Funkcija koja kreira gorutine, prikazana je u listingu \ref{lst:prime1}. Za svaki broj koji je trenutno označen kao prost, najpre je potrebno odrediti njegov prvi umnožak, a zatim, označiti sve njegove umnoške unutar opsega, što je i prikazano u listingu \ref{lst:prime2}. Koristi se globalni niz od \texttt{n} bulovskih promenljivih postavljenih na podrzumevanu vrednost \texttt{false} umesto na \texttt{true} radi jednostavnosti. Kao što je već pomenuto, ako svaka gorutina ima svoj opseg, ona mora da pristupa i članovima niza drugih gorutina jer su joj potrebni svi prosti brojevi manji od $\sqrt{\texttt{n}}$. To kao posledicu dovodi do pojave trke za resursima, međutim, u ovom slučaju je to dopustivo i nisu potrebni muteksi, upravo zato što se proverava dodatni uslov da li je pročitana vrednost u međuvremenu bila menjana. Ako se detektor trke za resursima pozove, dobija se izveštaj koji upozorava da je ona prisutna. Primer izveštaja se može videti u poglavlju \ref{datarace} na slici \ref{fig:datarace}. 
 
 \begin{center}
-\begin{lstlisting}[caption=Go implementacija konkurentne funkcije za označavanje prostih brojeva,label={lst:prime2}, backgroundcolor=\color{background}]
+\begin{lstlisting}[caption=Implementacija konkurentne funkcije za označavanje prostih brojeva u jeziku Go,label={lst:prime2}, backgroundcolor=\color{background}]
 func mark_prime(list *[]bool,first,last,sqrt int,wg *sync.WaitGroup){
 	for i:=2;  i<= sqrt && i*i<= last; i++{
 		if !(*list)[i] {
@@ -1296,12 +1287,11 @@ func mark_prime(list *[]bool,first,last,sqrt int,wg *sync.WaitGroup){
 \end{center}
 
 \subsection{Ostale implementacije}
-Implementacije u ostalim jezicima, realizovane su na isti načini. Za C++ je razmatrana samo jedna implementacija koja koristi biblioteku \texttt{omp}.
+Implementacija u Python-u, razlikuje se zbog nemogućnosti deljenja globalnih promenljivih, pa je odgovarajući deo niza potrebno proslediti kao parametar funkcije, što ima uticaj na memorijske zahteve. Na ovaj način je onemogućena provera toga da li se eliminišu umnošci broja koji je već označen da nije prost, što ima uticaj na vremensku efikasnost. Implementacije u ostalim jezicima, realizovane su na isti načini.
 
 \subsection{Rezultati}
 
-Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija, predstavljeno je grafikom na slici \ref{fig:prime1}. Python nije mogao da bude uključen na ovom grafiku usled znatno sporijeg izvršavanja, a rezultati Python implementacije, prikazani su u posebnoj tabeli. Go implementacija se pokazala kao najefikasnija. C++ implementacija je približno efikasna koliko je i Go, i obe rade ispod jedne sekunde za najveći ulaz. C implementacija je znatno sporija i njeno izvršavanje se meri u sekundama. U odnosu na sekvencijano izvršavanje, Go ima najveće ubrzanje. Pri konkurentnom izvršavanju, veličina ulaza nema značajan uticaj i nema velike razlike u brzini kada \texttt{n} iznosi 500 miliona ili 1 milijardu. 
-\\
+Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija, predstavljeno je grafikom na slici \ref{fig:prime1}. Python nije mogao da bude uključen na ovom grafiku usled znatno sporijeg izvršavanja, a rezultati Python implementacije, prikazani su u posebnim tabelama. Go i C++ su vremenski najefikasniji i povećanje vrednosti n, ne utiče značajno na njihovo vreme izvršavanja. U odnosu na sekvencijalno izvršavanje, sve implementacije dobijaju višestruko ubrzanje. 
 
 \pgfplotsset{ every non boxed x axis/.style={} }
 
@@ -1318,8 +1308,8 @@ Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija, preds
     },
     xlabel={n[$10^{6}$]},
     ylabel={Vreme [s]},
-    xmin=450, xmax=1050,
-    xtick={500,600,700,800,900,1000},
+    xmin=450, xmax=1250,
+    xtick={500,600,700,800,900,1000,1100,1200},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
@@ -1327,57 +1317,54 @@ Prosečno vreme konkurentnog i sekvencijalnog izvršavanja implementacija, preds
 ]
 
 
-\nextgroupplot[ymin=1.2,ymax=35,
-               ytick={5,10,15,20,25,30,35},
+\nextgroupplot[ymin=5,ymax=35,
+               ytick={10,15,20,25,30,35},
                axis x line=top, 
                axis y discontinuity=parallel,
-               height=6.0cm,
+               height=5.0cm,
 	    xlabel={}]
 
-\addplot[blue, dashed] coordinates {(500,23.16 )(600,26.54)(800,32.67 )(1000, 44.47)};
-\addplot[red, dashed] coordinates {(500, 15.92 )(600,19.53)(800,26.14 )(1000, 33.34)};   
-\addplot[green, dashed] coordinates {(500, 11.18 )(600,13.64)(800,18.9 )(1000, 23.67)};
-\addplot[blue,mark=*] coordinates {(500,4.78 )(600,6.5)(800,8 )(1000, 9.2)}; 
-\legend{C,Go,C++,C}
+\addplot[green,  mark=triangle*, dashed,mark options={solid}] coordinates {(500,19)(800,28)(1000, 32)(1200, 40)};
+\addplot[blue, dashed, mark=*,mark options={solid}] coordinates {(500,13)(800,18 )(1000, 22)(1200, 28)};   
+\addplot[red, dashed, mark=square*,mark options={solid}] coordinates {(500,11)(800,17)(1000, 21)(1200, 26)};
+\legend{C,Go,C++}
 
 
-\nextgroupplot[ymin=0,ymax=1.2,
-               ytick={0,1},
+\nextgroupplot[ymin=0,ymax=3.7,
+               ytick={0,1,2,3},
                axis x line=bottom,
-               height=3.0cm, ylabel={}]
+               height=4.0cm, ylabel={}]
 
-
-\addplot[green,mark=triangle*] coordinates {(500, 0.7)(600,0.78)(800,0.83 )(1000,0.88 )}; 
-\addplot[red,mark=square*] coordinates {(500,0.31 )(600,0.4)(800,0.51 )(1000,0.58 )}; 
-\legend{C++,Go}
+\addplot[green,mark=triangle*] coordinates {(500, 1.48)(800,2.45 )(1000,2.86 )(1200, 3.47)}; 
+\addplot[red,mark=square*] coordinates {(500,0.85 )(800,0.92 )(1000,1.1)(1200, 1.2)}; 
+\addplot[blue,mark=*] coordinates {(500,0.48 )(800,0.61)(1000, 0.72)(1200, 0.8)}; 
+\legend{C,C++,Go}
 
 \end{groupplot}
 \end{tikzpicture}
-\caption{Grafik brzine izvršavanja različitih implementacija Eratostenovog sita za različito n, testirano na 48 jezgara; isprekidanom linjom je prikazano sekvencijalno izvršavanje dok je konkurentno prikazano punom linijom}
+\caption{Grafik brzine izvršavanja različitih implementacija algoritma \textit{Eratostenovo sito} za različito n, testirano na 48 jezgara; isprekidanom linjom, prikazano je sekvencijalno izvršavanje dok je konkurentno prikazano punom linijom}
 \label{fig:prime1}
 
 \end{center}
 \end{figure}
 
-U tabeli \ref{tab:prime5}, prikazano je vreme izvršavanja sa različitim brojem niti/gorutina kada je n = 500 miliona. Sve tri implementacije postižu najbolje performanse sa 1000 niti/gorutina što je iskorišćeno prilikom svih ostalih testiranja.
+U tabeli \ref{tab:prime5}, prikazano je vreme izvršavanja sa različitim brojem niti/gorutina kada n iznosi 1 milijaradu. Sve tri implementacije postižu najbolje performanse sa 10000 niti/gorutina. Broj niti/gorutina utiče na opseg pretraživanja i veličinu posla koju jedna nit/gorutina obavlja, što ima velike posledice na vremensku efikasnost.
 
 \begin{table}
 \begin{center}
-\caption{Prosečno vreme izvršavanja [s] implementacija Eratostenovog sita sa različitim brojem niti, testirano sa 48 jezgara za n = 500 miliona}
-\begin{tabular}{||c||c c c c||}
+\caption{Prosečno vreme izvršavanja [s] implementacija algoritma \textit{Eratostenovo sito} sa različitim brojem niti, testirano sa 48 jezgara kada n iznosi 1 milijaradu}
+\begin{tabular}{||c||c c c c c||}
 \hline
-Br. niti		&10 &100 &1000 &10000\\ \hline
-Go	&2.14	&0.40	&\textbf{0.31}&0.49\\ \hline
-C	&6.17	&4.81	&\textbf{4.74}&7.85\\ \hline
-C++  &4.53	&2.84	&\textbf{0.73}&0.76\\ \hline
+Br. niti		&50 &100 &1000 &10000&100000\\ \hline
+Go	&4.15	&3.21	&0.78&\textbf{0.71}&1.31\\ \hline
+C++  &14.53&9.84	&5.31&\textbf{1.12}&1.41\\ \hline
+C	&7.34	&6.13	&5.02&\textbf{2.62}&4.72\\ \hline
 \end{tabular}
 \label{tab:prime5}
 \end{center}
 \end{table}
 
-
-Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara, prikazan je na slici \ref{fig:prime3}. Kod svih implementacija postoji ubrzanje sa povećanjem broja jezgara, ali ne postoji značajna razlika u brzini prilikom izvršavanja sa 24 i 48 jezgara.
-\\
+Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara, prikazan je na slici \ref{fig:prime3}. Kod svih implementacija postoji ubrzanje sa povećanjem broja jezgara, ali ne postoji značajna razlika u brzini prilikom izvršavanja sa 32  i 48 jezgara, što je posledica ograničenja samog algoritma bez optimizacije.
 
 \begin{figure}
 \begin{center}
@@ -1387,88 +1374,103 @@ Grafik brzine izvršavanja implementacija u zavisnosti od broja jezgara, prikaza
     xlabel={Broj jezgara},
     ylabel={Vreme [s]},
     xmin=2, xmax=50,
-    ymin=0, ymax=16,
+    ymin=0, ymax=14,
     xtick={4,8,12,16,20,24,28,32,36,40,44,48},
-    ytick={0,4,8,12,16},
+    ytick={0,2,4,6,8,10,12,14},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
     width=11cm,
     height=8cm,
 ]
-\addplot[blue,mark=*] coordinates {(4,14.5)(8,12.2)(16,11.5)(24,10.0 )(48,9.20)}; 
-\addplot[red,mark=square* ]   coordinates {(4,3.45)(8,1.82)(16,1.19 )(24,0.90 )(48,0.58)}; 
-\addplot[green,mark=triangle*] coordinates {(4,5.79)(8,4.21)(16,2.13 )(24,1.15)(48,0.88)}; 
-\legend{C, Go, C++}
+\addplot[red,mark=square* ]   coordinates {(4,13.4)(8,8.3)(16,6 )(24,4.1 )(32,3.4)(48,2.62)}; 
+\addplot[green,mark=triangle*] coordinates {(4,8.60)(8,6.21)(16,4.2 )(24,2)(32,1.7 )(48,1.12)}; 
+\addplot[blue,mark=*] coordinates {(4,7.78)(8,3.2)(16,1.65)(24,1.15 )(32,0.88 )(48,0.71)}; 
+\legend{C, C++, Go}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik brzine izvršavanja različitih implementacija Eratostenovog sita u zavisnosti od broja jezgara}
+\caption{Grafik brzine izvršavanja različitih implementacija algoritma \textit{Eratostenovo sito} u zavisnosti od broja jezgara  kada n iznosi 1 milijaradu}
 \label{fig:prime3}
 \end{center}
 \end{figure}
 
-Python je testiran za deset puta manju vrednost \texttt{n} u odnosu na ostale implementacije i rezultati testiranja su prikazani u tabeli \ref{tab:prime1}. Prilikom izvršavanja algoritma, Python-u je potrebno više od jednog minuta, dok Go za deset puta veću vrednost radi ispod jedne sekunde. Upotreba memorije je četiri puta veća nego kod ostalih implementacija i potrebno je više vremena pri konkurentnom izvršavanju nego pri sekvencijalnom usled već pomenutog problema sa GIL-om u odeljku \ref{gil}.
-\\
 
-\begin{table}
-\begin{center}
-\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije Python implementacije Eratostenovog sita za različito n}
-\begin{tabular}{||c||c|c|c||}
-\hline
-n[$10^{6}$] & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
-1	&0.57	&0.32&13.5\\
-10	&9.92&3.53&51.0\\
-30	&32.18&12.04&129.9\\
-50	&52.76&19.42&201.2\\
-100	&113.80&57.58&397.1\\
-\hline
-\end{tabular}
-\label{tab:prime1}
-\end{center}
-\end{table}
+Maksimalna upotreba memorije u zavisnosti od n, prikazana je grafikom na slici \ref{fig:prime2}. Sve tri implementacije imaju slične memorijske zahteve. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebna količina memorije koja je direktno proporcijalna vrednosti n.
 
-Maksimalna upotreba memorije u zavisnosti od \texttt{n}, prikazana je na slici \ref{fig:prime2}. Sve tri implementacije imaju slične memorijske zahteve. Na grafiku se vidi približno linearna zavisnost y=x, što znači da je potrebna količina memorije direktno proporcijalna vrednosti \texttt{n}.
-\\
+Prosečno vreme izvršavanja i upotreba memorije Python implementacije, prikazani su u tabeli \ref{tab:prime1}. Python radi najsporije od svih implementacija i potrebno mu je više od 20 sekundi za ulaz veličine 10 miliona, dok ostale implementacije rade oko jedne sekunde za ulaz 500 miliona. U odnosu na sekvencijalno izvršavanje, Python dobija ubrzanje koje je neuporedivo manje u odnosu na druge jezike. Memorijski zahtevi su takođe znatno veći u odnosu na druge implementacije usled upotrebe procesa umesto niti.
 
-\begin{figure}
+\begin{figure}[H]
 \begin{center}
 
 \begin{tikzpicture}
 \begin{axis}[
     xlabel={n[$10^{6}$]},
     ylabel={Upotreba memorije [MB]},
-    xmin=450, xmax=1050,
-    ymin=450, ymax=1050,
-    xtick={500,600,700,800,900,1000},
-    ytick={500,600,700,800,900,1000},
+    xmin=450, xmax=1250,
+    ymin=400, ymax=1350,
+    xtick={500,600,700,800,900,1000,1100,1200},
+    ytick={500,700,900,1100,1300},
     legend pos=outer north east,
     ymajorgrids=true,
     grid=none,
     width=11cm,
     height=8cm,
 ]
-\addplot[blue,mark=*] coordinates {(500,506 )(600,606.4)(800,808.2)(1000,1008 )}; 
-\addplot[red,mark=square* ]coordinates {(500,492)(600,589)(800,784)(1000,980 )}; 
-\addplot[green,mark=triangle*] coordinates {(500,489 )(600,587)(800,782 )(1000, 978)}; 
-\legend{Go, C++,C}
+\addplot[green,mark=triangle*] coordinates {(500,532 )(800,851 )(1000,1063)(1200, 1259)}; 
+\addplot[blue,mark=*] coordinates {(500, 520)(800,830 )(1000,1036 )(1200, 1238)}; 
+\addplot[red,mark=square*] coordinates {(500,491 )(800,784)(1000,979)(1200, 1175)}; 
+\legend{C,Go,C++}
 \end{axis}
 \end{tikzpicture}
 
-\caption{Grafik maksimalne upotrebe memorije različitih implementacija Eratostenovog sita za različito n}
+\caption{Grafik maksimalne upotrebe memorije različitih implementacija algoritma \textit{Eratostenovo sito} za različito n}
 \label{fig:prime2}
 \end{center}
 \end{figure}
 
-Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. Najkraća implementacija algoritma je u Python-u, dok je u C-u najduža. Go se ponovo nalazi između C-a i C++-a po broju linija koda.
-
-\begin{table}
+\begin{table}[H]
 \begin{center}
-\caption{Dužine k\^{o}da implementacija Eratostenovog sita}
+\caption{Prosečno vreme izvršavanja i maksimalna upotreba memorije za različito n, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
+\begin{tabular}{||c||c|c|c||}
+\hline
+n & Konkurentno [s]& Sekvencijalno [s] & Memorija [MB] \\ \hline
+100,000	&0.12	&0.19&17.2\\
+1,000,000	&1.95	&3.15&102.4\\
+10,000,000	&23.88&29.63&888.7\\
+\hline
+\end{tabular}
+\label{tab:prime1}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\begin{center}
+\caption{Prosečno vreme izvršavanja  u zavisnosti od broja jezgara i prosečno vreme izvršavanja sa različitim brojem niti za n = 1 milion, implementacije algoritma \textit{Eratostenovo sito} u jeziku Python}
+\begin{tabular}{||c||c|c|c|c|c|c||}
+\hline
+Br. jezgara &4  &8 &16 &24 & 32 &48 \\ \hline
+Vreme [s]	&2.93		&2.42		&2.13 	& 2.01	&1.96 	&1.95\\ \hline  
+\multicolumn{7}{c}{}\\
+\hline
+Br. niti &4 &10 &30 &50 &100 & 500  \\ \hline
+Vreme [s]	&2.38		&2.03		&2.05	 	& 1.98	&1.95		&2.07\\ \hline
+\end{tabular}
+\label{tab:prime11}
+\end{center}
+\end{table}
+
+U  tabeli \ref{tab:prime11}, prikazano je vreme izvršavanja u zavisnosti od broja jezgara i vreme izvršavanja sa različitim brojem niti kada n iznosi 1 milion. Povećanje broja jezgara nema značajan uticaj na vremensku efikasnost Pythona, kao ni različit broj niti koji se koristi.
+
+Dužine implementacija su prikazane u tabeli \ref{tab:prime2}. Najkraća implementacija algoritma je u Python-u, dok je u C-u najduža. Go se nalazi između C-a i C++-a po broju linija koda.
+
+\begin{table}[H]
+\begin{center}
+\caption{Dužine kodova implementacija algoritma \textit{Eratostenovo sito}}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 		&  C  		&Go 	& C++ & Python 	 \\ \hline
-Br. linija koda& 89		& 78	&61	&42		 \\ \hline
+Br. linija koda&98		& 82	&70	&42		 \\ \hline
 \end{tabular}
 \label{tab:prime2}
 \end{center}
@@ -1477,11 +1479,11 @@ Br. linija koda& 89		& 78	&61	&42		 \\ \hline
 
 \subsection{Rezime}
 
-Za implementaciju algoritma \textit{Eratostenovo sito}, Go implementacija se ispostavila kao vremenski najefikasnija sa značajnim ubrzanjem u odnosu na sekvencijalno izvršavanje. Upotreba memorije je približno ista kolika je kod C-a i C++-a, kao i dužina koda implementacije.
+Za implementaciju algoritma \textit{Eratostenovo sito},  Go se ispostavio kao vremenski najefikasniji sa značajnim ubrzanjem u odnosu na sekvencijalno izvršavanje. Upotreba memorije implementacije u Go-u, približno je ista kolika je kod C-a i C++-a, kao i dužina koda implementacije.
 
 %Aplikacija================================================================
 
-\chapter{Primer upotrebe programskog jezika Go}
+\chapter{Primer upotrebe programskog jezika Go}\label{app}
 
 Kao primer upotrebe programskog jezika Go, razvijena je serverska aplikacija\ koja demonstrira korišćenje konkurentnosti kao i drugih aspekata jezika. U ovoj glavi, predstavljena je struktura aplikacije i opisani su pojedinačni delovi koji ilustruju različite karakteristike programskog jezika. 
 
@@ -1605,7 +1607,7 @@ U šablonu se sve instrukcije, podaci i kontrole toka navode između dvostrukih 
 \end{lstlisting}
 \end{center}
 
-\subsection{Preuzimanje i procesiranje fajla}
+\subsection{Preuzimanje i procesiranje fajla}\label{appFile}
 
 Funkcija \texttt{ImageHandler} se poziva kada korisnik klikne na dugme filter i bavi se preuzimanjem fajla, proverom zadovoljenosti svih uslova i primenom filtera. Struktura funkcije je prikazana u listingu \ref{lst:imghand}. Unutar funkcije, nalazi se jedna naredba \texttt{select}. Za kontrolu maksimalnog broja konekcija koji server može da opsluži, koristi se semafor. Ukoliko ima slobodnih mesta, izvršiće se glavni deo funkcije. Ukoliko nema slobodnih mesta, nakon isteka dozvoljenog vremena čekanja \texttt{timeout}, korisniku se ispisuje poruka da je server trenutno zauzet. 
  
