@@ -13,7 +13,7 @@ type matrix [][]int
 var n, num_routines int
 var m1, m2, res matrix
 
-func multiply_row(row, num_rouines int) {
+func multiply_row(row, num_routines int) {
 	for ; row<n; row+=num_routines {
 		for i := 0; i < n; i++ {
 			for j := 0; j < n; j++ {
@@ -25,8 +25,8 @@ func multiply_row(row, num_rouines int) {
 
 func multiply_conc(num_routines int) {
 	wg := sync.WaitGroup{}
-	wg.Add(n)
-	for i := 0; i < n; i++ {
+	wg.Add(num_routines)
+	for i := 0; i < num_routines; i++ {
 		go func(row int){
 			multiply_row(row, num_routines)
 			wg.Done()
